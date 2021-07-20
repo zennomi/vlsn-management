@@ -41,11 +41,13 @@ import Clients from "../pages/pages/Clients";
 // import Chat from "../pages/pages/Chat";
 import ListClass from "../pages/pages/ListClass";
 import Attendance from "../pages/pages/Attendance";
+import CreateClass from "../pages/dashboards/Classroom/CreateClass";
 
 // Dashboards
 const Default = async(() => import("../pages/dashboards/Default"));
 const Analytics = async(() => import("../pages/dashboards/Analytics"));
 const Ecommerce = async(() => import("../pages/dashboards/Ecommerce"));
+const Classroom = async(() => import("../pages/dashboards/Classroom"));
 const Crypto = async(() => import("../pages/dashboards/Crypto"));
 const Social = async(() => import("../pages/dashboards/Social"));
 
@@ -101,7 +103,7 @@ const dashboardRoutes = {
 };
 const studentRoutes = {
   
-  path: "/pages/clients",
+  path: "/student/clients",
   name: "Học Sinh",
   icon: UsersIcon,
   component: Clients
@@ -201,7 +203,25 @@ const authRoutes = {
     },
   ]
 };
-
+const classRoutes = {
+  
+  path: "/class",
+  name: "Lớp Học",
+  icon: UsersIcon,
+  children: [
+    {
+      path: "/class/",
+      name: "Danh Sách Lớp Học",
+      component: Classroom
+    },
+    {
+      path: "/create/",
+      name: "Tạo Lớp Học",
+      component: CreateClass
+    },
+  ]
+ 
+}
 const layoutRoutes = {
   path: "/layouts",
   name: "Layouts",
@@ -261,7 +281,6 @@ const privateRoutes = {
       name: "Điểm Danh",
       component: Attendance
     },
-
   ]
 };
 
@@ -271,7 +290,8 @@ export const dashboard = [
   pageRoutes,
   layoutRoutes,
   studentRoutes,
-  privateRoutes
+  privateRoutes,
+  classRoutes
 ];
 
 // Landing specific routes
@@ -285,6 +305,6 @@ export default [
   dashboardRoutes,
   pageRoutes,
   authRoutes,
-  studentRoutes
-  
+  studentRoutes,
+  classRoutes
 ];

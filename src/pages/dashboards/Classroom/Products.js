@@ -1,32 +1,20 @@
-import React, {useState} from "react";
+import React,{useState} from "react";
 
 import {
-  Card,
   CardBody,
+  Card,
   CardHeader,
   CardTitle,
-  Col,
-  Container,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  Row,
   UncontrolledDropdown,
-  Input,
-  Button,
-  Label
+  
 } from "reactstrap";
-import { Formik,FastField, Form  } from 'formik';
 import { MDBDataTableV5 } from 'mdbreact';
 import { MoreHorizontal } from "react-feather";
 
-// import avatar1 from "../../assets/img/avatars/avatar.jpg";
-// import avatar2 from "../../assets/img/avatars/avatar-2.jpg";
-// import avatar3 from "../../assets/img/avatars/avatar-3.jpg";
-// import avatar4 from "../../assets/img/avatars/avatar-4.jpg";
-// import avatar5 from "../../assets/img/avatars/avatar-5.jpg";
-
-const ClientsList = () =>{ 
+const Products = () => {
   const [datatable, setDatatable] = useState({
     columns: [
       {
@@ -66,15 +54,10 @@ const ClientsList = () =>{
         sort: 'disabled',
         width: 100,
       },
-      {
-        label: 'Action',
-        field: 'action',
-        width: 100,
-      },
     ],
     rows: [
       {
-        name: 'Nguyễn Đức Thắng',
+        name: 'Tiger Nixon',
         position: 'System Architect',
         office: 'Edinburgh',
         age: '61',
@@ -82,7 +65,7 @@ const ClientsList = () =>{
         salary: '$320',
       },
       {
-        name: 'Nguyễn Hùng Giang',
+        name: 'Garrett Winters',
         position: 'Accountant',
         office: 'Tokyo',
         age: '63',
@@ -533,8 +516,8 @@ const ClientsList = () =>{
   });  
 
 
-  return(
-    <Card>
+  return (
+    <Card className="flex-fill w-100">
       <CardHeader>
         <div className="card-actions float-right">
           <UncontrolledDropdown>
@@ -549,118 +532,13 @@ const ClientsList = () =>{
           </UncontrolledDropdown>
         </div>
         <CardTitle tag="h5" className="mb-0">
-          Học sinh
+          Danh Sách Lớp Học
         </CardTitle>
       </CardHeader>
       <CardBody>
-          <MDBDataTableV5 hover scrollX entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
-      </CardBody>
+            <MDBDataTableV5 hover  entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={4} data={datatable} />
+        </CardBody>
     </Card>
     );
 }
-const Single = () => (
-  <Card>
-    <CardHeader>
-        <CardTitle>Thêm học sinh mới</CardTitle>
-    </CardHeader>
-    <CardBody>
-      <div style={{margin:"10px"}}>
-      <Formik
-            initialValues={
-              {
-                date: '',
-                subject: '',
-                class: ''
-              }
-            }
-            onSubmit={(values) => {
-                
-            }}
-          >
-            <Form>
-              <Row >
-                  <Col>
-                    <Label>Họ và Đệm</Label>
-                    <FastField
-                      bsSize="lg"
-                      type="text"
-                      name="date"
-                      placeholder="Enter Date Attendance"
-                      component={Input}
-                    />
-                  </Col>
-              </Row>
-              <Row>
-                  <Col>
-                    <Label>Tên</Label>
-                    <FastField
-                      bsSize="lg"
-                      type="text"
-                      name="subject"
-                      placeholder="Enter Search subject"
-                      component={Input}
-                    />
-                  </Col>
-              </Row> 
-              <Row>
-                  <Col>
-                    <Label>Lớp</Label>
-                    <FastField
-                            bsSize="lg"
-                            type="select"
-                            name="subject"
-                            placeholder="Nhập môn "
-                            component={Input}
-                            
-                          >
-                            <option>6</option>
-                            <option>7</option>
-                            <option>8</option>
-                            <option>9</option>
-                            <option>10</option>
-                            <option>11</option>
-                            <option>12</option>
-                    </FastField>
-                  </Col>
-              </Row>
-              <Row>
-                  <Col>
-                    <Label>Trường</Label>
-                    <FastField
-                      bsSize="lg"
-                      type="text"
-                      name="class"
-                      placeholder="Enter Search Class"
-                      component={Input}
-                    />
-                  </Col>
-              </Row>
-              <Row>
-                  <Col>
-                    <Button  type="submit" >Thêm</Button>
-                  </Col>
-              </Row>
-            </Form>
-          </Formik>
-      
-      </div>
-    </CardBody>
-  </Card>
-);
-
-const Clients = () => (
-  <Container fluid className="p-0">
-    <h1 className="h3 mb-3">Học Sinh</h1>
-
-    <Row>
-      <Col xl="8">
-        <ClientsList />
-      </Col>
-      <Col xl="4">
-        <Single />
-      </Col>
-    </Row>
-  </Container>
-);
-
-export default Clients;
+export default Products;
