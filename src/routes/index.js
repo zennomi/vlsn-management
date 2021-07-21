@@ -42,7 +42,7 @@ import Clients from "../pages/pages/Clients";
 import ListClass from "../pages/pages/ListClass";
 import Attendance from "../pages/pages/Attendance";
 import CreateClass from "../pages/dashboards/Classroom/CreateClass";
-
+import StudentProfile from "../pages/pages/StudentProfile";
 // Dashboards
 const Default = async(() => import("../pages/dashboards/Default"));
 const Analytics = async(() => import("../pages/dashboards/Analytics"));
@@ -280,6 +280,11 @@ const privateRoutes = {
       path: "/pages/attendance",
       name: "Điểm Danh",
       component: Attendance
+    },
+    {
+      path: "/student/info",
+      name: "Thông Tin Học Sinh",
+      component: StudentProfile
     },
   ]
 };
