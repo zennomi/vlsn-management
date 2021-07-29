@@ -552,8 +552,9 @@ const CreateClass = () => (
             {({setFieldValue, values}) => <Form>
               <Row >
                   <Col>
-                    <Label>Khối</Label>
+                   
                     <FastField
+                            label = "Khối"
                             bsSize="lg"
                             type="select"
                             name="grade"
@@ -571,10 +572,9 @@ const CreateClass = () => (
                        </FastField>
                   </Col>
                   <Col>
-                          <Label >
-                            Chọn Môn Học
-                          </Label>
+                        
                           <FastField
+                            label="Chọn Môn Học"
                             bsSize="lg"
                             type="select"
                             name="subject"
@@ -593,8 +593,9 @@ const CreateClass = () => (
               </Row>
               <Row>
                   <Col>
-                      <Label>Tên lớp học</Label>
+                      
                       <FastField
+                        label ="Tên lớp học"
                         bsSize="lg"
                         type="text"
                         name="className"
@@ -604,7 +605,7 @@ const CreateClass = () => (
                   </Col>
                   <Col>
                        
-                          <Label style={{marginBottom: "27px"}}>Chọn giáo viên</Label>
+                          <Label style={{marginBottom: "4px"}}>Chọn giáo viên</Label>
                           <Autocomplete
                             id="multiple-limit-tags1"
                             name="teacher"
@@ -624,10 +625,9 @@ const CreateClass = () => (
               </Row> 
               <Row>
                   <Col>
-                          <Label >
-                          Chọn thời khóa biểu
-                          </Label>
+                         
                           <FastField
+                            label="Chọn thời khóa biểu"
                             bsSize="lg"
                             type="select"
                             name="date"
@@ -644,8 +644,9 @@ const CreateClass = () => (
                           </FastField>
                   </Col>
                   <Col>
-                        <Label>Thời gian bắt đầu</Label>
+        
                           <FastField
+                            label="Thời gian bắt đầu"
                             bsSize="lg"
                             type="time"
                             name="start"
@@ -653,8 +654,8 @@ const CreateClass = () => (
                           />
                   </Col>
                   <Col>
-                        <Label>Thời gian kết thúc</Label>
                           <FastField
+                            label="Thời gian kết thúc"
                             bsSize="lg"
                             type="time"
                             name="end"
