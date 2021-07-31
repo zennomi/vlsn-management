@@ -12,77 +12,26 @@ import {
   DropdownToggle,
   Row,
   UncontrolledDropdown,
-  // Input,
   Button,
   Modal, 
 } from "reactstrap";
-import { Formik,FastField, Form  } from 'formik';
+import { Formik,FastField, Form ,Field } from 'formik';
 import { MDBDataTableV5 } from 'mdbreact';
 import { MoreHorizontal } from "react-feather";
 import { Autocomplete } from '@material-ui/lab'
 import TextField from '@material-ui/core/TextField';
 import { ReactstrapInput } from "reactstrap-formik";
-// import {getAllStudentAction} from "../../redux/actions/studentInfoAction";
-// import {selectListStudent} from "../../redux/selectors/studentInfoSelector";
-// import { connect } from "react-redux";
 import StudentApi from "../../api/StudentApi";
 import ClassroomApi from "../../api/ClassroomApi";
-// import avatar1 from "../../assets/img/avatars/avatar.jpg";
-// import avatar2 from "../../assets/img/avatars/avatar-2.jpg";
-// import avatar3 from "../../assets/img/avatars/avatar-3.jpg";
-// import avatar4 from "../../assets/img/avatars/avatar-4.jpg";
-// import avatar5 from "../../assets/img/avatars/avatar-5.jpg";
 
-const datatable = {
-  columns: [
-    {
-      label: 'Họ Tên',
-      field: 'fullName',
-      width: 200,
-      attributes: {
-        'aria-controls': 'DataTable',
-        'aria-label': 'fullName',
-      },
-    },
-    {
-      label: 'Trường học',
-      field: 'school',
-      width: 250,
-    },
-    {
-      label: 'SĐT',
-      field: 'studentNumber',
-      width: 200,
-    },
-    {
-      label: 'Lớp',
-      field: 'grade',
-      sort: 'asc',
-      width: 100,
-    },
-    {
-      label: 'Tên PH',
-      field: 'parentName',
-      sort: 'disabled',
-      width: 150,
-    },
-    {
-      label: 'SĐT PH',
-      field: 'parentNumber',
-      sort: 'disabled',
-      width: 100,
-    },
-    {
-      label: 'Action',
-      field: 'action',
-      width: 150,
-    },
-  ],
-  rows: [
-     
-  ]
-}; 
-
+const removeAccents = (str) => {
+  return str.normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 const ClientsList = (props) =>{ 
   const datatable = {
@@ -91,7 +40,6 @@ const ClientsList = (props) =>{
         label: 'Họ Tên',
         field: 'fullName',
         width: 200,
-        
       },
       {
         label: 'Trường học',
@@ -112,13 +60,11 @@ const ClientsList = (props) =>{
       {
         label: 'Tên PH',
         field: 'parentName',
-        sort: 'disabled',
         width: 150,
       },
       {
         label: 'SĐT PH',
         field: 'parentNumber',
-        sort: 'disabled',
         width: 100,
       },
       {
@@ -146,6 +92,7 @@ const ClientsList = (props) =>{
     getAllStudentList();
     console.log("render");
   }, []);
+
   useEffect(() => {
     console.log("rerender");
   });
@@ -367,7 +314,8 @@ const ClientsList = (props) =>{
                           }}
                           getOptionSelected={(option, value) => option.id === value.id}
                           options={suggestClass}
-                          getOptionLabel={(option) =>option.subjectName +"-"+option.grade + option.className +"-"+ option.teacherId.fullName +"-Thứ "+ option.schedule}
+                          getOptionLabel={(option) => option.subjectName +" - "+option.grade + option.className +" - GV."+ option.teacherId.fullName +" - "+
+                                                   ((option.schedule !== "1") ? "Thứ "+option.schedule : "Chủ Nhật")}
                           renderInput={(params) => (
                             <TextField {...params} name="listClass" variant="outlined" label="Chọn lớp học" placeholder="Tên lớp" />
                           )}
@@ -426,9 +374,27 @@ const ClientsList = (props) =>{
   </>
     );
 }
+
+
 const Single = (props) => {
   
+  const [suggestClass, setSuggest] = useState([]);
+  
+  const setModalUpdate = () => props.handler
 
+  useEffect(() => {
+    const getSuggestClass = async () =>{
+      const result = await ClassroomApi.getListClassroomInGrade(12);
+      setSuggest(result);
+    }
+    getSuggestClass();
+    console.log("render");
+  }, []);
+
+  useEffect(() => {
+    console.log("rerender");
+  });
+  
 
   return(
   
@@ -451,10 +417,64 @@ const Single = (props) => {
                   listClass:[]
                 }
               }
-              onSubmit={(values) => {
+              onSubmit={async (values) => {
                 console.log(values);
-                alert("Thêm học sinh thành công!");
+                
+                var lastNameDeleteSpace = values.lastName.replace(/\s+/g, ''); // xóa khoảng trắng
+                const lastName = capitalizeFirstLetter(lastNameDeleteSpace);  // viết hoa chữ cái đầu
+                const resLast = removeAccents(lastName) // bỏ dấu tiếng việt
+                var firstNameDeleteSpace = values.firstName.replace(/\s+/g, ''); // xóa khoảng trắng
+                const firstName = capitalizeFirstLetter(firstNameDeleteSpace);  // viết hoa chữ cái đầu
+                const resFirst = removeAccents(firstName); // bỏ dấu tiếng việt
+                const password = resLast+resFirst;
+                console.log(password);
+
+                const result = await StudentApi.createStudent(
+                  values.studentPhone, // username là sđt của học sinh
+                  password,
+                  values.firstName,
+                  values.lastName,
+                  values.school,
+                  values.grade,
+                  values.studentPhone,
+                  values.parentPhone,
+                  values.parentName
+                )
+                const listClassStudent = [];
+                
+          
+                if(result === "create successful!" && values.listClass.length !== 0){
+
+                    const student = await StudentApi.getStudentByPhoneNumber(values.studentPhone);
+                      values.listClass.map(clazz => 
+                        listClassStudent.push({
+                            classId: clazz.id,
+                            studentId: student.id
+                        })
+                      )
+                    const res = await StudentApi.createStudentClass(student.id,listClassStudent);
+                    if(res === "create successful!"){
+                        // const result = await StudentApi.getAllStudent();
+                        // setListStudent(result);
+                        setModalUpdate();
+                        alert("thêm học sinh thành công!");
+                    }
+                    else{
+                      alert("thêm lớp học thất bại");
+                    }
+                }else if (result === "create successful!" && values.listClass.length === 0){
+                      // const result = await StudentApi.getAllStudent();
+                      // setListStudent(result);
+                      setModalUpdate();
+                      alert("thêm học sinh thành công!");
+                }
+                else{
+                    alert("thêm học sinh thất bại! Xem lại thông tin học sinh");
+                }
+                
+                
               }}
+              
             >
              {({setFieldValue, values}) => <Form>
                 <Row >
@@ -486,7 +506,7 @@ const Single = (props) => {
                 <Row>
                     <Col>
       
-                      <FastField
+                      <Field
                               label="Lớp"
                               bsSize="lg"
                               type="select"
@@ -495,14 +515,14 @@ const Single = (props) => {
                               component={ReactstrapInput}
                               
                             >
-                              <option>6</option>
-                              <option>7</option>
-                              <option>8</option>
-                              <option>9</option>
-                              <option>10</option>
-                              <option>11</option>
-                              <option>12</option>
-                      </FastField>
+                              <option value = "6">6</option>
+                              <option value = "7">7</option>
+                              <option value = "8">8</option>
+                              <option value = "9">9</option>
+                              <option value = "10">10</option>
+                              <option value = "11">11</option>
+                              <option value = "12">12</option>
+                      </Field>
                     </Col>
                 </Row>
                 <Row>
@@ -531,8 +551,10 @@ const Single = (props) => {
                           onChange={(e, value) => {
                             setFieldValue("listClass", value)
                           }}
-                          options={datatable.rows}
-                          getOptionLabel={(option) => option.name}
+                          options={suggestClass}
+                          getOptionSelected={(option, value) => option.id === value.id}
+                          getOptionLabel={(option) =>option.subjectName +" - "+option.grade + option.className +" - GV."+ option.teacherId.fullName +" - "+
+                                               ((option.schedule !== "1") ? "Thứ "+option.schedule : "Chủ Nhật")}
                           renderInput={(params) => (
                             <TextField {...params} name="listClass" variant="outlined" label="Chọn lớp học" placeholder="Tên lớp" />
                           )}
@@ -591,21 +613,7 @@ const Single = (props) => {
 }
 const Clients = (props) => {
 
-  
   const [modal, setModal] = useState(false);
-  
-  // const getAllStudent = props.getAllStudentAction;
-  
-  // useEffect(() => {
-  //   const getAllStudentList = async () =>{
-  //     const result = await StudentApi.getAllStudent();
-  //     console.log(result);
-  //     getAllStudent(result);
-  //   }
-  //   getAllStudentList();
-  // }, [getAllStudent]);
-
-  
 
   const toggle = () => setModal(!modal);
  
