@@ -3,9 +3,8 @@ import async from "../components/Async";
 import {
  
   Layout as LayoutIcon,
-
+  Home as HomeIcon,
   Monitor as MonitorIcon,
-  Sliders as SlidersIcon,
   Users as UsersIcon
 } from "react-feather";
 
@@ -30,7 +29,7 @@ import ThemeModern from "../pages/layouts/ThemeModern";
 
 // Misc
 import Blank from "../pages/misc/Blank";
-import Blank2 from "../pages/misc/Blank2";
+import Atten from "../pages/misc/Atten";
 // Pages
 import Profile from "../pages/pages/Profile";
 import Settings from "../pages/pages/Settings";
@@ -44,8 +43,9 @@ import ListClass from "../pages/pages/ListClass";
 import Attendance from "../pages/pages/Attendance";
 import CreateClass from "../pages/dashboards/Classroom/CreateClass";
 import StudentProfile from "../pages/pages/StudentProfile";
+import AbsentStudent from "../pages/pages/AbsentStudent";
 // Dashboards
-const Default = async(() => import("../pages/dashboards/Default"));
+
 const Analytics = async(() => import("../pages/dashboards/Analytics"));
 const Ecommerce = async(() => import("../pages/dashboards/Ecommerce"));
 const Classroom = async(() => import("../pages/dashboards/Classroom"));
@@ -66,17 +66,16 @@ const landingRoutes = {
 
 const dashboardRoutes = {
   path: "/dashboard",
-  name: "Dashboards",
-  header: "Pages",
+  name: "Tài Khoản",
+  header: " ",
   badgeColor: "primary",
-  badgeText: "5",
-  icon: SlidersIcon,
+  icon: HomeIcon,
   containsHome: true,
   children: [
     {
       path: "/dashboard/default",
-      name: "Default",
-      component: withAuth(Default,["ADMIN","MENTOR","TEACHER","STUDENT","MANAGER"]),
+      name: "Thông Tin Cá Nhân",
+      component: withAuth(Profile,["ADMIN","MENTOR","TEACHER","STUDENT","MANAGER"]),
     },
     {
       path: "/dashboard/analytics",
@@ -110,61 +109,50 @@ const studentRoutes = {
   component: Clients
   
 }
-const pageRoutes = {
-  path: "/pages",
+const MentorRoutes = {
+  path: "/mentors",
   name: "Trợ Giảng",
   icon: LayoutIcon,
   children: [
     {
-      path: "/pages/profile",
+      path: "/mentors/profile",
       name: "Thông Tin Cá Nhân",
       component: Profile
     },
     {
-      path: "/pages/settings",
+      path: "/mentors/settings",
       name: "Cài Đặt",
       component: Settings
     },
-    // {
-    //   path: "/pages/projects",
-    //   name: "Projects",
-    //   component: Projects
-    // },
-    // {
-    //   path: "/pages/invoice",
-    //   name: "Invoice",
-    //   component: Invoice
-    // },
-    // {
-    //   path: "/pages/pricing",
-    //   name: "Pricing",
-    //   component: Pricing
-    // },
-    // {
-    //   path: "/pages/tasks",
-    //   name: "Tasks",
-    //   component: Tasks
-    // },
-    // {
-    //   path: "/pages/chat",
-    //   name: "Chat",
-    //   component: Chat,
-    //   badgeColor: "primary",
-    //   badgeText: "New"
-    // },
-    // {
-    //   path: "/pages/blank",
-    //   name: "Blank Page",
-    //   component: Blank
-    // },
     {
-      path: "/pages/listClass",
+      path: "/mentors/listClass",
       name: "Điểm Danh",
       component: ListClass
     },
   ]
 };
-
+const ManagerRoutes = {
+  path: "/manager",
+  name: "Quản Lý",
+  icon: LayoutIcon,
+  children: [
+    {
+      path: "/managers/students/absent",
+      name: "Học Sinh Nghỉ Học",
+      component: AbsentStudent
+    },
+    {
+      path: "/managers/students/homework",
+      name: "Học Sinh & BTVN",
+      component: Settings
+    },
+    {
+      path: "/managers/students/cost",
+      name: "Học Phí",
+      component: ListClass
+    },
+  ]
+};
 const authRoutes = {
   path: "/auth",
   name: "Auth",
@@ -195,7 +183,7 @@ const authRoutes = {
     {
       path: "/atten/info/:id",
       name: "Blank Page",
-      component: Blank2
+      component:withAuth(Atten,["MENTOR","ADMIN","TEACHER","MANAGER"]),
     },
     {
       path: "/auth/reset-password",
@@ -293,7 +281,8 @@ const privateRoutes = {
 // Dashboard specific routes
 export const dashboard = [
   dashboardRoutes,
-  pageRoutes,
+  MentorRoutes,
+  ManagerRoutes,
   layoutRoutes,
   studentRoutes,
   privateRoutes,
@@ -309,8 +298,8 @@ export const page = [authRoutes];
 // All routes
 export default [
   dashboardRoutes,
-  pageRoutes,
-  authRoutes,
+  MentorRoutes,
+  ManagerRoutes,
   studentRoutes,
   classRoutes
 ];

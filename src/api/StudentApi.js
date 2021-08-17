@@ -49,6 +49,27 @@ const createStudentClass = (id,[...listClass]) => {
     const body = [...listClass];
     return Api.post(`${url}/${id}/classes`,body);
 }
+// lấy ra lớp học của học sinh tại thời điểm hiện tại
+const getClassInPresentStudent = (studentId, weekyDay) => { 
+    const parameters = {
+        schedule: weekyDay
+    }
+    return Api.get(`${url}/${studentId}/classes/schedule/now`, {params:parameters });
+}
+const getStudentClasses = (studentId) => { 
+    return Api.get(`${url}/${studentId}/classes`);
+}
+const studentAtten = (studentId,status,classId,dateId) => { 
+    const parameters = {
+        status: status
+    }
+    const body =  {
+        dateId:dateId,
+        studentId:studentId,
+        classroomId:classId
+    }
+    return Api.post(`${url}/${studentId}/attdendances/`,body,{params:parameters });
+}
 // export
-const api = { getAllStudent,updateStudentInfo , updateStudentClass , getStudentById, createStudent,createStudentClass, getStudentByPhoneNumber }
+const api = { getAllStudent,updateStudentInfo , updateStudentClass , getStudentById, createStudent,createStudentClass, getStudentByPhoneNumber, getClassInPresentStudent, getStudentClasses, studentAtten }
 export default api;

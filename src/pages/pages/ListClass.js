@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import {
   Card,
   CardBody,
@@ -6,7 +6,6 @@ import {
   CardHeader,
   Container,
   Row,
-  Label,
   Button
 } from "reactstrap";
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -14,87 +13,8 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import { Formik,FastField, Form  } from 'formik';
 import { ReactstrapInput } from "reactstrap-formik";
 import Moment from 'moment';
+import ClassroomApi from "../../api/ClassroomApi"
 
-const products = [ 
-  {
-    classId: "1",
-    className: "Hình 12A",
-    teacherName: "Nguyên",
-    mentorId: 1,
-    timeTable: {
-      start: "18h10",
-      end: "19h40",
-      day:"6"
-    }
-  },
-  {
-    classId: "2",
-    className: "Hình 12B",
-    teacherName: "Nguyên",
-    mentorId: 2,
-    timeTable: {
-      start: "18h10",
-      end: "19h40",
-      day:"6"
-    }
-  },
-  {
-    classId: "3",
-    className: "Đại 12A",
-    teacherName: "Chung",
-    mentorId: 1,
-    timeTable: {
-      start: "18h10",
-      end: "19h40",
-      day:"6"
-    }
-  },
-  {
-    classId: "4",
-    className: "Đại 12B",
-    teacherName: "Chung",
-    mentorId: 1,
-    timeTable: {
-      start: "18h10",
-      end: "19h40",
-      day:"6"
-    }
-  },
-  {
-    classId: "4",
-    className: "Đại 12B",
-    teacherName: "Chung",
-    mentorId: 1,
-    timeTable: {
-      start: "18h10",
-      end: "19h40",
-      day:"6"
-    }
-  },
-  {
-    classId: "4",
-    className: "Đại 12B",
-    teacherName: "Chung",
-    mentorId: 1,
-    timeTable: {
-      start: "18h10",
-      end: "19h40",
-      day:"6"
-    }
-  },
-  {
-    classId: "4",
-    className: "Đại 12B",
-    teacherName: "Chung",
-    mentorId: 1,
-    timeTable: {
-      start: "18h10",
-      end: "19h40",
-      day:"6"
-    }
-  },
-
-];
 const mystyle = {
 with: "100%",
 display: "flex",
@@ -108,50 +28,101 @@ padding: "10px",
 borderRadius: "10px",
 }
 const today = Moment(Date.now()).format('DD-MM-YYYY');
-const mentorId = 2;
+const weeklyToday = new Date().getDay() + 1;
+const mentorId = 4;
 
 const ListClass = (props) => {
-  const redirect = (classId) => {
-    console.log(classId);
+
+  const redirect = (clazz) => {
     props.history.push({
       pathname: '/pages/attendance',
-      state: { classId: classId }
+      state: { 
+        classId: clazz.classId,
+        mentorList: clazz.mentorList,
+        className: clazz.className,
+        teacherName:clazz.teacherName,
+        day: clazz.day,
+        start: clazz.start,
+        end: clazz.end,
+      }
     })
   } 
+
+  const products = [];
+
+
+  const [listClassToday, setListClass] = useState([]);
+
+  useEffect(() => {
+    const getAllClassListToday = async () =>{
+      const result = await ClassroomApi.getListClassroomToday(weeklyToday);
+      setListClass(result);
+    }
+    getAllClassListToday();
+    console.log("render");
+  }, []);
+  
+  useEffect(() => {
+    console.log("rerender listClass!");
+  });
+  console.log(listClassToday);
+  listClassToday.map(clazz => 
+      products.push(
+        {
+          mentorList: clazz.listMentor,
+          className: clazz.subjectName + " " + clazz.grade + clazz.className,
+          classId: clazz.id,
+          teacherName:clazz.teacherId.fullName,
+          day: clazz.schedule,
+          start: clazz.startTime,
+          end: clazz.endTime,
+        }
+      )
+  )
+
   const columns = [
   {
-  dataField: 'className',
-  text: 'DANH SÁCH LỚP HỌC NGÀY '+today ,
-  headerStyle: (colum, colIndex) => {
-    return { width: '100%', textAlign: 'center',bordered:"none",fontSize: "20px",fontWeight: "bolder"  };
-  },
-  sort: true,
-  formatter: (cell,row) => {
-    
-    return (
-        <>
-          {(row.mentorId === mentorId) ? 
-              <div style={mystyle} >
-                  <h5>{row.className +" - Thầy " + row.teacherName + " Thứ " + row.timeTable.day + ": " + 
-                    row.timeTable.start + " - " + row.timeTable.end} </h5> 
-                    <Button onClick ={() => redirect(row.classId)} style ={{marginLeft:"auto", backgroundColor: "red",borderRadius:"20px"}}>
-                      Tham Gia
-                    </Button>
-              </div> :
-              <div style={mystyle1} >
-              <h5>{row.className +" - Thầy " + row.teacherName + " Thứ " + row.timeTable.day + ": " + 
-                row.timeTable.start + " - " + row.timeTable.end} </h5> 
-                    <Button onClick ={() => redirect(row.classId)}  style ={{marginLeft:"auto", borderRadius:"20px"}}>
+    dataField: 'className',
+    text: 'DANH SÁCH LỚP HỌC'+((weeklyToday !== 1) ?' THỨ '+ weeklyToday : ' CHỦ NHẬT') +' NGÀY '+today,
+    headerStyle: (colum, colIndex) => {
+      return { width: '100%', textAlign: 'center',bordered:"none",fontSize: "20px",fontWeight: "bolder"  };
+    },
+    sort: true,
+    formatter: (cell,row) => {
+      console.log(row);
+      console.log(weeklyToday);
+      var isMentorClazz = false;
+      row.mentorList.forEach(element => {
+        if(element.mentorId === mentorId){
+          isMentorClazz = true;
+        }
+        return null;
+      });
+
+      return (
+          <>
+            {(isMentorClazz) ? 
+                <div style={mystyle} key={row.classId}>
+                    <h5 >{row.className +" - GV." + row.teacherName + "-" + 
+                      row.start + " - " + row.end} </h5> 
+                      <Button  onClick ={() => redirect(row)} style ={{marginLeft:"auto", backgroundColor: "red",borderRadius:"20px"}}>
                         Tham Gia
-                    </Button>
-              </div> 
-          }
-        </>
-    );
-  }
+                      </Button>
+                </div> :
+                <div style={mystyle1} key={row.classId} >
+                <h5 >{row.className +" - GV." + row.teacherName + "-"+ 
+                  row.start + " - " + row.end} </h5> 
+                      <Button  onClick ={() => redirect(row)}  style ={{marginLeft:"auto", borderRadius:"20px"}}>
+                          Tham Gia
+                      </Button>
+                </div> 
+            }
+          </>
+      );
+    }
 
   }
-  ];
+];
  
 
     return (
@@ -177,10 +148,9 @@ const ListClass = (props) => {
                   <Form>
                     <Row style={{ alignItems: "center" }}>
                         <Col >
-                          <Label>
-                            Tên lớp:
-                          </Label>
+                          
                           <FastField
+                            label="Tên lớp:"
                             bsSize="lg"
                             type="text"
                             name="class"
@@ -190,10 +160,9 @@ const ListClass = (props) => {
                         </Col>
                       
                         <Col  >
-                          <Label >
-                            Chọn Môn Học
-                          </Label>
+                          
                           <FastField
+                            label="Chọn Môn Học"
                             bsSize="lg"
                             type="select"
                             name="subject"
@@ -210,10 +179,8 @@ const ListClass = (props) => {
                   
                         </Col>
                           <Col  >
-                            <Label >
-                              Chọn Khối
-                            </Label>
                             <FastField
+                              label="Chọn Khối"
                               bsSize="lg"
                               type="select"
                               name="grade"
@@ -231,7 +198,7 @@ const ListClass = (props) => {
                             
                           </Col>
                           <Col >
-                              <Button style={{marginTop:"45px", borderRadius:"20px"}} type="submit" >Serach</Button>
+                              <Button style={{marginTop:"20px", borderRadius:"5px"}} type="submit" >Serach</Button>
                           </Col>
                       </Row>
                   </Form>
@@ -239,13 +206,13 @@ const ListClass = (props) => {
               </CardHeader>
               <CardBody>
                   <BootstrapTable 
-                    keyField='id' 
+                    keyField='classId' 
                     data={ products } 
                     columns={ columns } 
                     bordered = {false}
                     hover
                     pagination={paginationFactory({
-                      sizePerPage: 5,
+                      sizePerPage: 7,
                       nextPageText: '>',
                       prePageText: '<',
                       withFirstAndLast: false,

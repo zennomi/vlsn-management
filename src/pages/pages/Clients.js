@@ -13,9 +13,11 @@ import {
   Row,
   UncontrolledDropdown,
   Button,
+  Input,
+  Label,
   Modal, 
 } from "reactstrap";
-import { Formik,FastField, Form ,Field } from 'formik';
+import { Formik,FastField, Form  } from 'formik';
 import { MDBDataTableV5 } from 'mdbreact';
 import { MoreHorizontal } from "react-feather";
 import { Autocomplete } from '@material-ui/lab'
@@ -82,16 +84,9 @@ const ClientsList = (props) =>{
 
   const [modalUpdate, setModalUpdate] = useState(false);
   const [student, setStudent] = useState({});
-  const [listStudent, setListStudent] = useState([]);
   
-  useEffect(() => {
-    const getAllStudentList = async () =>{
-      const result = await StudentApi.getAllStudent();
-      setListStudent(result);
-    }
-    getAllStudentList();
-    console.log("render");
-  }, []);
+  const listStudent = props.listStudent;
+  const setListStudent = props.setListStudent;
 
   useEffect(() => {
     console.log("rerender");
@@ -381,6 +376,7 @@ const Single = (props) => {
   const [suggestClass, setSuggest] = useState([]);
   
   const setModalUpdate = () => props.handler
+  const setListStudent = props.setListStudent;
 
   useEffect(() => {
     const getSuggestClass = async () =>{
@@ -454,8 +450,8 @@ const Single = (props) => {
                       )
                     const res = await StudentApi.createStudentClass(student.id,listClassStudent);
                     if(res === "create successful!"){
-                        // const result = await StudentApi.getAllStudent();
-                        // setListStudent(result);
+                        const result = await StudentApi.getAllStudent();
+                        setListStudent(result);
                         setModalUpdate();
                         alert("thêm học sinh thành công!");
                     }
@@ -463,8 +459,8 @@ const Single = (props) => {
                       alert("thêm lớp học thất bại");
                     }
                 }else if (result === "create successful!" && values.listClass.length === 0){
-                      // const result = await StudentApi.getAllStudent();
-                      // setListStudent(result);
+                      const result = await StudentApi.getAllStudent();
+                      setListStudent(result);
                       setModalUpdate();
                       alert("thêm học sinh thành công!");
                 }
@@ -476,73 +472,77 @@ const Single = (props) => {
               }}
               
             >
-             {({setFieldValue, values}) => <Form>
+             {({setFieldValue, values, handleChange}) => <Form>
                 <Row >
-                    <Col>
+                    <Col >
                   
                       <FastField
                         label="Họ và đệm"
                         bsSize="lg"
                         type="text"
                         name="lastName"
-                        placeholder="nhập họ và đệm:.."
+                        placeholder="Vd: Nguyễn Đức"
                         component={ReactstrapInput}
                       />
                     </Col>
-                </Row>
-                <Row>
-                    <Col>
-                     
+                    <Col > 
                       <FastField
                         label="Tên"
                         bsSize="lg"
                         type="text"
                         name="firstName"
-                        placeholder="nhập tên học sinh:.."
+                        placeholder="Vd: Thắng"
                         component={ReactstrapInput}
                       />
-                    </Col>
-                </Row> 
-                <Row>
-                    <Col>
-      
-                      <Field
-                              label="Lớp"
-                              bsSize="lg"
-                              type="select"
-                              name="grade"
-                              placeholder="nhập lớp:.. "
-                              component={ReactstrapInput}
-                              
-                            >
-                              <option value = "6">6</option>
-                              <option value = "7">7</option>
-                              <option value = "8">8</option>
-                              <option value = "9">9</option>
-                              <option value = "10">10</option>
-                              <option value = "11">11</option>
-                              <option value = "12">12</option>
-                      </Field>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                      
+                      {/* <label>Chọn lớp:</label> */}
+                      <Label for="grade">Chọn lớp:</Label>
+                      <Input 
+                              label="Lớp"
+                              bsSize="lg"
+                              id ="grade"
+                              type="select"
+                              name="grade"
+                              
+                              // component={ReactstrapInput}
+                              onChange={ async (e) =>{
+                                // do something
+                                handleChange(e);
+                                console.log(e.target.value);
+                                const newSuggest = await ClassroomApi.getListClassroomInGrade(e.target.value);
+                                setSuggest(newSuggest);
+                              }}
+                            >
+                              <option value = "12">12</option>
+                              <option value = "11">11</option>
+                              <option value = "10">10</option>
+                              <option value = "9">9</option>
+                              <option value = "8">8</option>
+                              <option value = "7">7</option>
+                              <option value = "6">6</option>
+                      </Input>
+                    </Col>
+                    <Col>
                       <FastField
                         label="Trường học"
                         bsSize="lg"
                         type="text"
                         name="school"
-                        placeholder="nhập trường học:.."
+                        placeholder="Vd: Thăng Long"
                         component={ReactstrapInput}
                       />
                     </Col>
                 </Row>
+                
                 <Row>
                     <Col>
                       <div >
             
                         <Autocomplete
+                        
                           multiple
                           limitTags={2}
                           label="Chọn lớp học"
@@ -556,7 +556,7 @@ const Single = (props) => {
                           getOptionLabel={(option) =>option.subjectName +" - "+option.grade + option.className +" - GV."+ option.teacherId.fullName +" - "+
                                                ((option.schedule !== "1") ? "Thứ "+option.schedule : "Chủ Nhật")}
                           renderInput={(params) => (
-                            <TextField {...params} name="listClass" variant="outlined" label="Chọn lớp học" placeholder="Tên lớp" />
+                            <TextField {...params} name="listClass" variant="outlined" label="Đăng ký học lớp"  placeholder="Tên lớp" />
                           )}
                         />
                       </div>
@@ -569,7 +569,7 @@ const Single = (props) => {
                             bsSize="lg"
                             type="text"
                             name="studentPhone"
-                            placeholder="nhập sđt học sinh:.."
+                            placeholder="Vd:0965993506"
                             component={ReactstrapInput}
                           />
                       </Col>
@@ -579,7 +579,7 @@ const Single = (props) => {
                             bsSize="lg"
                             type="text"
                             name="parentPhone"
-                            placeholder="nhập sđt phụ huynh:.."
+                            placeholder="Vd: 0965993506"
                             component={ReactstrapInput}
                           />
                       </Col>
@@ -591,7 +591,7 @@ const Single = (props) => {
                             bsSize="lg"
                             type="text"
                             name="parentName"
-                            placeholder="nhập họ tên phụ huynh:.."
+                            placeholder="Vd: Nguyễn Hùng Giang"
                             component={ReactstrapInput}
                           />
                       </Col>
@@ -615,6 +615,20 @@ const Clients = (props) => {
 
   const [modal, setModal] = useState(false);
 
+  const [listStudent, setListStudent] = useState([]);
+  
+  useEffect(() => {
+    const getAllStudentList = async () =>{
+      const result = await StudentApi.getAllStudent();
+      setListStudent(result);
+    }
+    getAllStudentList();
+    console.log("render");
+  }, []);
+  
+  useEffect(() => {
+    console.log("rerender Clients!");
+  });
   const toggle = () => setModal(!modal);
  
   return(
@@ -630,11 +644,11 @@ const Clients = (props) => {
     </Row>
     <Row>
       <Col>
-        <ClientsList {...props}  />
+        <ClientsList {...props} listStudent={listStudent} setListStudent={setListStudent}/>
         
       </Col>
       <Modal isOpen={modal} toggle={toggle}>
-            <Single handler = {toggle} />
+            <Single handler = {toggle} listStudent={listStudent} setListStudent={setListStudent} />
       </Modal>
     </Row>
   </Container>

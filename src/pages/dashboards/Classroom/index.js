@@ -5,7 +5,7 @@ import { Container, Row, Col } from "reactstrap";
 import BarChart from "./BarChart";
 import Header from "./Header";
 // import LineChart from "./LineChart";
-import Products from "./Products";
+import ClassList from "./ClassList";
 // import Statistics from "./Statistics";
 // import USAMap from "./USAMap";
 
@@ -26,7 +26,7 @@ const Ecommerce = () => (
     </Row> */}
     <Row>
       <Col lg="8" className="d-flex">
-        <Products />
+        <ClassList />
       </Col>
       <Col lg="4" className="d-flex">
         <BarChart />
