@@ -14,7 +14,7 @@ import {
 import { MDBDataTableV5 } from 'mdbreact';
 import { MoreHorizontal } from "react-feather";
 import ClassroomApi from "../../../api/ClassroomApi";
-const ClassList = () => {
+const ClassList = (props) => {
   const datatable = {
     columns: [
       {
@@ -60,6 +60,14 @@ const ClassList = () => {
   };  
   const [classes, setClasses] = useState([]);
 
+  const setClassroom = props.setClass;
+  const setWatch = props.setWatch;
+  
+  const watchingClass = (clazz) =>{
+      setClassroom(clazz);
+      setWatch(true);
+  }
+
   useEffect(() => {
     const getAllClassList = async () =>{
       const result = await ClassroomApi.getAllClassList();
@@ -76,7 +84,7 @@ const ClassList = () => {
       time: clazz.startTime +" - "+clazz.endTime,
       total: clazz.totalStudent,
       teacherName: clazz.teacherId.fullName,
-      action: <button>
+      action: <button onClick={() => watchingClass(clazz)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                           <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                           <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>

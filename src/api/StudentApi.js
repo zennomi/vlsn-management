@@ -70,6 +70,44 @@ const studentAtten = (studentId,status,classId,dateId) => {
     }
     return Api.post(`${url}/${studentId}/attdendances/`,body,{params:parameters });
 }
+const getStatictisSubjectAvgMarkInGrade = (grade,subjectName) => { 
+    const parameters = {
+        subjectName:subjectName
+    }
+    
+    return Api.get(`${url}/avg-mark/statistic/${grade}`,{params:parameters });
+}
+const getStudentSubjectAvgMarkInGrade = (grade,subjectName) => { 
+    const parameters = {
+        subjectName:subjectName
+    }
+    
+    return Api.get(`${url}/avg-mark/${grade}`,{params:parameters });
+}
+const getWeakStudentSubjectAvgMarkInGrade = (grade,subjectName) => { 
+    const parameters = {
+        subjectName:subjectName
+    }
+    
+    return Api.get(`${url}/avg-mark/weak/${grade}`,{params:parameters });
+}
+const getStudentByStatus = (status) => {
+    return Api.get(`${url}/status/${status}`);
+}
 // export
-const api = { getAllStudent,updateStudentInfo , updateStudentClass , getStudentById, createStudent,createStudentClass, getStudentByPhoneNumber, getClassInPresentStudent, getStudentClasses, studentAtten }
+const api = { 
+    getAllStudent,
+    updateStudentInfo, 
+    updateStudentClass, 
+    getStudentById, 
+    createStudent,
+    createStudentClass, 
+    getStudentByPhoneNumber, 
+    getClassInPresentStudent, 
+    getStudentClasses, 
+    studentAtten, 
+    getStudentByStatus,
+    getStatictisSubjectAvgMarkInGrade,
+    getStudentSubjectAvgMarkInGrade,
+    getWeakStudentSubjectAvgMarkInGrade }
 export default api;

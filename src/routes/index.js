@@ -5,7 +5,8 @@ import {
   Layout as LayoutIcon,
   Home as HomeIcon,
   Monitor as MonitorIcon,
-  Users as UsersIcon
+  Users as UsersIcon,
+  Book as BookIcon
 } from "react-feather";
 
 // Landing
@@ -44,13 +45,21 @@ import Attendance from "../pages/pages/Attendance";
 import CreateClass from "../pages/dashboards/Classroom/CreateClass";
 import StudentProfile from "../pages/pages/StudentProfile";
 import AbsentStudent from "../pages/pages/AbsentStudent";
+import StudentHomeWork from "../pages/pages/StudentHomeWork";
+import StudentCostInfo from "../pages/pages/StudentCostInfo";
+import StudentScorce from "../pages/pages/StudentScorce";
+import StudentExamResult from "../pages/pages/StudentExamResult";
+import CreateResult from "../pages/dashboards/Classroom/CreateResult";
+import HomeWork from "../pages/pages/HomeWork";
+import StudentCourse from "../pages/pages/StudentCourse";
+import CourseView from "../pages/pages/CourseView";
+
 // Dashboards
 
-const Analytics = async(() => import("../pages/dashboards/Analytics"));
-const Ecommerce = async(() => import("../pages/dashboards/Ecommerce"));
+
+
 const Classroom = async(() => import("../pages/dashboards/Classroom"));
-const Crypto = async(() => import("../pages/dashboards/Crypto"));
-const Social = async(() => import("../pages/dashboards/Social"));
+
 
 
 // Attendance
@@ -69,7 +78,7 @@ const dashboardRoutes = {
   name: "Tài Khoản",
   header: " ",
   badgeColor: "primary",
-  icon: HomeIcon,
+  icon: UsersIcon,
   containsHome: true,
   children: [
     {
@@ -77,28 +86,21 @@ const dashboardRoutes = {
       name: "Thông Tin Cá Nhân",
       component: withAuth(Profile,["ADMIN","MENTOR","TEACHER","STUDENT","MANAGER"]),
     },
+  ]
+};
+const studentProfileRouter = {
+  path: "/profile",
+  name: "Tài Khoản",
+  header: " ",
+  badgeColor: "primary",
+  icon: UsersIcon,
+  containsHome: true,
+  children: [
     {
-      path: "/dashboard/analytics",
-      name: "Analytics",
-      component: Analytics
+      path: "/profile/info",
+      name: "Thông Tin Cá Nhân",
+      component: withAuth(StudentProfile,["ADMIN","MENTOR","TEACHER","STUDENT","MANAGER"]),
     },
-    {
-      path: "/dashboard/e-commerce",
-      name: "E-commerce",
-      component: Ecommerce
-    },
-    {
-      path: "/dashboard/social",
-      name: "Social",
-      component: Social
-    },
-    {
-      path: "/dashboard/crypto",
-      name: "Crypto",
-      component: Crypto,
-      badgeColor: "primary",
-      badgeText: "New"
-    }
   ]
 };
 const studentRoutes = {
@@ -144,12 +146,22 @@ const ManagerRoutes = {
     {
       path: "/managers/students/homework",
       name: "Học Sinh & BTVN",
-      component: Settings
+      component: StudentHomeWork
+    },
+    {
+      path: "/managers/students/scores",
+      name: "Điểm TB",
+      component: StudentScorce
+    },
+    {
+      path: "/managers/students/exams",
+      name: "Điểm Kiểm Tra",
+      component: StudentExamResult
     },
     {
       path: "/managers/students/cost",
       name: "Học Phí",
-      component: ListClass
+      component: StudentCostInfo
     },
   ]
 };
@@ -192,6 +204,9 @@ const authRoutes = {
     },
   ]
 };
+
+
+
 const classRoutes = {
   
   path: "/class",
@@ -207,6 +222,11 @@ const classRoutes = {
       path: "/create/",
       name: "Tạo Lớp Học",
       component: CreateClass
+    },
+    {
+      path: "/create/results",
+      name: "Nhập Điểm",
+      component: CreateResult
     },
   ]
  
@@ -253,7 +273,30 @@ const layoutRoutes = {
   ]
 };
 
-
+const dashboardStudentRoutes = {
+  path: "/home-work/",
+  name: "Bài Tập Về Nhà",
+  icon:HomeIcon,
+  component: HomeWork
+};
+const CourseStudentRoutes = {
+  path: "/course",
+  name: "Khóa Học Của Tôi",
+  icon:BookIcon,
+  children:[
+    {
+      path: "/course/subject",
+      name: "Danh Sách Lớp Học",
+      component: StudentCourse
+    },
+    {
+      path: "/course/lesson",
+      name: "Danh Sách Bài Học",
+      component: CourseView
+    },
+  ]
+  
+};
 
 // This route is not visisble in the sidebar
 const privateRoutes = {
@@ -294,7 +337,7 @@ export const landing = [landingRoutes];
 
 // Auth specific routes
 export const page = [authRoutes];
-
+export const studentDashboard = [ studentProfileRouter,dashboardStudentRoutes, CourseStudentRoutes];
 // All routes
 export default [
   dashboardRoutes,

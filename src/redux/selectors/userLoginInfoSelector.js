@@ -15,9 +15,14 @@ const selectUserRoleSelector = createSelector(
     userLoginInfoSelector,
     state => state.userInfo.role);
 
+const selectUserFirstNameSelector = createSelector(
+    userLoginInfoSelector,
+    state => state.userInfo.firstName);
+
 const selectFullNameSelector = createSelector(
     selectUserInfoSelector,
-    state => state.firstName + " " + state.lastName);
+    state => state.lastName + " " + state.firstName);
+
 
 const selectRememberMeSelector = createSelector(
     userLoginInfoSelector,
@@ -38,7 +43,9 @@ export const selectUserInfo = (state) => {
 export const selectFullName = (state) => {
     return selectFullNameSelector(state);
 }
-
+export const selectFistName = (state) => {
+    return selectUserFirstNameSelector(state);
+}
 export const selectRememberMe = (state) => {
     return selectRememberMeSelector(state);
 }

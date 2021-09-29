@@ -9,9 +9,9 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 
-import routes from "../routes/index";
+import routes,{studentDashboard} from "../routes/index";
 import avatar from "../assets/img/avatars/avatar.jpg";
-
+import { selectFullName, selectRole } from "../redux/selectors/userLoginInfoSelector";
 const initOpenRoutes = (location) => {
   /* Open collapse element that matches current url */
   const pathName = location.pathname;
@@ -96,8 +96,8 @@ const SidebarItem = withRouter(
   }
 );
 
-const Sidebar = ({ location, sidebar, layout }) => {
-  const [openRoutes, setOpenRoutes] = useState(() => initOpenRoutes(location));
+const Sidebar = (props) => {
+  const [openRoutes, setOpenRoutes] = useState(() => initOpenRoutes(props.location));
 
   const toggle = index => {
     // Collapse all elements
@@ -113,8 +113,8 @@ const Sidebar = ({ location, sidebar, layout }) => {
     <nav
       className={
         "sidebar" +
-        (!sidebar.isOpen ? " toggled" : "") +
-        (sidebar.isSticky ? " sidebar-sticky" : "")
+        (!props.sidebar.isOpen ? " toggled" : "") +
+        (props.sidebar.isSticky ? " sidebar-sticky" : "")
       }
     >
       <div className="sidebar-content">
@@ -126,48 +126,97 @@ const Sidebar = ({ location, sidebar, layout }) => {
           </a>
 
           <ul className="sidebar-nav">
-            {routes.map((category, index) => {
-              return (
-                <React.Fragment key={index}>
-                  {category.header ? (
-                    <li className="sidebar-header">{category.header}</li>
-                  ) : null}
-
-                  {category.children ? (
-                    <SidebarCategory
-                      name={category.name}
-                      badgeColor={category.badgeColor}
-                      badgeText={category.badgeText}
-                      icon={category.icon}
-                      to={category.path}
-                      isOpen={openRoutes[index]}
-                      onClick={() => toggle(index)}
-                    >
-                      {category.children.map((route, index) => (
-                        <SidebarItem
-                          key={index}
-                          name={route.name}
-                          to={route.path}
-                          badgeColor={route.badgeColor}
-                          badgeText={route.badgeText}
-                        />
-                      ))}
-                    </SidebarCategory>
-                  ) : (
-                    <SidebarItem
-                      name={category.name}
-                      to={category.path}
-                      icon={category.icon}
-                      badgeColor={category.badgeColor}
-                      badgeText={category.badgeText}
-                    />
-                  )}
-                </React.Fragment>
-              );
-            })}
+          {
+               
+               (props.role === "STUDENT") ? 
+               
+               studentDashboard.map((category, index) => {
+                   return (
+                       <React.Fragment key={index}>
+                         {category.header ? (
+                           <li className="sidebar-header">{category.header}</li>
+                         ) : null}
+     
+                         {category.children ? (
+                           <SidebarCategory
+                             name={category.name}
+                             badgeColor={category.badgeColor}
+                             badgeText={category.badgeText}
+                             icon={category.icon}
+                             to={category.path}
+                             isOpen={openRoutes[index]}
+                             onClick={() => toggle(index)}
+                           >
+                             {category.children.map((route, index) => (
+                               <SidebarItem
+                                 key={index}
+                                 name={route.name}
+                                 to={route.path}
+                                 badgeColor={route.badgeColor}
+                                 badgeText={route.badgeText}
+                               />
+                             ))}
+                           </SidebarCategory>
+                         ) : (
+                           <SidebarItem
+                             name={category.name}
+                             to={category.path}
+                             icon={category.icon}
+                             badgeColor={category.badgeColor}
+                             badgeText={category.badgeText}
+                           />
+                         )}
+                       </React.Fragment>
+                     );
+                   })
+               
+               :
+               
+                 routes.map((category, index) => {
+                   return (
+                       <React.Fragment key={index}>
+                         {category.header ? (
+                           <li className="sidebar-header">{category.header}</li>
+                         ) : null}
+     
+                         {category.children ? (
+                           <SidebarCategory
+                             name={category.name}
+                             badgeColor={category.badgeColor}
+                             badgeText={category.badgeText}
+                             icon={category.icon}
+                             to={category.path}
+                             isOpen={openRoutes[index]}
+                             onClick={() => toggle(index)}
+                           >
+                             {category.children.map((route, index) => (
+                               <SidebarItem
+                                 key={index}
+                                 name={route.name}
+                                 to={route.path}
+                                 badgeColor={route.badgeColor}
+                                 badgeText={route.badgeText}
+                               />
+                             ))}
+                           </SidebarCategory>
+                         ) : (
+                           <SidebarItem
+                             name={category.name}
+                             to={category.path}
+                             icon={category.icon}
+                             badgeColor={category.badgeColor}
+                             badgeText={category.badgeText}
+                           />
+                         )}
+                       </React.Fragment>
+                     );
+                   })
+               
+             
+           }
           </ul>
 
-          {!layout.isBoxed && !sidebar.isSticky ? (
+          {!props.layout.isBoxed && !props.sidebar.isSticky ? (
             <div className="sidebar-bottom d-none d-lg-block">
               <div className="media">
                 <img
@@ -178,7 +227,7 @@ const Sidebar = ({ location, sidebar, layout }) => {
                   height="40"
                 />
                 <div className="media-body">
-                  <h5 className="mb-1">Chris Wood</h5>
+                  <h5 className="mb-1">{props.fullName}</h5>
                   <div>
                     <FontAwesomeIcon
                       icon={faCircle}
@@ -196,9 +245,13 @@ const Sidebar = ({ location, sidebar, layout }) => {
   )
 }
 
-export default withRouter(
-  connect(store => ({
-    sidebar: store.sidebar,
-    layout: store.layout
-  }))(Sidebar)
-);
+const mapGlobalStateToProps = state => {
+  return {
+    app: state.app,
+    sidebar: state.sidebar,
+    layout: state.layout,
+    fullName: selectFullName(state),
+    role: selectRole(state),
+  };
+};
+export default withRouter(connect(mapGlobalStateToProps)(Sidebar));

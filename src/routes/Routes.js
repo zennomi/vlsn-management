@@ -3,12 +3,15 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import {
   landing as landingRoutes,
   dashboard as dashboardRoutes,
-  page as pageRoutes
+  page as pageRoutes,
+  studentDashboard as stDashboard,
 } from "./index";
 
 import DashboardLayout from "../layouts/Dashboard";
 import AuthLayout from "../layouts/Auth";
 import Page404 from "../pages/auth/Page404";
+import { connect } from "react-redux";
+import {selectRole} from "../redux/selectors/userLoginInfoSelector";
 
 import ScrollToTop from "../components/ScrollToTop";
 
@@ -43,12 +46,14 @@ const childRoutes = (Layout, routes) =>
     )
   );
 
-const Routes = () => (
+const Routes = (props) => (
   <Router>
     <ScrollToTop>
       <Switch>
         {childRoutes(DashboardLayout, landingRoutes)}
-        {childRoutes(DashboardLayout, dashboardRoutes)}
+        {(props.role === "STUDENT") ? childRoutes(DashboardLayout, stDashboard) : 
+        childRoutes(DashboardLayout, dashboardRoutes) }
+
         {childRoutes(AuthLayout, pageRoutes)}
         <Route
           render={() => (
@@ -62,4 +67,10 @@ const Routes = () => (
   </Router>
 );
 
-export default Routes;
+const mapGlobalStateToProps = state => {
+  return {
+      role: selectRole(state)
+  };
+};
+export default connect(mapGlobalStateToProps)(Routes);
+

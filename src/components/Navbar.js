@@ -29,7 +29,7 @@ import {
   User,
   UserPlus
 } from "react-feather";
-
+import { selectFullName, selectRole } from "../redux/selectors/userLoginInfoSelector";
 import usFlag from "../assets/img/flags/us.png";
 import esFlag from "../assets/img/flags/es.png";
 import deFlag from "../assets/img/flags/de.png";
@@ -40,6 +40,7 @@ import avatar3 from "../assets/img/avatars/avatar-3.jpg";
 import avatar4 from "../assets/img/avatars/avatar-4.jpg";
 import avatar5 from "../assets/img/avatars/avatar-5.jpg";
 
+import {  withRouter } from "react-router-dom";
 const notifications = [
   {
     type: "important",
@@ -134,7 +135,7 @@ const NavbarDropdownItem = ({ icon, title, description, time, spacing }) => (
   </ListGroupItem>
 );
 
-const NavbarComponent = ({ dispatch }) => {
+const NavbarComponent = ({ dispatch,fullName }) => {
   return (
     <Navbar color="white" light expand>
       <span
@@ -146,14 +147,7 @@ const NavbarComponent = ({ dispatch }) => {
         <i className="hamburger align-self-center" />
       </span>
 
-      <Form inline>
-        <Input
-          type="text"
-          placeholder="Search projects..."
-          aria-label="Search"
-          className="form-control-no-border mr-sm-2"
-        />
-      </Form>
+      
 
       <Collapse navbar>
         <Nav className="ml-auto" navbar>
@@ -274,7 +268,7 @@ const NavbarComponent = ({ dispatch }) => {
                   className="avatar img-fluid rounded-circle mr-1"
                   alt="Chris Wood"
                 />
-                <span className="text-dark">Chris Wood</span>
+                <span className="text-dark">{fullName}</span>
               </DropdownToggle>
             </span>
             <DropdownMenu right>
@@ -297,7 +291,14 @@ const NavbarComponent = ({ dispatch }) => {
     </Navbar>
   );
 };
+const mapGlobalStateToProps = state => {
+  return {
+    app: state.app,
+    sidebar: state.sidebar,
+    layout: state.layout,
+    fullName: selectFullName(state),
+    role: selectRole(state),
+  };
+};
+export default withRouter(connect(mapGlobalStateToProps)(NavbarComponent));
 
-export default connect(store => ({
-  app: store.app
-}))(NavbarComponent);

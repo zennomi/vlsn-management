@@ -17,7 +17,7 @@ import {
   Row,
   UncontrolledDropdown
 } from "reactstrap";
-
+import { MDBDataTableV5 } from 'mdbreact';
 import {
   Briefcase,
   Home,
@@ -43,14 +43,16 @@ import avatar5 from "../../assets/img/avatars/avatar-5.jpg";
 
 import unsplash1 from "../../assets/img/photos/unsplash-1.jpg";
 import unsplash2 from "../../assets/img/photos/unsplash-2.jpg";
+import {
+  Clock as ClockIcon,
+  Camera as CameraIcon
+} from "react-feather";
+
+import  QRCode  from "qrcode.react";
 
 const StudentProfileDetails = () => (
   <Card>
-    <CardHeader>
-      <CardTitle tag="h5" className="mb-0">
-        Profile Details
-      </CardTitle>
-    </CardHeader>
+   
     <CardBody className="text-center">
       <img
         src={avatar4}
@@ -60,299 +62,522 @@ const StudentProfileDetails = () => (
         height="128"
       />
       <CardTitle tag="h5" className="mb-0">
-        Stacie Hall
+            <h4>Lê Ngọc Ánh - Lớp 12</h4>
+            <h6>Level:108</h6>
       </CardTitle>
-      <div className="text-muted mb-2">Lead Developer</div>
+     
 
       <div>
         <Button size="sm" color="primary" className="mr-1">
-          Follow
+            <CameraIcon></CameraIcon>
         </Button>
-        <Button size="sm" color="primary">
-          <MessageSquare width={16} height={16} /> Message
-        </Button>
+      </div>
+      
+      <div>
+          <div>
+              <a href="">LINK ĐIỂM DANH</a>
+          </div>
+          <QRCode value="https://www.google.com/" />
+      </div>
+      
+    </CardBody>
+
+    <hr className="my-0" />
+
+    <CardBody>
+      <CardTitle tag="h5"><h4>Lớp học đã đăng ký</h4></CardTitle>
+      <div className="d-flex justify-content-between flex-wrap">
+          <div>
+               Toán Đại 12A
+          </div>
+          <div>
+               <ClockIcon></ClockIcon> T6-18h10:19h40
+          </div>
+      </div>
+      <div className="d-flex justify-content-between flex-wrap">
+          <div>
+               Toán Hình 12A
+          </div>
+          <div>
+               <ClockIcon></ClockIcon> T3-18h10:19h40
+          </div>
       </div>
     </CardBody>
 
     <hr className="my-0" />
-
     <CardBody>
-      <CardTitle tag="h5">Skills</CardTitle>
-      <Badge color="primary" className="mr-1 my-1">
-        HTML
-      </Badge>
-      <Badge color="primary" className="mr-1 my-1">
-        JavaScript
-      </Badge>
-      <Badge color="primary" className="mr-1 my-1">
-        Sass
-      </Badge>
-      <Badge color="primary" className="mr-1 my-1">
-        Angular
-      </Badge>
-      <Badge color="primary" className="mr-1 my-1">
-        Vue
-      </Badge>
-      <Badge color="primary" className="mr-1 my-1">
-        React
-      </Badge>
-      <Badge color="primary" className="mr-1 my-1">
-        Redux
-      </Badge>
-      <Badge color="primary" className="mr-1 my-1">
-        UI
-      </Badge>
-      <Badge color="primary" className="mr-1 my-1">
-        UX
-      </Badge>
-    </CardBody>
-
-    <hr className="my-0" />
-    <CardBody>
-      <CardTitle tag="h5">About</CardTitle>
-      <ul className="list-unstyled mb-0">
-        <li className="mb-1">
-          <Home width={14} height={14} className="mr-1" /> Lives in{" "}
-          <Link to="/dashboard/default">San Francisco, SA</Link>
-        </li>
-
-        <li className="mb-1">
-          <Briefcase width={14} height={14} className="mr-1" /> Works at{" "}
-          <Link to="/dashboard/default">GitHub</Link>
-        </li>
-        <li className="mb-1">
-          <MapPin width={14} height={14} className="mr-1" /> From{" "}
-          <Link to="/dashboard/default">Boston</Link>
-        </li>
-      </ul>
+          <div className="d-flex justify-content-between flex-wrap">
+                <div>
+                    <h5 style={{fontWeight:"bold"}}>Điểm Trung Bình: 9.0</h5>
+                </div>
+                <div>
+                    <h5 style={{fontWeight:"bold"}}>Hạng</h5>
+                </div>
+          </div>
+          <div className="d-flex justify-content-between flex-wrap">
+                <div>
+                    <h5>Toán Đại - 8.8</h5>
+                </div>
+                <div>
+                    <h5>14</h5>
+                </div>
+          </div>
+          <div className="d-flex justify-content-between flex-wrap">
+                <div>
+                    <h5>Toán Hình - 9.5</h5>
+                </div>
+                <div>
+                    <h5>5</h5>
+                </div>
+          </div>
     </CardBody>
     <hr className="my-0" />
     <CardBody>
-      <CardTitle tag="h5">Elsewhere</CardTitle>
+        <h5 style={{textAlign:"center",fontWeight:"bold"}}>Xếp Hạng: <p style={{color:"red"}}>Vàng (Xuất Sắc)</p></h5>
+        <div style={{margin: "0 auto"}}>
 
-      <ul className="list-unstyled mb-0">
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faGlobe} fixedWidth className="mr-1" />
-          <Link to="/dashboard/default">staciehall.co</Link>
-        </li>
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faTwitter} fixedWidth className="mr-1" />
-          <Link to="/dashboard/default">Twitter</Link>
-        </li>
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faFacebook} fixedWidth className="mr-1" />
-          <Link to="/dashboard/default">Facebook</Link>
-        </li>
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faInstagram} fixedWidth className="mr-1" />
-          <Link to="/dashboard/default">Instagram</Link>
-        </li>
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faLinkedin} fixedWidth className="mr-1" />
-          <Link to="/dashboard/default">LinkedIn</Link>
-        </li>
-      </ul>
+              <div style={{width:"50%",margin: "0 auto"}} >
+                  <img width="100%" alt="medal" src={require('../../assets/img/medalrank/Gold.png')}></img>
+              </div>
+              
+        </div>
     </CardBody>
   </Card>
 );
 
-const Activities = () => (
+const Activities = () => {
+  const datatable = {
+    columns: [
+      {
+        label: 'Hàm Số',
+        field: '12/9',
+      },
+      {
+        label: 'Mũ Lôgarit',
+        field: '13/9',
+      },
+      {
+        label: 'Tích Phân',
+        field: '14/9',
+      },
+      {
+        label: 'Số Phức',
+        field: '15/9',
+      },
+    ],
+    rows: [
+      {
+        "12/9":9,
+        "13/9":10,
+        "14/9":9,
+        "15/9":8,
+        "16/9":9.5,
+        "17/9":9.5,
+        "18/9":9.5,
+        "19/9":9.5,
+        "20/9":9.5,
+        "21/9":9.5,
+        "22/9":9.5,
+      },
+    ],
+  };
+  const datatable1 = {
+    columns: [
+      {
+        label: 'Thể Tích Khối Đa Diện',
+        field: '12/9',
+      },
+      {
+        label: 'Thể Tích Khối Tròn Xoay',
+        field: '13/9',
+      },
+      {
+        label: 'Hình Học Oxyz',
+        field: '14/9',
+      },
+      {
+        label: 'Số Phức',
+        field: '15/9',
+      },
+    ],
+    rows: [
+      {
+        "12/9":9,
+        "13/9":10,
+        "14/9":9,
+        "15/9":8,
+        "16/9":9.5,
+        "17/9":9.5,
+        "18/9":9.5,
+        "19/9":9.5,
+        "20/9":9.5,
+        "21/9":9.5,
+        "22/9":9.5,
+      },
+    ],
+  };
+  const datatable2 = {
+    columns: [
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+      {
+        label: 'Đề 1',
+        field: '12/9',
+      },
+    ],
+    rows: [
+      {
+        "12/9":9,
+      },
+    ],
+  };
+  const listDataTable = [];
+  listDataTable.push(datatable);
+  listDataTable.push(datatable1);
+  listDataTable.push(datatable2)
+  return(
   <Card>
     <CardHeader>
-      <div className="card-actions float-right">
-        <UncontrolledDropdown>
-          <DropdownToggle tag="a">
-            <MoreHorizontal />
-          </DropdownToggle>
-          <DropdownMenu right>
-            <DropdownItem>Action</DropdownItem>
-            <DropdownItem>Another Action</DropdownItem>
-            <DropdownItem>Something else here</DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-      </div>
       <CardTitle tag="h5" className="mb-0">
-        Activities
+        Bảng Điểm
       </CardTitle>
     </CardHeader>
     <CardBody>
-      <Media>
-        <img
-          src={avatar5}
-          width="36"
-          height="36"
-          className="rounded-circle mr-2"
-          alt="Ashley Briggs"
-        />
-        <Media body>
-          <small className="float-right text-navy">5m ago</small>
-          <strong>Ashley Briggs</strong> started following{" "}
-          <strong>Stacie Hall</strong>
-          <br />
-          <small className="text-muted">Today 7:51 pm</small>
-          <br />
-        </Media>
-      </Media>
+          <div style={{marginTop:"5px"}}>
+                <Row>
+                      <Col xs="auto" lg="8">
+                          <div style={{margin: "0 auto"}}>
+                                <h5 style={{margin: "0 auto",fontWeight:"bold"}}>
+                                    Toán Đại
+                                </h5>
+                                <h5 style={{margin: "0 auto"}}>Trung Bình: 9.0</h5>
+                                <h5 style={{margin: "0 auto"}}>Hạng: 14</h5>
+                                <h5 style={{fontWeight:"bold"}}>Rank: <p style={{color:"red"}}>Vàng (Xuất Sắc)</p></h5>
+                          </div>
+                          <MDBDataTableV5 
+                            hover 
+                            paging={false} 
+                            displayEntries={false} 
+                            responsive 
+                            bordered borderless={false} 
+                       
+                            searching={false} 
+                            entries={10} 
+                            pagesAmount={4} 
+                            info={false}
+                            data={listDataTable[0]} />
+                      </Col>
+                      <Col xs="auto" lg="4">
+                          <div style={{margin: "0 auto"}}>
 
-      <hr />
-      <Media>
-        <img
-          src={avatar1}
-          width="36"
-          height="36"
-          className="rounded-circle mr-2"
-          alt="Chris Wood"
-        />
-        <Media body>
-          <small className="float-right text-navy">30m ago</small>
-          <strong>Chris Wood</strong> posted something on{" "}
-          <strong>Stacie Hall</strong>'s timeline
-          <br />
-          <small className="text-muted">Today 7:21 pm</small>
-          <div className="border text-sm text-muted p-2 mt-1">
-            Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem
-            quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam
-            quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
-            Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut
-            libero venenatis faucibus. Nullam quis ante.
+                              <div style={{width:"100%",margin: "0 auto"}} >
+                                  <img width="100%" alt="medal" src={require('../../assets/img/medalrank/Gold.png')}></img>
+                              </div>
+
+                          </div>
+                      </Col>
+                </Row>
           </div>
-          <Button size="sm" color="danger" className="mt-1">
-            <FontAwesomeIcon icon={faHeart} fixedWidth /> Like
-          </Button>
-        </Media>
-      </Media>
+       
+          <div style={{marginTop:"5px"}}>
+                <Row>
+                      <Col xs="auto" lg="8">
+                          <div style={{margin: "0 auto"}}>
+                                <h5 style={{margin: "0 auto",fontWeight:"bold"}}>
+                                    Toán Hình
+                                </h5>
+                                <h5 style={{margin: "0 auto"}}>Trung Bình: 8.8</h5>
+                                <h5 style={{margin: "0 auto"}}>Hạng: 14</h5>
+                                <h5 style={{fontWeight:"bold"}}>Rank: <p style={{color:"blue"}}>Bạc (Giỏi)</p></h5>
+                          </div>
+                          <MDBDataTableV5 
+                            hover 
+                            paging={false} 
+                            displayEntries={false} 
+                            responsive 
+                            bordered borderless={false} 
+                        
+                            searching={false} 
+                            entries={10} 
+                            pagesAmount={4} 
+                            info={false}
+                            data={listDataTable[1]} />
+                      </Col>
+                      <Col xs="auto" lg="4">
+                          <div style={{margin: "0 auto"}}>
 
-      <hr />
-      <Media>
-        <img
-          src={avatar4}
-          width="36"
-          height="36"
-          className="rounded-circle mr-2"
-          alt="Stacie Hall"
-        />
-        <Media body>
-          <small className="float-right text-navy">1h ago</small>
-          <strong>Stacie Hall</strong> posted a new blog
-          <br />
-          <small className="text-muted">Today 6:35 pm</small>
-        </Media>
-      </Media>
+                              <div style={{width:"100%",margin: "0 auto"}} >
+                                  <img width="100%" alt="medal" src={require('../../assets/img/medalrank/Sliver.png')}></img>
+                              </div>
 
-      <hr />
-      <Media>
-        <img
-          src={avatar2}
-          width="36"
-          height="36"
-          className="rounded-circle mr-2"
-          alt="Carl Jenkins"
-        />
-        <Media body>
-          <small className="float-right text-navy">3h ago</small>
-          <strong>Carl Jenkins</strong> posted two photos on{" "}
-          <strong>Stacie Hall</strong>'s timeline
-          <br />
-          <small className="text-muted">Today 5:12 pm</small>
-          <div className="row no-gutters mt-1">
-            <div className="col-6 col-md-4 col-lg-4 col-xl-3">
-              <img src={unsplash1} className="img-fluid pr-2" alt="Unsplash" />
-            </div>
-            <div className="col-6 col-md-4 col-lg-4 col-xl-3">
-              <img src={unsplash2} className="img-fluid pr-2" alt="Unsplash" />
-            </div>
+                          </div>
+                      </Col>
+                </Row>
+                
           </div>
-          <Button size="sm" color="danger" className="mt-1">
-            <FontAwesomeIcon icon={faHeart} fixedWidth /> Like
-          </Button>
-        </Media>
-      </Media>
+          <div style={{marginTop:"5px"}}>
+                <Row>
+                      <Col xs="auto" lg="8">
+                          <div style={{margin: "0 auto"}}>
+                                <h5 style={{margin: "0 auto",fontWeight:"bold"}}>
+                                    Luyện Đề
+                                </h5>
+                                <h5 style={{margin: "0 auto"}}>Trung Bình: 8.8</h5>
+                                <h5 style={{margin: "0 auto"}}>Hạng: 14</h5>
+                                <h5 style={{fontWeight:"bold"}}>Rank: <p style={{color:"blue"}}>Bạc (Giỏi)</p></h5>
+                          </div>
+                          <MDBDataTableV5 
+                            hover 
+                            paging={false} 
+                            displayEntries={false} 
+                            responsive 
+                            bordered borderless={false} 
+                        
+                            searching={false} 
+                            entries={10} 
+                            pagesAmount={4} 
+                            info={false}
+                            data={listDataTable[2]} />
+                      </Col>
+                      <Col xs="auto" lg="4">
+                          <div style={{margin: "0 auto"}}>
 
-      <hr />
-      <Media>
-        <img
-          src={avatar2}
-          width="36"
-          height="36"
-          className="rounded-circle mr-2"
-          alt="Carl Jenkins"
-        />
-        <Media body>
-          <small className="float-right text-navy">1d ago</small>
-          <strong>Carl Jenkins</strong> started following{" "}
-          <strong>Stacie Hall</strong>
-          <br />
-          <small className="text-muted">Yesterday 3:12 pm</small>
-          <Media className="mt-1">
-            <img
-              src={avatar4}
-              width="36"
-              height="36"
-              className="rounded-circle mr-2"
-              alt="Stacie Hall"
-            />
-            <Media body className="pl-3">
-              <div className="border text-sm text-muted p-2 mt-1">
-                Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id,
-                lorem. Maecenas nec odio et ante tincidunt tempus.
-              </div>
-            </Media>
-          </Media>
-        </Media>
-      </Media>
+                              <div style={{width:"100%",margin: "0 auto"}} >
+                                  <img width="100%" alt="medal" src={require('../../assets/img/medalrank/Sliver.png')}></img>
+                              </div>
 
-      <hr />
-      <Media>
-        <img
-          src={avatar4}
-          width="36"
-          height="36"
-          className="rounded-circle mr-2"
-          alt="Stacie Hall"
-        />
-        <Media body>
-          <small className="float-right text-navy">1d ago</small>
-          <strong>Stacie Hall</strong> posted a new blog
-          <br />
-          <small className="text-muted">Yesterday 2:43 pm</small>
-        </Media>
-      </Media>
-
-      <hr />
-      <Media>
-        <img
-          src={avatar1}
-          width="36"
-          height="36"
-          className="rounded-circle mr-2"
-          alt="Chris Wood"
-        />
-        <Media body>
-          <small className="float-right text-navy">1d ago</small>
-          <strong>Chris Wood</strong> started following{" "}
-          <strong>Stacie Hall</strong>
-          <br />
-          <small className="text-muted">Yesterdag 1:51 pm</small>
-        </Media>
-      </Media>
-
-      <hr />
-      <Button color="primary" block>
-        Load more
-      </Button>
+                          </div>
+                      </Col>
+                </Row>
+                
+          </div>
     </CardBody>
   </Card>
-);
-
+  );
+}
 const StudentProfile = (props) => (
   <Container fluid className="p-0">
-    <h1 className="h3 mb-3">Profile {props.location.state.studentId} </h1>
+    <h1 className="h3 mb-3">Thông tin học sinh </h1>
 
     <Row>
-      <Col md="4" xl="3">
+      <Col md="5" xl="4">
         <StudentProfileDetails />
       </Col>
-      <Col md="8" xl="9">
+      <Col md="7" xl="8">
         <Activities />
       </Col>
     </Row>

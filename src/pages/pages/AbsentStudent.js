@@ -206,6 +206,154 @@ const AbsentListInWeek = (props) =>{
   </>
     );
 }
+const AttendanceList = (props) =>{ 
+
+  const datatable = {
+    columns: [
+      {
+        label: 'Họ Tên',
+        field: 'fullName',
+      },
+      {
+        label: 'Trường học',
+        field: 'school',
+
+      },
+      {
+        label: 'SĐT',
+        field: 'studentNumber',
+
+      },
+      {
+        label: 'SĐT PH',
+        field: 'parentNumber',
+        width: 100,
+      },
+      {
+        label: 'Action',
+        field: 'action',
+
+      },
+    ],
+    rows: [
+       {
+        fullName:"Nguyễn Đức Thắng",
+        school:"Thăng Long",
+        studentNumber:"0965993506",
+        parentNumber:"0965993506"
+       }
+    ]
+  }; 
+  const datatable2 = {
+    columns: [
+      {
+        label: 'Tên Lớp',
+        field: 'fullName',
+        width: 150,
+        attributes: {
+          'aria-controls': 'DataTable',
+          'aria-label': 'Name',
+        },
+      },
+      {
+        label: 'Lịch Học',
+        field: 'schedule',
+        width: 120,
+      },
+      {
+        label: 'Thời Gian',
+        field: 'time',
+        width: 200,
+      },
+      {
+        label: 'Sĩ Số',
+        field: 'total',
+        sort: 'asc',
+        width: 80,
+      },
+      {
+        label: 'Giáo Viên',
+        field: 'teacherName',
+        sort: 'disabled',
+        width: 150,
+      },
+      {
+        label: 'Action',
+        field: 'action',
+        width: 200,
+      }
+    ],
+    rows: [
+      
+    ],
+  };
+  
+  
+  
+  return(
+  <> 
+      <div className='header' style={{marginBottom:"5px"}}>
+      <h1 className='title'>DANH SÁCH ĐIỂM DANH</h1>
+          
+          <Row>
+                <Col xs="auto">
+                    <div >
+                      <div className ="d-flex">
+                        <Row>
+                            <Col>
+                                  <Input 
+                                  type="select"
+                                  id="grade"
+                                  name="grade"
+                                  onChange={ async (e) =>{
+                                    
+                                }}
+                                >
+                                                <option value = "12">Khối 12</option>
+                                                <option value = "11">Khối 11</option>
+                                                <option value = "10">Khối 10</option>
+                                                <option value = "9">Khối 9</option>
+                                                <option value = "8">Khối 8</option>
+                                                <option value = "7">Khối 7</option>
+                                                <option value = "6">Khối 6</option>
+                                </Input>
+                            </Col>
+                            <Col lg="6.5">
+                              <Input 
+                                  type="select"
+                                  id="subject"
+                                  name="subject"
+                                  onChange={ async (e) =>{
+                                    
+                                }}
+                                >
+                                              <option value="Toán Đại">Toán Đại</option>
+                                              <option value="Toán Hình">Toán Hình</option>
+                                              <option value="Tiếng Anh">Tiếng Anh</option>
+                                              <option value="Hóa">Hóa</option>
+                                              <option value="Văn">Văn</option>
+                                              <option value="Lý">Lý</option>
+                                              <option value="Sinh">Sinh</option>
+                                </Input>
+                            </Col>
+                            
+                        </Row>
+                      </div>
+                    </div>
+                </Col>
+                
+          </Row>
+      </div>
+    <Card>
+      <CardBody>
+          <MDBDataTableV5 responsive theadColor="primary-color" searchTop searchBottom={false} theadTextWhite bordered  hover  entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable2} />
+          <MDBDataTableV5 responsive theadColor="primary-color" searchTop searchBottom={false} theadTextWhite bordered borderless={false} hover  entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
+      </CardBody>
+    </Card>
+  </>
+    );
+}
+
 const AbsentStudent = (props) => {
 
   
@@ -217,6 +365,11 @@ const AbsentStudent = (props) => {
     <Row>
       <Col>
         <AbsentListInWeek {...props}/>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+        <AttendanceList {...props}/>
       </Col>
     </Row>
   </Container>

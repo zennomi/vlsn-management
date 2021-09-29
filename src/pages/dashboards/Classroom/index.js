@@ -1,38 +1,32 @@
-import React from "react";
+import React, {useState} from "react";
 import { Container, Row, Col } from "reactstrap";
 
 // import Activity from "./Activity";
-import BarChart from "./BarChart";
+// import BarChart from "./BarChart";
 import Header from "./Header";
 // import LineChart from "./LineChart";
 import ClassList from "./ClassList";
+import Statistics from "./Statistics";
+import Course from "./Course";
 // import Statistics from "./Statistics";
 // import USAMap from "./USAMap";
 
-const Ecommerce = () => (
+const Ecommerce = (props) =>{
+
+  const [clazz, setClass] = useState({});
+  const [modal,setModal] = useState(false);
+
+  return(
   <Container fluid className="p-0">
     <Header />
-    {/* <Statistics />
     <Row>
-      <Col lg="4" className="d-flex">
-        <USAMap />
-      </Col>
-      <Col md="7" lg="4" className="col-xxl-6 d-flex">
-        <LineChart />
-      </Col>
-      <Col md="5" lg="4" className="col-xxl-2 d-flex">
-        <Activity />
-      </Col>
-    </Row> */}
-    <Row>
-      <Col lg="8" className="d-flex">
-        <ClassList />
-      </Col>
-      <Col lg="4" className="d-flex">
-        <BarChart />
+      <Col className="d-flex">
+        <ClassList setClass={setClass} {...props} setWatch={setModal} isWatching={modal} />
       </Col>
     </Row>
+    {(modal) ? <Statistics clazz={clazz} {...props} /> : null}
+    {(modal) ? <Course clazz={clazz} {...props} /> : null}
   </Container>
 );
-
+}
 export default Ecommerce;

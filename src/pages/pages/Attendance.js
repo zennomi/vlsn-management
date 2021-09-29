@@ -13,6 +13,8 @@ import { Formik,FastField, Form  } from 'formik';
 import { MDBDataTable } from 'mdbreact';
 import { ReactstrapInput } from "reactstrap-formik";
 import AttenDanceApi from "../../api/AttendanceApi";
+import { Autocomplete } from '@material-ui/lab'
+import TextField from '@material-ui/core/TextField';
 const Attendance = (props) =>{ 
     
     const today = Moment(Date.now()).format('DD-MM-YYYY');
@@ -164,15 +166,20 @@ const Attendance = (props) =>{
       data1.rows = listStudentNotInClass;
       data3.rows = subStudentInClass;
 
+      const listStudentMustHaveHomeWork = [];
+      attenedStudents.map(e => listStudentMustHaveHomeWork.push(e));
+      subStudentInClass.map(e => listStudentMustHaveHomeWork.push(e));
+
     return (
         <Container fluid className="p-0">
             <h1 className="h3 mb-3">Thông Tin Lớp Học Ngày {today}</h1>
             <Row>
             <Col>
+                 
                 <Card>
                 <CardHeader>
                 {/* <h2>{props.location.state.classId}</h2> */}
-                <h5>{clazz.className +" - Thầy " + clazz.teacherName + " Thứ " + clazz.day + ": " + 
+                <h5>{clazz.className +" - GV. " + clazz.teacherName+" " + ((clazz.day !== "1") ? "- Thứ " + clazz.day : "- Chủ Nhật ") + ": " + 
                     clazz.start + " - " + clazz.end} </h5>
                 <Formik
                   initialValues={
@@ -221,7 +228,7 @@ const Attendance = (props) =>{
                       </Col>
                     </Row>
                     <CardBody >
-                          <MDBDataTable hover scrollY scrollX entries={100} displayEntries={false} data={data}/>
+                          <MDBDataTable hover scrollY scrollX entries={150} displayEntries={false} data={data}/>
                     </CardBody>
                   </CardBody>
                   <CardBody>
@@ -241,7 +248,7 @@ const Attendance = (props) =>{
                       </Col>
                     </Row>
                     <CardBody>
-                          <MDBDataTable  hover scrollY scrollX entries={100} displayEntries={false} data={data3} />
+                          <MDBDataTable  hover scrollY scrollX entries={150} displayEntries={false} data={data3} />
                     </CardBody>
                   </CardBody>
                   <CardBody>
@@ -261,12 +268,52 @@ const Attendance = (props) =>{
                       </Col>
                     </Row>
                     <CardBody>
-                          <MDBDataTable  hover scrollY scrollX entries={100} displayEntries={false} data={data1} />
-                          <Button onClick={submitAbsentStudents}>Xác Nhận</Button>
+                          <MDBDataTable  hover scrollY scrollX entries={150} displayEntries={false} data={data1} />
+                          <Button color="primary" onClick={submitAbsentStudents}>Xác Nhận</Button>
                     </CardBody>
                   </CardBody>
                 </Card>
             </Col>
+            </Row>
+            <Row>
+                  <Col>
+                            <h1>Học Sinh Thiếu BTVN</h1>
+                            <Formik
+                                    initialValues={
+                                      {
+                                          listUnSubmittedHomeWork:[]
+                                      }
+                                    }
+                                    onSubmit={async (values) => {
+                                        alert(values)
+                                      
+                                    }}
+                                
+                                >
+                                {({setFieldValue, values}) => 
+                                    <Form>
+                                        <Autocomplete
+                                            multiple
+                                            limitTags={2}
+                                            label="Học Sinh Thiếu BTVN"
+                                            id="multiple-limit-tags"
+                                            value={values.listUnSubmittedHomeWork}
+                                            name="listUnSubmittedHomeWork"
+                                            onChange={(e, value) => {
+                                              setFieldValue("listUnSubmittedHomeWork", value)
+                                            }}
+                                            getOptionSelected={(option, value) => option.id === value.id}
+                                            options={listStudentMustHaveHomeWork}
+                                            getOptionLabel={(option) => option.fullName + " - " + option.school + " - " + option.studentNumber}
+                                            renderInput={(params) => (
+                                              <TextField {...params} name="listUnSubmittedHomeWork" variant="outlined" label="Học Sinh Thiếu BTVN"  />
+                                            )}
+                                          />
+                                        <Button color="primary" type="submit">Thêm</Button>
+                                    </Form>
+                                  }
+                              </Formik>
+                  </Col>
             </Row>
         </Container>
     );
