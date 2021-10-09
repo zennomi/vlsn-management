@@ -9,14 +9,14 @@ import {
   Container,
   Input,
   Row,
-
+  Button
 } from "reactstrap";
 
 import { MDBDataTableV5 } from 'mdbreact';
 import Header from "./Header";
 import Moment from 'moment';
 import AttendanceApi from "../../api/AttendanceApi";
-
+import ClassroomApi from "../../api/ClassroomApi";
 
 // chuyển về thứ {dayInNumber}
 const getWeeklyDay = (dayInNumber) => {
@@ -208,6 +208,12 @@ const AbsentListInWeek = (props) =>{
 }
 const AttendanceList = (props) =>{ 
 
+  const[grade,setGrade] = useState(12);
+  const[subject,setSubject] = useState("Toán Đại");
+  
+  const [classes, setClasses] = useState([]);
+  const [students,setStudents]=useState([]);
+
   const datatable = {
     columns: [
       {
@@ -227,21 +233,12 @@ const AttendanceList = (props) =>{
       {
         label: 'SĐT PH',
         field: 'parentNumber',
-        width: 100,
+     
       },
-      {
-        label: 'Action',
-        field: 'action',
 
-      },
     ],
     rows: [
-       {
-        fullName:"Nguyễn Đức Thắng",
-        school:"Thăng Long",
-        studentNumber:"0965993506",
-        parentNumber:"0965993506"
-       }
+       
     ]
   }; 
   const datatable2 = {
@@ -249,47 +246,81 @@ const AttendanceList = (props) =>{
       {
         label: 'Tên Lớp',
         field: 'fullName',
-        width: 150,
-        attributes: {
-          'aria-controls': 'DataTable',
-          'aria-label': 'Name',
-        },
+       
       },
       {
         label: 'Lịch Học',
         field: 'schedule',
-        width: 120,
+        
       },
       {
         label: 'Thời Gian',
         field: 'time',
-        width: 200,
+       
       },
       {
         label: 'Sĩ Số',
         field: 'total',
         sort: 'asc',
-        width: 80,
+      
       },
       {
         label: 'Giáo Viên',
         field: 'teacherName',
         sort: 'disabled',
-        width: 150,
+      
       },
       {
-        label: 'Action',
+        label: '',
         field: 'action',
-        width: 200,
+     
       }
     ],
     rows: [
       
     ],
   };
-  
-  
-  
+  const setClassId = async (classId) => {
+      const listStudents = await AttendanceApi.getListStudentAttendanceInClass(classId);
+      setStudents(listStudents);
+  }
+
+  useEffect(() => {
+    const getAllSubjectClassInGrade = async () =>{
+        const res = await ClassroomApi.getListSubjectClassroomInGrade(grade,subject);
+        setClasses(res);
+    }
+    getAllSubjectClassInGrade();
+    
+  }, [grade,subject]);
+
+  classes.map(clazz => datatable2.rows.push({
+      fullName: clazz.subjectName + " " + clazz.grade + clazz.className,
+      schedule: (clazz.schedule !== "1") ? "Thứ "+clazz.schedule : "Chủ Nhật",
+      time: clazz.startTime +" - "+clazz.endTime,
+      total: clazz.totalStudent,
+      teacherName: clazz.teacherId.fullName,
+      action: <Button color="primary" style={{borderRadius:"15px"}} onClick={() => setClassId(clazz.id) }>Xem</Button>
+  }))
+
+  console.log(students);
+
+  const first = (students[0] !== undefined) ? students[0] : {listAtten:[]};
+
+  first.listAtten.map(res =>
+      datatable.columns.push({
+        label: res.date,
+        field: res.date,
+      })  
+  )
+  students.map(st => 
+      st.listAtten.map(res => 
+          st[res.date] = res.status
+      )
+    
+  )
+  datatable.rows = students;
+  console.log(students);
   return(
   <> 
       <div className='header' style={{marginBottom:"5px"}}>
@@ -306,7 +337,7 @@ const AttendanceList = (props) =>{
                                   id="grade"
                                   name="grade"
                                   onChange={ async (e) =>{
-                                    
+                                    setGrade(e.target.value);
                                 }}
                                 >
                                                 <option value = "12">Khối 12</option>
@@ -324,7 +355,7 @@ const AttendanceList = (props) =>{
                                   id="subject"
                                   name="subject"
                                   onChange={ async (e) =>{
-                                    
+                                    setSubject(e.target.value);
                                 }}
                                 >
                                               <option value="Toán Đại">Toán Đại</option>
@@ -346,8 +377,18 @@ const AttendanceList = (props) =>{
       </div>
     <Card>
       <CardBody>
-          <MDBDataTableV5 responsive theadColor="primary-color" searchTop searchBottom={false} theadTextWhite bordered  hover  entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable2} />
-          <MDBDataTableV5 responsive theadColor="primary-color" searchTop searchBottom={false} theadTextWhite bordered borderless={false} hover  entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
+          <MDBDataTableV5 
+          responsive 
+          theadColor="primary-color" 
+          searchTop searchBottom={false} 
+          theadTextWhite bordered  hover  entriesOptions={[5,10, 20, 50,100]} 
+          entries={4} pagesAmount={4} data={datatable2} />
+          <br/>
+          <MDBDataTableV5 
+          responsive theadColor="primary-color" 
+          searchTop searchBottom={false} theadTextWhite 
+          bordered borderless={false} hover  entriesOptions={[5,10, 20, 50,100,150]} 
+          entries={50} pagesAmount={50} data={datatable} />
       </CardBody>
     </Card>
   </>

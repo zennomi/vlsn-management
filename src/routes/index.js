@@ -53,7 +53,7 @@ import CreateResult from "../pages/dashboards/Classroom/CreateResult";
 import HomeWork from "../pages/pages/HomeWork";
 import StudentCourse from "../pages/pages/StudentCourse";
 import CourseView from "../pages/pages/CourseView";
-
+import ClientProfile from "../pages/pages/ClientProfile";
 // Dashboards
 
 
@@ -99,7 +99,7 @@ const studentProfileRouter = {
     {
       path: "/profile/info",
       name: "Thông Tin Cá Nhân",
-      component: withAuth(StudentProfile,["ADMIN","MENTOR","TEACHER","STUDENT","MANAGER"]),
+      component: withAuth(ClientProfile,["ADMIN","MENTOR","TEACHER","STUDENT","MANAGER"]),
     },
   ]
 };

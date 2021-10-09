@@ -7,6 +7,10 @@ const getListStudentAttendanceToday = (classId) => {
    
     return Api.get(`${url}/classes/${classId}`);
 }
+const getListStudentAttendanceInClass = (classId) => {
+   
+    return Api.get(`${url}/classes/${classId}/main`);
+}
 const getListStudentNotInClassToday = (classId) => {
     return Api.get(`${url}/classes/${classId}/absent`);
 }
@@ -60,5 +64,6 @@ const api = {
      studentAtten, 
      getListSubStudentInClassToday,
      studentListAtten,
-     getListAbsentStudentInWeeklyDay }
+     getListAbsentStudentInWeeklyDay,
+     getListStudentAttendanceInClass }
 export default api;

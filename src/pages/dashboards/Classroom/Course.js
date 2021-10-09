@@ -96,7 +96,7 @@ const CourseList = (props) =>{
     ],
   }; 
   
-    const clazz = props.clazz;
+    
   
 
     useEffect(() => {
@@ -255,9 +255,7 @@ const AttendanceList = (props) => {
       
     ],
   };  
-  const [marks, setListMark] = useState([]);
-  const classroom = props.clazz;
-  const exam = props.exam;
+  
 
   useEffect(() => {
     const getAllExamMark = async () =>{

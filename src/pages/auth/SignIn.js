@@ -103,7 +103,13 @@ const SignIn = (props) => {
                 props.setUserLoginInfo(user);
 
                 // redirect home page
-                props.history.push("/dashboard/default"); 
+                if(result.role === "STUDENT"){
+                  props.history.push("/profile/info");
+                }
+                else{
+                  props.history.push("/dashboard/default");
+                }
+                 
               }
             } catch (error) {
               if (error.status === 401) {
@@ -192,7 +198,8 @@ const SignIn = (props) => {
 
 const mapGlobalStateToProps = state => {
   return {
-    isRememberMe: selectRememberMe(state)
+    isRememberMe: selectRememberMe(state),
+  
   };
 };
 export default connect( mapGlobalStateToProps, { setTokenInfo, setUserLoginInfo, setRememberMeInfo })(withRouter(SignIn));

@@ -185,10 +185,15 @@ const StudentListScorces = (props) =>{
   }, [grade,subject]);
 
   data.map(st => datatable.rows.push({
-      rank:st.rank,
-      fullName:st.fullName,
-      school:st.school,
-      avgMark: (st.avgMark !== 0) ? st.avgMark : "Chưa có hạng"
+      rank: (st.rank <= 3 && st.rank > 0 ) ? <p style={{color:"red"}}>{st.rank}</p> :
+            (st.rank > 3 && st.rank <= 10) ? <p style={{color:"green"}}>{st.rank}</p> : st.rank,
+      fullName: (st.rank <= 3 && st.rank > 0) ? <p style={{color:"red"}}>{st.fullName}</p> :
+                (st.rank > 3 && st.rank <= 10) ? <p style={{color:"green"}}>{st.fullName}</p> : st.fullName,
+      school:   (st.rank <= 3 && st.rank > 0) ? <p style={{color:"red"}}>{st.school}</p> :
+                (st.rank > 3 && st.rank <= 10) ? <p style={{color:"green"}}>{st.school}</p> : st.school,
+      avgMark:  (st.avgMark !== 0 && st.rank <= 3) ? <p style={{color:"red"}}>{st.avgMark}</p> :
+                (st.avgMark !== 0 && st.rank > 3 && st.rank <= 10) ? <p style={{color:"green"}}>{st.avgMark}</p> :
+                (st.avgMark !== 0 && st.rank > 10) ? st.avgMark : "chưa có hạng",
   }))
 
   return (
@@ -299,6 +304,11 @@ const StudentScorces = (props) => {
 
   const[grade,setGrade]=useState(12);
   const[subject,setSubject]=useState("Toán Đại");
+
+  useEffect(() => {
+    console.log("render!");
+  
+  }, []);
  
   return(
     

@@ -39,40 +39,45 @@ const ClientsList = (props) =>{
   const datatable = {
     columns: [
       {
+        label: 'ID',
+        field: 'id',
+     
+      },
+      {
         label: 'Họ Tên',
         field: 'fullName',
-        width: 200,
+     
       },
       {
         label: 'Trường học',
         field: 'school',
-        width: 250,
+ 
       },
       {
         label: 'SĐT',
         field: 'studentNumber',
-        width: 200,
+  
       },
       {
         label: 'Lớp',
         field: 'grade',
         sort: 'asc',
-        width: 100,
+ 
       },
       {
         label: 'Tên PH',
         field: 'parentName',
-        width: 150,
+ 
       },
       {
         label: 'SĐT PH',
         field: 'parentNumber',
-        width: 100,
+
       },
       {
         label: 'Action',
         field: 'action',
-        width: 150,
+     
       },
     ],
     rows: [
@@ -112,7 +117,7 @@ const ClientsList = (props) =>{
   datatable.rows = listStudent;
   datatable.rows.map((row,i) => {
     row.action = <div style={{display:"flex"}}>
-                <button  onClick={() => redriectToProfile(i)}>
+                <button  onClick={() => redriectToProfile(row.id)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                     <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
@@ -154,7 +159,10 @@ const ClientsList = (props) =>{
         </CardTitle>
       </CardHeader>
       <CardBody>
-          <MDBDataTableV5 hover scrollX entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
+          <MDBDataTableV5 
+          hover 
+          responsive
+          entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
       </CardBody>
     </Card>
     <Modal isOpen={modalUpdate} toggle={toggleUpdate}>

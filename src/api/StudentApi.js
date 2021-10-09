@@ -94,6 +94,7 @@ const getWeakStudentSubjectAvgMarkInGrade = (grade,subjectName) => {
 const getStudentByStatus = (status) => {
     return Api.get(`${url}/status/${status}`);
 }
+
 // export
 const api = { 
     getAllStudent,

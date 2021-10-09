@@ -5,6 +5,12 @@ const url = "/classes";
 const getListClassroomInGrade =  (grade)  => {   
     return Api.get(`${url}/grade/${grade}`);
 };
+const getListSubjectClassroomInGrade =  (grade,subject)  => {  
+    const prametter = {
+        subject: subject
+    } 
+    return Api.get(`${url}/grade/${grade}/subjects/`,{params:prametter});
+};
 const getListClassroomToday =  (dayInWeek)  => {   
     return Api.get(`${url}/schedule/${dayInWeek}`);
 };
@@ -77,6 +83,7 @@ const api = { getListClassroomInGrade,
       getListStudentCostInfoByStatusInGradeAndSubject,
       changeCostStatusStudent,
       getListClassroomByScheduleAndGrade,
-      getAllStudentInClassOnDate
+      getAllStudentInClassOnDate,
+      getListSubjectClassroomInGrade
     }
 export default api;

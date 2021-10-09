@@ -54,6 +54,36 @@ const getAllExamInClass = (classId) => {
 
     return Api.get(`${url}/`, { params: parameters});
 };
+const getAllSubjectExamInMonthAtGrade = (month,grade,subject) => {
+
+    const parameters = {
+        month: month,
+        subject:subject
+    }
+
+    return Api.get(`${url}/results/details/${grade}`, { params: parameters});
+};
+const getAllStudentMarkInExam = (examId) => {
+
+    return Api.get(`${url}/results/${examId}/students-mark`);
+};
+const getAllStudentNotTakeSubjectExamInMonthAtGrade = (month,grade,subject) => {
+
+    const parameters = {
+        month: month,
+        subject:subject
+    }
+
+    return Api.get(`${url}/results/unsubmit/students/grade/${grade}`, { params: parameters});
+};
 // export
-const api = { getExamResultInClass,getExamResultStatisticInClass,getAllExamType, createExamType, createExam, createExamResult,getAllExamInClass }
+const api = { 
+    getExamResultInClass,
+    getExamResultStatisticInClass,
+    getAllExamType, 
+    createExamType, 
+    createExam, 
+    createExamResult,
+    getAllExamInClass, getAllSubjectExamInMonthAtGrade, getAllStudentMarkInExam,
+    getAllStudentNotTakeSubjectExamInMonthAtGrade }
 export default api;

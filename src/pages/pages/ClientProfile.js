@@ -1,6 +1,8 @@
 import React, { useState,useEffect } from "react";
 // import { Link } from "react-router-dom";
-
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { selectFullName, selectRole, selectId } from "../../redux/selectors/userLoginInfoSelector";
 import {
   // Badge,
   Button,
@@ -287,9 +289,9 @@ const Activities = (props) => {
   </Card>
   );
 }
-const StudentProfile = (props) =>{ 
+const ClientProfile = (props) =>{ 
   
-  const studentId = props.history.location.state.studentId;
+  const studentId = props.id;
  
   
   return(
@@ -307,4 +309,12 @@ const StudentProfile = (props) =>{
   </Container>
 );
 }
-export default StudentProfile;
+// export default ClientProfile;
+const mapGlobalStateToProps = state => {
+  return {
+    fullName: selectFullName(state),
+    role: selectRole(state),
+    id:selectId(state)
+  };
+};
+export default withRouter(connect(mapGlobalStateToProps)(ClientProfile));

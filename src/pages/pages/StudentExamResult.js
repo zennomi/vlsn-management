@@ -17,7 +17,7 @@ import Header from "./Header";
 // import Moment from 'moment';
 // import AttendanceApi from "../../api/AttendanceApi";
 import { Bar } from 'react-chartjs-2';
-
+import ExamApi from "../../api/ExamApi";
 const StatisticsScorce = (props) =>{
 
   const data = {
@@ -25,7 +25,7 @@ const StatisticsScorce = (props) =>{
     datasets: [
       {
         label: '# số học sinh',
-        data: [15,54,77,150,100,40],
+        data: [],
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',
@@ -59,20 +59,82 @@ const StatisticsScorce = (props) =>{
     },
   };
   
+  const grade = props.grade;
+  const setGrade = props.setGrade;
+  const subject = props.subject;
+  const setSubject = props.setSubject;
+  const month = props.month;
+  const setMonth = props.setMonth;
+ 
+  const setExamId = props.setExamId;
+ 
+  const setClassId = props.setClassId;
 
-  useEffect(() => {
-    const getAllAbsentStudentAttendanceInWeeklyDay = async () =>{
+  const [examList, setExamList] = useState([]);
+  const [datastatistics,setDataStatistics] = useState([]);
+
+  const datatable = {
+    columns: [
+      {
+        label: 'Tên Lớp',
+        field: 'classFullName',
+    
+      },
+      {
+        label: 'Giáo Viên',
+        field: 'teacherName',
+      },
+      {
+        label: 'Nội Dung Kiểm Tra',
+        field: 'examName',
+      
+      },
+      {
+        label: 'Loại Kiểm Tra',
+        field: 'type',
+      },
+      {
+        label: 'Ngày Kiểm Tra',
+        field: 'createdDate',
+      },
+      {
+        label: '',
+        field: 'action',
         
-    }
-    getAllAbsentStudentAttendanceInWeeklyDay();
-    console.log("render");
-  }, []);
+      },
+    ],
+    rows: [
+      
+    ],
+  }; 
 
+  const setClassIdAndExamId = async (exam,clazz) =>{
+      setClassId(clazz);
+      setExamId(exam);
+      const statistics = await ExamApi.getExamResultStatisticInClass(exam,clazz);
+      console.log(statistics);
+      setDataStatistics(statistics);
+  }
 
   useEffect(() => {
-    console.log("rerender");
-   
-  });
+    const getAllSubjectExamInMonthAtGrade = async () =>{
+        const exams = await ExamApi.getAllSubjectExamInMonthAtGrade(month,grade,subject);
+        setExamList(exams);
+    }
+    getAllSubjectExamInMonthAtGrade();
+    
+  }, [month,grade,subject]);
+
+  examList.map(exam => datatable.rows.push({
+      classFullName: subject + " " + grade + exam.className,
+      teacherName:exam.teacherName,
+      examName:exam.examName,
+      type:exam.type,
+      createdDate:exam.createdDate,
+      action: <Button color="primary" style={{borderRadius:"15px"}} onClick={() => setClassIdAndExamId(exam.examId,exam.classId) }>Xem</Button>
+  }))
+  
+  data.datasets[0].data = datastatistics;
 
   return(
   <> 
@@ -86,7 +148,7 @@ const StatisticsScorce = (props) =>{
                       id="grade"
                       name="grade"
                       onChange={ async (e) =>{
-                        
+                        setGrade(e.target.value);
                     }}
                     >
                                     <option value = "12">Khối 12</option>
@@ -104,7 +166,7 @@ const StatisticsScorce = (props) =>{
                       id="subject"
                       name="subject"
                       onChange={ async (e) =>{
-                        
+                        setSubject(e.target.value);
                     }}
                     >
                                   <option value="Toán Đại">Toán Đại</option>
@@ -124,7 +186,7 @@ const StatisticsScorce = (props) =>{
                       id="subject"
                       name="subject"
                       onChange={ async (e) =>{
-                        
+                        setMonth(e.target.value);
                     }}
                     >
                                   <option value="1">Tháng 1</option>
@@ -144,6 +206,15 @@ const StatisticsScorce = (props) =>{
             </Row>
            
           </div>
+          <br/>
+          <div>
+              <MDBDataTableV5 
+              hover 
+              responsive
+              searchTop
+              searchBottom={false}
+              entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} data={datatable} />
+          </div>
       </div>
       <Bar data={data} options={options} />
     
@@ -157,18 +228,9 @@ const StudentListScorces = (props) =>{
   const datatable = {
     columns: [
       {
-        label: 'Hạng',
-        field: 'rank',
-    
-      },
-      {
         label: 'Họ Tên',
         field: 'fullName',
   
-        attributes: {
-          'aria-controls': 'DataTable',
-          'aria-label': 'Name',
-        },
       },
       {
         label: 'Trường',
@@ -176,7 +238,7 @@ const StudentListScorces = (props) =>{
       
       },
       {
-        label: 'Điểm TB',
+        label: 'Điểm KT',
         field: 'mark',
       },
       {
@@ -189,15 +251,16 @@ const StudentListScorces = (props) =>{
     ],
   };  
   const [marks, setListMark] = useState([]);
-  
+  const examId = props.examId;
 
   useEffect(() => {
     const getAllExamMark = async () =>{
-     
+        const examRespone = await ExamApi.getAllStudentMarkInExam(examId);
+        setListMark(examRespone);
     }
     getAllExamMark();
-    console.log("render");
-  }, []);
+    
+  }, [examId]);
 
   datatable.rows = marks;
 
@@ -213,7 +276,7 @@ const StudentListScorces = (props) =>{
       </div>
       </CardHeader>
       <CardBody>
-            <MDBDataTableV5 hover scrollX entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} data={datatable} />
+            <MDBDataTableV5 hover responsive entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} data={datatable} />
         </CardBody>
     </Card>
   </>
@@ -225,47 +288,51 @@ const StudentListScorces = (props) =>{
 
 const WeakStudentListScorces = (props) =>{
 
- 
+  const grade = props.grade;
+
+  const subject = props.subject;
+
+  const month = props.month;
+
   
 
   const datatable = {
     columns: [
       {
-        label: 'Hạng',
-        field: 'rank',
-    
-      },
-      {
         label: 'Họ Tên',
         field: 'fullName',
-  
-        attributes: {
-          'aria-controls': 'DataTable',
-          'aria-label': 'Name',
-        },
       },
       {
         label: 'Trường',
         field: 'school',
       
       },
+      {
+        label: 'STĐ PH',
+        field: 'parentName',
+      },
+      {
+        label: 'STĐ PH',
+        field: 'parentNumber',
+      },
     ],
     rows: [
       
     ],
   };  
-  const [marks, setListMark] = useState([]);
+  const [students, setStudents] = useState([]);
   
 
   useEffect(() => {
-    const getAllExamMark = async () =>{
-     
+    const getListStudentNotTakeSubjectExamInMonthAtGrade = async () =>{
+          const response = await ExamApi.getAllStudentNotTakeSubjectExamInMonthAtGrade(month,grade,subject);
+          setStudents(response);
     }
-    getAllExamMark();
-    console.log("render");
-  }, []);
+    getListStudentNotTakeSubjectExamInMonthAtGrade();
+   
+  }, [month,grade,subject]);
 
-  datatable.rows = marks;
+  datatable.rows = students;
 
   return (
     <Card className="flex-fill w-100">
@@ -277,7 +344,7 @@ const WeakStudentListScorces = (props) =>{
       </div>
       </CardHeader>
       <CardBody>
-            <MDBDataTableV5 hover scrollX entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} data={datatable} />
+            <MDBDataTableV5 hover responsive entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} data={datatable} />
         </CardBody>
     </Card>
     );
@@ -285,25 +352,56 @@ const WeakStudentListScorces = (props) =>{
 }
 const StudentScorces = (props) => {
 
-  
- 
+  const [month,setMonth] = useState(1);
+  const [grade,setGrade] = useState(12);
+  const [subject,setSubject] = useState("Toán Đại");
+  const [examId,setExamId] = useState(0);
+  const [classId,setClassId] = useState(0);
+
   return(
     
   <Container fluid className="p-0">
     <Header />
     <Row>
       <Col>
-        <StatisticsScorce {...props}/>
+        <StatisticsScorce 
+        {...props} 
+        month={month} 
+        setMonth={setMonth} 
+        grade={grade} 
+        setGrade={setGrade} 
+        subject={subject} 
+        examId={examId}
+        setExamId={setExamId}
+        classId={classId}
+        setClassId={setClassId}
+        setSubject={setSubject}/>
       </Col>
     </Row>
     <Row>
       <Col>
-        <StudentListScorces {...props}/>
+        <StudentListScorces 
+        {...props}
+        month={month} 
+        setMonth={setMonth} 
+        grade={grade} 
+        setGrade={setGrade} 
+        subject={subject} 
+        examId={examId}
+        classId={classId}
+        setSubject={setSubject}/>
       </Col>
     </Row>
     <Row>
       <Col>
-        <WeakStudentListScorces {...props}/>
+        <WeakStudentListScorces 
+        {...props}
+        month={month} 
+        setMonth={setMonth} 
+        grade={grade} 
+        setGrade={setGrade} 
+        subject={subject} 
+        setSubject={setSubject}/>
       </Col>
     </Row>
   </Container>
