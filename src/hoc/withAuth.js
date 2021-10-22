@@ -22,7 +22,7 @@ function withAuth(AuthenticatedComponent, [...roles]) {
                     return null;
                 })
                 if(isExits){
-                    console.log(storage.getUserInfo().role);
+                    
                     return <AuthenticatedComponent {...this.props}/>
                 }else{
                     return <Redirect to="/auth/500" />

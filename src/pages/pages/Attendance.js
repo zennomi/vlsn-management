@@ -6,13 +6,22 @@ import {
   Col,
   Container,
   Row,
-  Button
+  Button,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader
 } from "reactstrap";
 import Moment from 'moment';
 import { Formik,FastField, Form  } from 'formik';
+import * as Yup from 'yup';
 import { MDBDataTable } from 'mdbreact';
 import { ReactstrapInput } from "reactstrap-formik";
 import AttenDanceApi from "../../api/AttendanceApi";
+import LessonApi from "../../api/LessonApi";
+import ChapterApi from "../../api/ChapterApi";
+import HomeWorkApi from "../../api/HomeWorkApi";
 import { Autocomplete } from '@material-ui/lab'
 import TextField from '@material-ui/core/TextField';
 const Attendance = (props) =>{ 
@@ -20,9 +29,13 @@ const Attendance = (props) =>{
     const today = Moment(Date.now()).format('DD-MM-YYYY');
     const todayInMonth = Moment(Date.now()).format('DD-MM');
     const today2 = Moment(Date.now()).format('YYYY-MM-DD');
-    const content = "";
+   
     const clazz = props.location.state;
 
+    const [lesson,setLesson] = useState({});
+    const [currentLesson, setCurrentLesson] = useState({});
+    const [modalSubmitStudentHomeWork,setModalSubmitStudentHomeWork] = useState(false);
+    const [listStudentNotSubmittedHomeWork, setListStudentNotSubmittedHomeWork] = useState([]);
     const submitAbsentStudents = async () => {
         const nowTime = new Date();
         const dateNow = new Date(nowTime.getTime() - 30*60000 );
@@ -78,25 +91,28 @@ const Attendance = (props) =>{
     const [attenedStudents, setAttendStudents] = useState([]);
     const [subStudentInClass, setSubList] = useState([]);
 
+    const [modalCreateLesson, setModalCreateLesson] = useState(false);
+    const [suggestChapters, setSuggestChapter] = useState([]);
+
       const data = {
         columns: [
           {
             label: 'Họ Tên',
             field: 'fullName',
             sort: 'asc',
-            width: 150
+            
           },
           {
             label: 'Trường',
             field: 'school',
             sort: 'asc',
-            width: 150
+         
           },
           {
             label: todayInMonth,
             field: 'attendanceStatus',
             sort: 'asc',
-            width: 150
+        
           }
           
         ],
@@ -108,13 +124,13 @@ const Attendance = (props) =>{
             label: 'Họ Tên',
             field: 'fullName',
             sort: 'asc',
-            width: 150
+         
           },
           {
             label: 'Trường',
             field: 'school',
             sort: 'asc',
-            width: 150
+       
           },
          
         ],
@@ -126,19 +142,19 @@ const Attendance = (props) =>{
             label: 'Họ Tên',
             field: 'fullName',
             sort: 'asc',
-            width: 150
+         
           },
           {
             label: 'Trường',
             field: 'school',
             sort: 'asc',
-            width: 150
+         
           },
           {
             label: todayInMonth,
             field: 'attendanceStatus',
             sort: 'asc',
-            width: 150
+     
           }
           
         ],
@@ -155,19 +171,56 @@ const Attendance = (props) =>{
           setAttendStudents(attenedSt);
         }
         getAllStudentAttendanceInClass();
-        console.log("render");
       }, [clazz.classId]);
-      
+
+
       useEffect(() => {
-        console.log("rerender attendance!");
-      });
+        const getCurrentLesson = async () =>{
+            const res = await LessonApi.getCurrentLessonInClassToday(clazz.classId);
+            if(res !== "empty"){
+              setCurrentLesson(res);
+            }
+        }
+        const getStudentNotSubmitedHomeWork = async () =>{
+          const res = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.classId,currentLesson.id);
+          setListStudentNotSubmittedHomeWork(res);
+        }
+        getCurrentLesson();
+        if(Object.keys(currentLesson).length !== 0){
+          getStudentNotSubmitedHomeWork();
+        }
+      }, [clazz.classId,currentLesson.id,currentLesson]);
+
+      useEffect(() => {
+        const getLessonInClass = async () =>{
+            const response = await LessonApi.getLessonInClassToday(clazz.classId);
+            if (response !== "empty"){
+                setLesson(response);
+            }
+            
+        }
+        getLessonInClass();
+      }, [clazz.classId]);
+      useEffect(() => {
+        const getAllSuggestChapter = async () =>{
+        const response = await ChapterApi.getAllSubjectChapterInGrade(clazz.grade,clazz.subjectName)
+        setSuggestChapter(response)
+        }
+        getAllSuggestChapter();
+      }, [clazz.grade,clazz.subjectName]);
 
       data.rows = attenedStudents;
       data1.rows = listStudentNotInClass;
       data3.rows = subStudentInClass;
 
+      
+      const mapNotSubmittedId = {};
+      listStudentNotSubmittedHomeWork.map(st => mapNotSubmittedId[st.id] = st.id);
+      var listStudentNotSubmittedHomeWorkId = [];
+      listStudentNotSubmittedHomeWork.map(st => listStudentNotSubmittedHomeWorkId.push(st.id));
+
       const listStudentMustHaveHomeWork = [];
-      attenedStudents.map(e => listStudentMustHaveHomeWork.push(e));
+      attenedStudents.map(e => (mapNotSubmittedId[e.id] === undefined) ? listStudentMustHaveHomeWork.push(e) : null);
       subStudentInClass.map(e => listStudentMustHaveHomeWork.push(e));
 
     return (
@@ -178,37 +231,106 @@ const Attendance = (props) =>{
                  
                 <Card>
                 <CardHeader>
+
                 {/* <h2>{props.location.state.classId}</h2> */}
                 <h5>{clazz.className +" - GV. " + clazz.teacherName+" " + ((clazz.day !== "1") ? "- Thứ " + clazz.day : "- Chủ Nhật ") + ": " + 
                     clazz.start + " - " + clazz.end} </h5>
-                <Formik
-                  initialValues={
-                    {
-                      contentTitle: '',
-                    }
-                  }
-                  onSubmit={(values) => {
-                    setTimeout(() => {
-                      alert(JSON.stringify(values, null, 2));
-                    }, 500);
-                  }}
-                >
-                    <Form>
-                      <Row>
-                        <Col lg="6">
-                          <FastField
-                              label ={"Nội dung bài học" + content}
-                              type="text"
-                              name="contentTitle"
-                              placeholder="Nhập nội dung bài học"
-                              component={ReactstrapInput}      
-                          />
-                          <Button  type="submit" >Xác nhận</Button>
-                        </Col>
-                        
-                      </Row>
-                    </Form>
-                </Formik>
+                {(Object.keys(lesson).length === 0) ? <Button color="primary" onClick={() => setModalCreateLesson(true)}>Thêm bài học hôm nay</Button> : 
+                <h6>Nội dung bài học: {lesson.chapter.chapterName} - {lesson.lessonName} </h6>}
+               
+               <Modal isOpen={modalCreateLesson} toggle={setModalCreateLesson}>
+                          <ModalHeader>
+                                Tạo bài học mới 
+                          </ModalHeader>
+                          <ModalBody>
+                              <Formik
+                                    initialValues={
+                                      {
+                                        lessonName:"",
+                                        date:"",
+                                        chapterId:0
+                                      }
+                                      
+                                    }
+                                    validationSchema={
+                                      Yup.object({
+                                        lessonName: Yup.string()
+                                          .required('Bắt buộc')
+                                          .max(50, 'Tên bài học không được vượt quá 50 kí tự')
+                                          .min(6, 'Tên bài học ít nhất 6 kí tự'),
+                                        date: Yup.string()
+                                          .required("Bắt buộc"),
+                                        chapterId: Yup.string()
+                                            .required("Bắt buộc")
+                                      })
+                                    }
+                                    onSubmit={async (values) => {
+                                          console.log(values);
+                                          const date = new Date(values.date);
+                                          console.log(date);
+                                          const dateFormat = Moment(date).format('DD-MM-YYYY');
+                                          console.log(dateFormat);
+                                          const newLesson = await LessonApi.createNewLessonInClass(
+                                            clazz.classId,
+                                            values.lessonName,
+                                            dateFormat,
+                                            values.chapterId
+                                          )
+                                          if (newLesson === "create successful!"){
+
+                                            alert("tạo bài học thành công!");
+
+                                            const response = await LessonApi.getLessonInClassToday(clazz.classId);
+                                            setLesson(response);
+                                            setModalCreateLesson(false);
+                                          }else{
+                                            alert("tạo thất bại!")
+                                          }
+
+                                    }}
+                                
+                                >
+                                {({setFieldValue, values}) => 
+                                    <Form>
+                                        <FastField
+                                                label="Tên bài học:"
+                                                bsSize="lg"
+                                                type="text"
+                                                name="lessonName"
+                                                component={ReactstrapInput}
+                                              />
+                                        <FastField
+                                                label="Ngày học"
+                                                bsSize="lg"
+                                                type="date"
+                                                name="date"
+                                                component={ReactstrapInput}
+                                              />
+                                        <Label style={{marginBottom: "4px"}}>Chọn chương học</Label>
+                                        <Autocomplete
+                                          id="multiple-limit-tags1"
+                                          name="chapterId"
+                                          onChange={(e, value) => {
+                                            setFieldValue("chapterId", value.id)
+                                          }}
+                                          options={suggestChapters}
+                                          getOptionSelected={(option,value) => option.id === value.id}
+                                          getOptionLabel={(option) => option.chapterName}
+                                          renderInput={(params) => (
+                                            <TextField {...params} name="chapterId" variant="outlined" label="Chọn chương học" />
+                                          )}
+                                        />
+                                        <Button color="primary" type="submit">Thêm</Button>
+                                    </Form>
+                                  }
+                              </Formik>
+                              
+                          </ModalBody>
+                          <ModalFooter>
+                              <Button color="primary" onClick={() => setModalCreateLesson(false)}>Hủy</Button>
+                          </ModalFooter>
+                    </Modal> 
+
                 </CardHeader>
                   
                   <CardBody>
@@ -228,7 +350,10 @@ const Attendance = (props) =>{
                       </Col>
                     </Row>
                     <CardBody >
-                          <MDBDataTable hover scrollY scrollX entries={150} displayEntries={false} data={data}/>
+                          <MDBDataTable hover 
+                          scrollY 
+                          responsive
+                          entries={150} displayEntries={false} data={data}/>
                     </CardBody>
                   </CardBody>
                   <CardBody>
@@ -248,7 +373,10 @@ const Attendance = (props) =>{
                       </Col>
                     </Row>
                     <CardBody>
-                          <MDBDataTable  hover scrollY scrollX entries={150} displayEntries={false} data={data3} />
+                          <MDBDataTable  hover 
+                          scrollY 
+                          responsive
+                          entries={150} displayEntries={false} data={data3} />
                     </CardBody>
                   </CardBody>
                   <CardBody>
@@ -268,53 +396,80 @@ const Attendance = (props) =>{
                       </Col>
                     </Row>
                     <CardBody>
-                          <MDBDataTable  hover scrollY scrollX entries={150} displayEntries={false} data={data1} />
+                          <MDBDataTable  hover 
+                          scrollY 
+                          responsive
+                          entries={150} displayEntries={false} data={data1} />
                           <Button color="primary" onClick={submitAbsentStudents}>Xác Nhận</Button>
                     </CardBody>
                   </CardBody>
                 </Card>
             </Col>
+
             </Row>
             <Row>
-                  <Col>
-                            <h1>Học Sinh Thiếu BTVN</h1>
-                            <Formik
-                                    initialValues={
-                                      {
-                                          listUnSubmittedHomeWork:[]
+                {(Object.keys(currentLesson).length !== 0) ? 
+                <Button onClick={() => setModalSubmitStudentHomeWork(true)} color="primary">Học sinh không làm btvn</Button> : null}
+                <Modal isOpen={modalSubmitStudentHomeWork} toggle={setModalSubmitStudentHomeWork}>
+                        <ModalBody>
+                                <h1>Học sinh thiếu btvn</h1>
+                                <Formik
+                                        initialValues={
+                                          {
+                                              listUnSubmittedHomeWork:[]
+                                          }
+                                        }
+                                        onSubmit={async (values) => {
+                                            const mapId = {};
+                                            values.listUnSubmittedHomeWork.map(student => mapId[student.id]= student.id);
+                                            var listId = [];
+                                            listStudentMustHaveHomeWork.map(st => (mapId[st.id] === undefined) ? listId.push(st.id) :
+                                            null)
+                                            console.log(mapId);
+                                            console.log(listId);
+                                            const res = await HomeWorkApi.submitHomework(clazz.classId,listId);
+                                            if (res === "submit successful!"){
+                                              alert("Lưu học sinh không làm btvn thành công!");
+                                              setModalSubmitStudentHomeWork(false);
+                                            }
+                                        }}
+                                    
+                                    >
+                                    {({setFieldValue, values}) => 
+                                        <Form>
+                                            <ul>
+                                              Học sinh thiếu btvn:
+                                              {listStudentNotSubmittedHomeWork.map((st,i) => 
+                                                  <li key={i}>{st.fullName} - {st.id}</li>
+                                              )}
+                                            </ul>
+                                            <Autocomplete
+                                                multiple
+                                                limitTags={2}
+                                                label="Học Sinh Thiếu BTVN"
+                                                id="multiple-limit-tags"
+                                                value={values.listUnSubmittedHomeWork}
+                                                name="listUnSubmittedHomeWork"
+                                                onChange={(e, value) => {
+                                                  setFieldValue("listUnSubmittedHomeWork", value)
+                                                }}
+                                                getOptionSelected={(option, value) => option.id === value.id}
+                                                options={listStudentMustHaveHomeWork}
+                                                getOptionLabel={(option) => option.fullName + " - " + option.id }
+                                                renderInput={(params) => (
+                                                  <TextField {...params} name="listUnSubmittedHomeWork" variant="outlined" label="Học Sinh Thiếu BTVN"  />
+                                                )}
+                                              />
+                                            <Button color="primary" type="submit">Thêm</Button>
+                                            <Button color="primary" onClick={() => setModalSubmitStudentHomeWork(false)}>Hủy</Button>
+                                        </Form>
                                       }
-                                    }
-                                    onSubmit={async (values) => {
-                                        alert(values)
-                                      
-                                    }}
-                                
-                                >
-                                {({setFieldValue, values}) => 
-                                    <Form>
-                                        <Autocomplete
-                                            multiple
-                                            limitTags={2}
-                                            label="Học Sinh Thiếu BTVN"
-                                            id="multiple-limit-tags"
-                                            value={values.listUnSubmittedHomeWork}
-                                            name="listUnSubmittedHomeWork"
-                                            onChange={(e, value) => {
-                                              setFieldValue("listUnSubmittedHomeWork", value)
-                                            }}
-                                            getOptionSelected={(option, value) => option.id === value.id}
-                                            options={listStudentMustHaveHomeWork}
-                                            getOptionLabel={(option) => option.fullName + " - " + option.school + " - " + option.studentNumber}
-                                            renderInput={(params) => (
-                                              <TextField {...params} name="listUnSubmittedHomeWork" variant="outlined" label="Học Sinh Thiếu BTVN"  />
-                                            )}
-                                          />
-                                        <Button color="primary" type="submit">Thêm</Button>
-                                    </Form>
-                                  }
-                              </Formik>
-                  </Col>
+                                  </Formik>
+                        </ModalBody>
+                </Modal>
             </Row>
+
+            
         </Container>
     );
 }

@@ -180,7 +180,10 @@ const MarkList = (props) => {
         </CardTitle>
       </CardHeader>
       <CardBody>
-            <MDBDataTableV5 hover responsive entriesOptions={[5,10, 20, 50,100]} entries={4} pagesAmount={4} data={datatable} />
+            <MDBDataTableV5 hover 
+            responsive 
+            searchTop searchBottom={false}
+            entriesOptions={[5,10, 20, 50,100]} entries={4} pagesAmount={4} data={datatable} />
         </CardBody>
     </Card>
     );
