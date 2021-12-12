@@ -33,7 +33,7 @@ import Blank from "../pages/misc/Blank";
 import Atten from "../pages/misc/Atten";
 // Pages
 import Profile from "../pages/pages/Profile";
-import Settings from "../pages/pages/Settings";
+// import Settings from "../pages/pages/Settings";
 import Clients from "../pages/pages/Clients";
 // import Projects from "../pages/pages/Projects";
 // import Invoice from "../pages/pages/Invoice";
@@ -54,6 +54,8 @@ import HomeWork from "../pages/pages/HomeWork";
 import StudentCourse from "../pages/pages/StudentCourse";
 import CourseView from "../pages/pages/CourseView";
 import ClientProfile from "../pages/pages/ClientProfile";
+import Teachers from "../pages/pages/Teachers";
+import Mentors from "../pages/pages/Mentors";
 // Dashboards
 
 
@@ -112,26 +114,11 @@ const studentRoutes = {
   
 }
 const MentorRoutes = {
-  path: "/mentors",
-  name: "Trợ Giảng",
+  path: "/attendance",
+  name: "Điểm danh",
   icon: LayoutIcon,
-  children: [
-    {
-      path: "/mentors/profile",
-      name: "Thông Tin Cá Nhân",
-      component: Profile
-    },
-    {
-      path: "/mentors/settings",
-      name: "Cài Đặt",
-      component: Settings
-    },
-    {
-      path: "/mentors/listClass",
-      name: "Điểm Danh",
-      component: ListClass
-    },
-  ]
+  component: withAuth(ListClass,["ADMIN","MENTOR","TEACHER","MANAGER"])
+ 
 };
 const ManagerRoutes = {
   path: "/manager",
@@ -141,27 +128,27 @@ const ManagerRoutes = {
     {
       path: "/managers/students/absent",
       name: "Học Sinh Nghỉ Học",
-      component: AbsentStudent
+      component: withAuth(AbsentStudent,["ADMIN","MENTOR","TEACHER","MANAGER"]) 
     },
     {
       path: "/managers/students/homework",
       name: "Học Sinh & BTVN",
-      component: StudentHomeWork
+      component: withAuth(StudentHomeWork,["ADMIN","MENTOR","TEACHER","MANAGER"])
     },
     {
       path: "/managers/students/scores",
       name: "Điểm TB",
-      component: StudentScorce
+      component: withAuth(StudentScorce,["ADMIN","MENTOR","TEACHER","MANAGER"])
     },
     {
       path: "/managers/students/exams",
       name: "Điểm Kiểm Tra",
-      component: StudentExamResult
+      component: withAuth(StudentExamResult,["ADMIN","MENTOR","TEACHER","MANAGER"])
     },
     {
       path: "/managers/students/cost",
       name: "Học Phí",
-      component: StudentCostInfo
+      component: withAuth(StudentCostInfo,["ADMIN","MANAGER"])
     },
   ]
 };
@@ -193,7 +180,7 @@ const authRoutes = {
       component: SignUp
     },
     {
-      path: "/atten/info/:id",
+      path: "/attend/info/:id",
       name: "Blank Page",
       component:withAuth(Atten,["MENTOR","ADMIN","TEACHER","MANAGER"]),
     },
@@ -216,21 +203,40 @@ const classRoutes = {
     {
       path: "/class/",
       name: "Danh Sách Lớp Học",
-      component: Classroom
+      component: withAuth(Classroom,["ADMIN","MENTOR","TEACHER","MANAGER"])
     },
     {
       path: "/create/",
       name: "Tạo Lớp Học",
-      component: CreateClass
+      component: withAuth(CreateClass,["ADMIN","MANAGER"])
     },
     {
       path: "/create/results",
       name: "Nhập Điểm",
-      component: CreateResult
+      component: withAuth(CreateResult,["ADMIN","MENTOR","TEACHER","MANAGER"])
     },
   ]
  
 }
+
+const adminRouters ={
+  path: "/admin",
+  name: "Quản trị viên",
+  icon: UsersIcon,
+  children: [
+    {
+      path: "/admin/teachers/",
+      name: "Giáo viên",
+      component: withAuth(Teachers,["ADMIN","MANAGER"])
+    },
+    {
+      path: "/admin/mentors/",
+      name: "Trợ giảng",
+      component: withAuth(Mentors,["ADMIN","MANAGER"])
+    },
+  ]
+}
+
 const layoutRoutes = {
   path: "/layouts",
   name: "Layouts",
@@ -329,7 +335,8 @@ export const dashboard = [
   layoutRoutes,
   studentRoutes,
   privateRoutes,
-  classRoutes
+  classRoutes,
+  adminRouters
 ];
 
 // Landing specific routes
@@ -344,5 +351,6 @@ export default [
   MentorRoutes,
   ManagerRoutes,
   studentRoutes,
-  classRoutes
+  classRoutes,
+  adminRouters
 ];

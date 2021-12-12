@@ -1,19 +1,30 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 
 import {
   Card,
   CardBody,
   Col,
   Row,
-  Button
+  
 } from "reactstrap";
 import {
   Book as BookIcon,
   Key as KeyIcon,
   Calendar as CalendarIcon
 } from "react-feather";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { selectFullName, selectRole, selectId } from "../../redux/selectors/userLoginInfoSelector";
+import ClientApi from "../../api/ClientApi";
 const NewHomeWork = (props) => {
 
+  const newHomeWork = (props.newHomeWork !== [] ) ? props.newHomeWork : [{
+    name:"",
+    link:"",
+    misson:"",
+    date:""
+  }];
+  console.log(newHomeWork);
 
   return(
     <>
@@ -24,34 +35,35 @@ const NewHomeWork = (props) => {
             </p>
         </div>
         <Row>
-            <Col lg="3">
-              <div>
-                <Card>
-                    <CardBody>
-                          <div style={{padding:"15px",borderRadius:"10px"}}>
-                            <img alt="BTVN" style={{width:"100%"}} src={require("../../assets/img/brands/logo.png")}/>
+            { (newHomeWork.length !== 0) ? newHomeWork.map((homework,i) => 
+              (homework !== undefined) ?
+              <Col key={i} lg="3">
+                <div>
+                  <Card>
+                      <CardBody>
+                            <div style={{padding:"15px",borderRadius:"10px"}}>
+                              <img alt="BTVN" style={{width:"100%"}} src={require("../../assets/img/brands/logo.png")}/>
+                            </div>
+                            <a  href={homework.link}>
+                              <h6 style={{fontWeight:"bold"}}>{homework.name}</h6>
+                              <h6 style={{fontWeight:"bold"}}>{homework.misson}</h6>
+                            </a>
+                          <div className="d-flex justify-content-between flex-wrap" >
+                                <div>
+                                    <CalendarIcon></CalendarIcon> {homework.date}
+                                </div>
+                                <div>
+                                  <BookIcon></BookIcon> <a href={homework.link}>Đề bài</a>
+                                </div>
                           </div>
-                          <a  href="google.com">
-                          <h6 style={{fontWeight:"bold"}}>Hàm Số Bậc 3</h6>
-                      </a>
-                        <div className="d-flex justify-content-between flex-wrap" >
-                               <div>
-                                  <CalendarIcon></CalendarIcon> 31-08-2021
-                              </div>
-                              <div>
-                                 <BookIcon></BookIcon> Đề Bài
-                              </div>
-                        </div>
-                    </CardBody>
-              
-                </Card>
-              </div>
-            </Col>
-            
+                      </CardBody>
+                
+                  </Card>
+                </div>
+              </Col> : null
+            ) : null}
         </Row>
-        <Row>
-          <Button style={{marginLeft:"auto"}} color="primary">Xem thêm</Button>
-        </Row>
+        
     </>
   )
 }
@@ -59,6 +71,12 @@ const NewHomeWork = (props) => {
 
 const SubmittedHomeWork = (props) => {
 
+  const submitedHomeWorks = (props.submitedHomeWorks !== [] ) ? props.submitedHomeWorks : [{
+    name:"",
+    link:"",
+    misson:"",
+    date:""
+  }];;
 
   return(
     <>
@@ -69,42 +87,48 @@ const SubmittedHomeWork = (props) => {
             </p>
         </div>
         <Row>
-            <Col lg="3">
+            { (submitedHomeWorks.length !== 0) ? submitedHomeWorks.map((homework,i) => 
+            <Col key={i} lg="3">
               <div>
                 <Card>
                     <CardBody>
                           <div style={{padding:"15px",borderRadius:"10px"}}>
                             <img alt="BTVN" style={{width:"100%"}} src={require("../../assets/img/brands/logo.png")}></img>
                           </div>
-                          <a  href="google.com">
-                          <h6 style={{fontWeight:"bold"}}>Hàm Số Bậc 3</h6>
+                          <a  href={homework.link}>
+                            <h6 style={{fontWeight:"bold"}}>{homework.name}</h6>
                           </a>
                         <div className="d-flex justify-content-between flex-wrap" >
                               <div>
-                                 <BookIcon></BookIcon> Đề Bài
+                                 <BookIcon></BookIcon> <a href={homework.link}>Đề bài</a>
                               </div>
+                              {(homework.keyLink !== undefined) ?
                               <div>
-                                  <KeyIcon></KeyIcon> Đáp Án
-                              </div>
+                                  <KeyIcon></KeyIcon> <a href={homework.keyLink}>Đáp án</a>
+                              </div> : null }
                         </div>
                     </CardBody>
               
                 </Card>
               </div>
             </Col>
-            
+            ) : null}
             
         </Row>
-        <Row>
-          <Button style={{marginLeft:"auto"}} color="primary">Xem thêm</Button>
-        </Row>
+        
     </>
   )
 }
 
 const UnSubmittedHomeWork = (props) => {
 
-
+  
+  const unSubmitHomeWorks = (props.unSubmitHomeWorks !== [] ) ? props.unSubmitHomeWorks : [{
+    name:"",
+    link:"",
+    misson:"",
+    date:""
+  }];
   return(
     <>
         <div className="d-flex justify-content-between flex-wrap">
@@ -114,22 +138,25 @@ const UnSubmittedHomeWork = (props) => {
             </p>
         </div>
         <Row>
-            <Col lg="3">
+            {(unSubmitHomeWorks.length !== 0) ? unSubmitHomeWorks.map((homework,i) => 
+            
+            <Col key={i} lg="3">
               <div>
                 <Card>
                     <CardBody>
                           <div style={{padding:"15px",borderRadius:"10px"}}>
                             <img alt="BTVN" style={{width:"100%"}} src={require("../../assets/img/brands/logo.png")}></img>
                           </div>
-                          <a  href="google.com">
-                          <h6 style={{fontWeight:"bold"}}>Hàm Số Bậc 3</h6>
-                      </a>
+                          <a  href={homework.link}>
+                              <h6 style={{fontWeight:"bold"}}>{homework.name}</h6>
+                              <h6 style={{fontWeight:"bold"}}>{homework.misson}</h6>
+                          </a>
                         <div className="d-flex justify-content-between flex-wrap" >
                               <div>
-                                  <CalendarIcon></CalendarIcon> 31-08-2021
+                                  <CalendarIcon></CalendarIcon> {homework.date}
                               </div>
                               <div>
-                                 <BookIcon></BookIcon> Đề Bài
+                                 <BookIcon></BookIcon> <a href={homework.link}>Đề bài</a>
                               </div>
                         </div>
                     </CardBody>
@@ -137,27 +164,48 @@ const UnSubmittedHomeWork = (props) => {
                 </Card>
               </div>
             </Col>
-           
+            ) : null}
             
         </Row>
-        <Row>
-          <Button style={{marginLeft:"auto"}} color="primary">Xem thêm</Button>
-        </Row>
+       
     </>
   )
 }
 
 const HomeWork = (props) =>{ 
 
+  const studentId = props.id;
+
+  const [homeworks,setHomeWorks] = useState([]);
   
-  
+
+  useEffect(() => {
+    const getAllHomeWork = async () =>{
+        const res = await ClientApi.getAllHomeWorkOfStudent(studentId);
+        setHomeWorks(res);
+    }
+    getAllHomeWork();
+  }, [studentId]);
+
+  var unSubmitHomeWorks = [];
+  var submitedHomeWorks = []
+  homeworks.map(homework => (homework.status === "A") ? unSubmitHomeWorks.push(homework) : submitedHomeWorks.push(homework) )
+  var newHomeWork = [];
+  for(var i = 0 ; i < 2 ; i ++){
+    newHomeWork.push(unSubmitHomeWorks[i]);
+  }
+  console.log(unSubmitHomeWorks);
+  console.log(submitedHomeWorks);
+  console.log(newHomeWork);
+  console.log(homeworks);
+
   return(
   <> 
-      <NewHomeWork></NewHomeWork>
+      <NewHomeWork newHomeWork={newHomeWork} setHomeWorks={setHomeWorks}></NewHomeWork>
       <br/>
-      <UnSubmittedHomeWork></UnSubmittedHomeWork>
+      <UnSubmittedHomeWork unSubmitHomeWorks={unSubmitHomeWorks} setHomeWorks={setHomeWorks}></UnSubmittedHomeWork>
       <br/>
-      <SubmittedHomeWork></SubmittedHomeWork>
+      <SubmittedHomeWork submitedHomeWorks={submitedHomeWorks} setHomeWorks={setHomeWorks}></SubmittedHomeWork>
      
   </>
     );
@@ -166,4 +214,12 @@ const HomeWork = (props) =>{
  
 
 // export default connect(mapGlobalStateToProps, { getAllStudentAction })(Clients);
-export default HomeWork;
+
+const mapGlobalStateToProps = state => {
+  return {
+    fullName: selectFullName(state),
+    role: selectRole(state),
+    id:selectId(state)
+  };
+};
+export default withRouter(connect(mapGlobalStateToProps)(HomeWork));

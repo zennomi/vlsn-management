@@ -7,11 +7,9 @@ import {
   CardTitle,
   Col,
   Container,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
+ 
   Row,
-  UncontrolledDropdown,
+
   Button,
   Input,
   Label,
@@ -19,12 +17,18 @@ import {
 } from "reactstrap";
 import { Formik,FastField, Form  } from 'formik';
 import { MDBDataTableV5 } from 'mdbreact';
-import { MoreHorizontal } from "react-feather";
 import { Autocomplete } from '@material-ui/lab'
 import TextField from '@material-ui/core/TextField';
 import { ReactstrapInput } from "reactstrap-formik";
 import StudentApi from "../../api/StudentApi";
 import ClassroomApi from "../../api/ClassroomApi";
+import UserApi from "../../api/UserApi";
+import FacebookIcon from '@material-ui/icons/Facebook';
+import View from "@material-ui/icons/Visibility"
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/Delete";
+import * as Yup from 'yup';
+
 
 const removeAccents = (str) => {
   return str.normalize('NFD')
@@ -75,7 +79,11 @@ const ClientsList = (props) =>{
 
       },
       {
-        label: 'Action',
+        label: 'Facebook',
+        field: 'facebookLink',
+      },
+      {
+        label: '',
         field: 'action',
      
       },
@@ -89,13 +97,12 @@ const ClientsList = (props) =>{
 
   const [modalUpdate, setModalUpdate] = useState(false);
   const [student, setStudent] = useState({});
-  
+  const grade = props.grade;
+  const setGrade = props.setGrade;
   const listStudent = props.listStudent;
   const setListStudent = props.setListStudent;
-
-  useEffect(() => {
-    console.log("rerender");
-  });
+  
+  
 
   const toggleUpdate = async (rowData) => {
     
@@ -111,58 +118,84 @@ const ClientsList = (props) =>{
       pathname: '/student/info',
       state: { studentId: id }
     })
-  }
- ;
+  };
   
-  datatable.rows = listStudent;
-  datatable.rows.map((row,i) => {
-    row.action = <div style={{display:"flex"}}>
-                <button  onClick={() => redriectToProfile(row.id)}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                  </svg>
+  const toggleDelete = async (student) => {
+    var requested = window.confirm("Bạn có chắc chắn muốn xóa học sinh " + student.fullName);
+  
+    if ( requested) {
+        const res = await StudentApi.deleteStudent(student.id);
+        if (res === "delete successful!"){
+            const newStudentList = await StudentApi.getAllStudentInGrade(grade);
+            setListStudent(newStudentList);
+            alert("Xóa học sinh thành công!");
+        }
+    }
+  };
+  
+  listStudent.map(st => datatable.rows.push(
+    {
+      id:st.id,
+      fullName:st.fullName,
+      school:st.school,
+      grade:st.grade,
+      studentNumber:st.studentNumber,
+      parentNumber: st.parentNumber,
+      parentName:st.parentName,
+      facebookLink: (st.facebookLink !== null) ?
+      <a alt={st.facebookLink} href={st.facebookLink} style={{color:"blue",fontWeight:"bolder"}}>
+        Xem Facebook <FacebookIcon color="primary"/> 
+     </a> : "Chưa có",
+     action: <div style={{display:"flex"}}>
+                <button style={{background:"none",border:"none"}}  onClick={() => redriectToProfile(st.id)}>
+                  <View color ="primary" />
                 </button>
-                <button onClick={() => toggleUpdate(row)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"  viewBox="0 0 16 16">
-                      <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                    </svg>
+                <button style={{background:"none",border:"none"}} onClick={() => toggleUpdate(st)}>
+                    <Edit color="action"/>
                 </button>
-                <button onClick={() => redriectToProfile(i)}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"  viewBox="0 0 16 16">
-                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                  </svg>
+                <button style={{background:"none",border:"none"}} onClick={() => toggleDelete(st)}>
+                    <Delete color="secondary"/>
                 </button>
-                </div>
-      return null;
-  })
+            </div>
+    }
+  ))
+  
  
   
   return(
   <> 
     <Card>
       <CardHeader>
-        <div className="card-actions float-right">
-          <UncontrolledDropdown >
-            <DropdownToggle tag="a">
-              <MoreHorizontal />
-            </DropdownToggle>
-            <DropdownMenu right >
-              <DropdownItem>Action</DropdownItem>
-              <DropdownItem>Another Action</DropdownItem>
-              <DropdownItem>Something else here</DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        </div>
-        <CardTitle tag="h5" className="mb-0">
-          Học sinh
-        </CardTitle>
+                  <Row >
+                  <Col xs="auto">
+                    <Input 
+                              id ="grade"
+                              type="select"
+                              name="grade"
+                              value={grade}
+                              onChange={ (e) =>{
+                                setGrade(e.target.value);
+                              }}
+                            >
+                              <option value = "12">Khối 12</option>
+                              <option value = "11">Khối 11</option>
+                              <option value = "10">Khối 10</option>
+                              <option value = "9">Khối 9</option>
+                              <option value = "8">Khối 8</option>
+                              <option value = "7">Khối 7</option>
+                              <option value = "6">Khối 6</option>
+                      </Input>
+                    </Col>
+                  </Row>
       </CardHeader>
       <CardBody>
           <MDBDataTableV5 
           hover 
           responsive
-          entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
+          searchTop
+          searchBottom={false}
+          barReverse
+          entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
       </CardBody>
     </Card>
     <Modal isOpen={modalUpdate} toggle={toggleUpdate}>
@@ -181,6 +214,7 @@ const ClientsList = (props) =>{
                   studentPhone:student.studentNumber,
                   parentPhone:student.parentNumber,
                   parentName:student.parentName || "Chưa có tên PH",
+                  facebookLink:student.facebookLink,
                   listClass:student.listClass
                 }
               }
@@ -194,7 +228,8 @@ const ClientsList = (props) =>{
                   values.grade,
                   values.studentPhone,
                   values.parentPhone,
-                  values.parentName
+                  values.parentName,
+                  values.facebookLink
                 )
                 const listUpdateClass = [];
                 var notChange = true;
@@ -361,9 +396,21 @@ const ClientsList = (props) =>{
                       </Col>
                 </Row>
                 <Row>
+                      <Col>
+                          <FastField
+                            label="Link Facebook"
+                            bsSize="lg"
+                            type="text"
+                            name="facebookLink"
+                            placeholder=""
+                            component={ReactstrapInput}
+                          />
+                      </Col>
+                </Row>
+                <Row>
                     <Col>
-                      <Button  type="submit" >Cập nhật</Button>
-                      <Button onClick={() => setModalUpdate(!modalUpdate)} >Hủy</Button>
+                      <Button color="primary" type="submit" >Cập nhật</Button>
+                      <Button color="primary" onClick={() => setModalUpdate(!modalUpdate)} >Hủy</Button>
                     </Col>
                 </Row>
               </Form>
@@ -385,19 +432,17 @@ const Single = (props) => {
   
   const setModalUpdate = () => props.handler
   const setListStudent = props.setListStudent;
-
+  const grade = props.grade;
   useEffect(() => {
     const getSuggestClass = async () =>{
       const result = await ClassroomApi.getListClassroomInGrade(12);
       setSuggest(result);
     }
     getSuggestClass();
-    console.log("render");
+   
   }, []);
 
-  useEffect(() => {
-    console.log("rerender");
-  });
+  
   
 
   return(
@@ -418,9 +463,43 @@ const Single = (props) => {
                   studentPhone:'',
                   parentPhone:'',
                   parentName:'',
+                  facebookLink:'',
                   listClass:[]
                 }
               }
+
+              validationSchema={
+                Yup.object({
+                  lastName: Yup.string()
+                    .required('bắt buộc'),
+  
+                  firstName: Yup.string()
+                    .required('bắt buộc'),
+  
+                  school: Yup.string()
+                    .required('bắt buộc'),
+  
+                  studentPhone: Yup.string()
+                    .required('bắt buộc')
+                    .min(10, 'SĐT phải có 10 chữ số')
+                    .max(10, 'SĐT phải có 10 chữ số')
+                    .matches(/^[0-9]+$/, "SĐT không chứa kí tự khác")
+                    .required('bắt buộc')
+                    .test('checkUniqueUsername', 'Tài khoản đã được đăng ký.', async username => {
+                      // call api
+                      const isExists = await UserApi.existsByUsername(username);
+                      return !isExists;
+                    }),
+
+                  parentPhone: Yup.string()
+                    .min(10, 'SĐT phải có 10 chữ số')
+                    .max(10, 'SĐT phải có 10 chữ số')
+                    .matches(/^[0-9]+$/, "SĐT không chứa kí tự khác"),
+                  
+                })
+              }
+
+
               onSubmit={async (values) => {
                 console.log(values);
                 
@@ -433,7 +512,7 @@ const Single = (props) => {
                 const password = resLast+resFirst;
                 console.log(password);
 
-                const result = await StudentApi.createStudent(
+                const newStudentId = await StudentApi.createStudent(
                   values.studentPhone, // username là sđt của học sinh
                   password,
                   values.firstName,
@@ -442,35 +521,39 @@ const Single = (props) => {
                   values.grade,
                   values.studentPhone,
                   values.parentPhone,
-                  values.parentName
+                  values.parentName,
+                  values.facebookLink
                 )
                 const listClassStudent = [];
                 
           
-                if(result === "create successful!" && values.listClass.length !== 0){
+                if(newStudentId !== 0 && values.listClass.length !== 0){
 
-                    const student = await StudentApi.getStudentByPhoneNumber(values.studentPhone);
                       values.listClass.map(clazz => 
                         listClassStudent.push({
                             classId: clazz.id,
-                            studentId: student.id
+                            studentId: newStudentId
                         })
                       )
-                    const res = await StudentApi.createStudentClass(student.id,listClassStudent);
+                    const res = await StudentApi.createStudentClass(newStudentId,listClassStudent);
                     if(res === "create successful!"){
-                        const result = await StudentApi.getAllStudent();
+                        const result = await StudentApi.getAllStudentInGrade(grade);
                         setListStudent(result);
                         setModalUpdate();
-                        alert("thêm học sinh thành công!");
+                        alert("thêm học sinh thành công! ID: "+newStudentId + "\r\n"+ 
+                        "tài khoản: "+ values.studentPhone + "\r\n"
+                         + "mật khẩu:" + password);
                     }
                     else{
-                      alert("thêm lớp học thất bại");
+                      alert("thêm thất bại");
                     }
-                }else if (result === "create successful!" && values.listClass.length === 0){
-                      const result = await StudentApi.getAllStudent();
+                }else if (newStudentId !== 0 && values.listClass.length === 0){
+                      const result = await StudentApi.getAllStudentInGrade(grade);
                       setListStudent(result);
                       setModalUpdate();
-                      alert("thêm học sinh thành công!");
+                      alert("thêm học sinh thành công! ID: "+newStudentId + "\r\n"+ 
+                        "tài khoản: "+ values.studentPhone + "\r\n"
+                         + "mật khẩu:" + password);
                 }
                 else{
                     alert("thêm học sinh thất bại! Xem lại thông tin học sinh");
@@ -605,9 +688,21 @@ const Single = (props) => {
                       </Col>
                 </Row>
                 <Row>
+                      <Col>
+                          <FastField
+                            label="Link Facebook"
+                            bsSize="lg"
+                            type="text"
+                            name="facebookLink"
+                            placeholder="Vd:https://www.facebook.com/nguyen.ducthang.52056/"
+                            component={ReactstrapInput}
+                          />
+                      </Col>
+                </Row>
+                <Row>
                     <Col>
-                      <Button  type="submit" >Thêm</Button>
-                      <Button onClick={props.handler} >Hủy</Button>
+                      <Button color="primary"  type="submit" >Thêm</Button>
+                      <Button color="primary" onClick={props.handler} >Hủy</Button>
                     </Col>
                 </Row>
               </Form>
@@ -622,21 +717,18 @@ const Single = (props) => {
 const Clients = (props) => {
 
   const [modal, setModal] = useState(false);
-
+  const [grade,setGrade] = useState(12);
   const [listStudent, setListStudent] = useState([]);
   
   useEffect(() => {
     const getAllStudentList = async () =>{
-      const result = await StudentApi.getAllStudent();
+      const result = await StudentApi.getAllStudentInGrade(grade);
       setListStudent(result);
     }
     getAllStudentList();
-    console.log("render");
-  }, []);
+  }, [grade]);
   
-  useEffect(() => {
-    console.log("rerender Clients!");
-  });
+  
   const toggle = () => setModal(!modal);
  
   return(
@@ -644,19 +736,22 @@ const Clients = (props) => {
   <Container fluid className="p-0">
     <Row>
         <Col style={{display:"flex"}}>
-            <h1 className="h3 mb-3">Học Sinh</h1>
-            <Button style={{marginLeft:"auto",borderRadius:"15px"}} variant="primary" onClick={toggle}>
+            <h1 className="h3 mb-3">Học Sinh Khối {grade}</h1>
+            <Button style={{marginLeft:"auto"}} color="primary" onClick={toggle}>
                 Thêm học sinh mới
             </Button>
         </Col>
     </Row>
     <Row>
       <Col>
-        <ClientsList {...props} listStudent={listStudent} setListStudent={setListStudent}/>
+        <ClientsList 
+          grade ={grade}
+          setGrade={setGrade}
+         {...props} listStudent={listStudent} setListStudent={setListStudent}/>
         
       </Col>
       <Modal isOpen={modal} toggle={toggle}>
-            <Single handler = {toggle} listStudent={listStudent} setListStudent={setListStudent} />
+            <Single grade={grade} handler = {toggle} listStudent={listStudent} setListStudent={setListStudent} />
       </Modal>
     </Row>
   </Container>

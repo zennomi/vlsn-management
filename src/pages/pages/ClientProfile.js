@@ -4,51 +4,39 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { selectFullName, selectRole, selectId } from "../../redux/selectors/userLoginInfoSelector";
 import {
-  // Badge,
-  Button,
+  Badge,
+  // Button,
   Card,
   CardBody,
   CardHeader,
   CardTitle,
   Col,
   Container,
-  
+  Media,
   Row,
 
 } from "reactstrap";
 import { MDBDataTableV5 } from 'mdbreact';
 import ClientApi from "../../api/ClientApi";
-// import {
-//   Briefcase,
-//   Home,
-//   MapPin,
-//   MessageSquare,
-//   MoreHorizontal
-// } from "react-feather";
 
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-// import { faHeart } from "@fortawesome/free-regular-svg-icons";
-// import {
-//   faFacebook,
-//   faInstagram,
-//   faLinkedin,
-//   faTwitter
-// } from "@fortawesome/free-brands-svg-icons";
 
-// import avatar1 from "../../assets/img/avatars/avatar.jpg";
-// import avatar2 from "../../assets/img/avatars/avatar-2.jpg";
+
+
+
+import avatar1 from "../../assets/img/avatars/avatar.jpg";
 import avatar4 from "../../assets/img/avatars/avatar-4.jpg";
-// import avatar5 from "../../assets/img/avatars/avatar-5.jpg";
 
-// import unsplash1 from "../../assets/img/photos/unsplash-1.jpg";
-// import unsplash2 from "../../assets/img/photos/unsplash-2.jpg";
+
 import {
   Clock as ClockIcon,
-  Camera as CameraIcon
-} from "react-feather";
+  // Camera as CameraIcon
 
-import  QRCode  from "qrcode.react";
+} from "react-feather";
+import StarIcon from "@material-ui/icons/Star";
+// import  QRCode  from "qrcode.react";
+const removeLastThreeChar = (str) => {
+  return str.slice(0,-3)
+}
 
 const StudentProfileDetails = (props) =>{ 
 
@@ -96,23 +84,23 @@ const StudentProfileDetails = (props) =>{
         height="128"
       />
       <CardTitle  className="mb-0">
-            <h4>{student.fullName} - {student.grade}</h4>
-            <h6>{student.school}</h6>
+            <h4>{student.fullName} - Lớp {student.grade}</h4>
+            <h5>Số sao: {student.score} <StarIcon style={{color:"yellow",marginBottom:"4px"}}/></h5>
       </CardTitle>
      
 
-      <div>
+      {/* <div>
         <Button size="sm" color="primary" className="mr-1">
             <CameraIcon></CameraIcon>
         </Button>
-      </div>
+      </div> */}
       
-      <div>
+      {/* <div>
           <div>
               <a href="https://www.google.com/">LINK ĐIỂM DANH</a>
           </div>
           <QRCode value="https://www.google.com/" />
-      </div>
+      </div> */}
       
     </CardBody>
 
@@ -127,7 +115,7 @@ const StudentProfileDetails = (props) =>{
             </div>
             <div>
                 <ClockIcon></ClockIcon> 
-                {(clazz.schedule === "1") ? "CN" : "T"+clazz.schedule }  {clazz.startTime}-{clazz.endTime}
+                {(clazz.schedule === "1") ? "CN" : "T"+clazz.schedule } - {removeLastThreeChar(clazz.startTime)} - {removeLastThreeChar(clazz.endTime)}
             </div>
         </div>
         
@@ -289,6 +277,164 @@ const Activities = (props) => {
   </Card>
   );
 }
+const Comment = (props) => {
+
+  const studentId = props.studentId;
+
+  const [comments,setComments] = useState([]);
+  
+
+  useEffect(() => {
+    const getAllComent = async () =>{
+        const res = await ClientApi.getTopTenStudentComment(studentId);
+        setComments(res);
+      
+    }
+    getAllComent();
+    
+  }, [studentId]);
+
+  return(
+    <Card>
+    <CardHeader>
+      <CardTitle tag="h5" className="mb-0">
+        Nhận xét từ trợ giảng và giáo viên:
+      </CardTitle>
+    </CardHeader>
+    <CardBody>
+      
+      { (comments.length !== 0) ? comments.map((comment,i) => 
+      <>
+      <Media key={i}>
+        <img
+          src={avatar1}
+          width="36"
+          height="36"
+          className="rounded-circle mr-2"
+          alt="Chris Wood"
+        />
+        <Media body>
+          <strong>{comment.role} - {comment.fullName}</strong> đã đăng lời nhận xét{" "}
+          <br />
+          <small className="text-muted">{comment.commentDate}</small>
+          <h5 className="border text-muted p-2 mt-1">
+            {comment.comment}
+          </h5>
+        </Media>
+      </Media>
+
+      <hr />
+      </>
+      ): <h5>Không có lời nhận xét nào</h5>}
+
+    </CardBody>
+  </Card>
+  )
+}
+
+
+const DailyStatus = (props) => {
+
+  const studentId = props.studentId;
+
+  const [listDailyInfo, setListDailyInfo] = useState([]);
+
+
+  useEffect(() => {
+    const getAllStudentDailyInfo = async () =>{
+        const res = await ClientApi.getAllStudentDailyStatus(studentId);
+        setListDailyInfo(res);
+    }
+    getAllStudentDailyInfo();
+    
+  }, [studentId]);
+
+  const datatable = {
+    columns: [
+      {
+        label: 'Nội dung bài học',
+        field: 'lessonName',
+        
+      },
+      {
+        label: 'Ngày',
+        field: 'lessonDate',
+        sort: 'asc',
+     
+      },
+      {
+        label: "Điểm danh",
+        field: 'attendanceStatus',
+        sort: 'asc',
+    
+      },
+      {
+        label: "BTVN",
+        field: 'homeWorkStatus',
+        sort: 'asc',
+    
+      },
+      {
+        label: "Video bài giảng",
+        field: 'lessonLink',
+        sort: 'asc',
+    
+      }
+    ],
+    rows: []
+  };
+
+  listDailyInfo.map(day => datatable.rows.push(
+    {
+        lessonName: day.lessonName,
+        lessonDate: day.lessonDate,
+        attendanceStatus: (day.attendanceStatus === "P") ? 
+          <Badge color="success" className="mr-1 my-1">
+              Đúng giờ
+          </Badge> :
+          (day.attendanceStatus === "L") ? 
+          <Badge color="warning" className="mr-1 my-1">
+              Đi muộn
+          </Badge> :
+          <Badge color="danger" className="mr-1 my-1">
+              Nghỉ học
+          </Badge>,
+        homeWorkStatus: (day.homeWorkStatus === "P") ? 
+            <Badge color="success" className="mr-1 my-1">
+                Hoàn thành
+            </Badge> :
+            (day.homeWorkStatus === "none") ?
+            <Badge color="warning" className="mr-1 my-1">
+                Không có
+            </Badge> :
+            <Badge color="danger" className="mr-1 my-1">
+                Chưa hoàn thành
+            </Badge>,
+        lessonLink:(day.lessonLink !== "none") ? 
+        <a style={{color:"blue",fontWeight:"bolder"}} href={day.lessonLink}>Xem bài giảng</a> : "Không có video"
+    }
+  ))
+
+  return(
+     <Card>
+        <CardHeader>
+          <CardTitle>Thông tin từng buổi học</CardTitle>
+        </CardHeader>
+        <CardBody>
+            <MDBDataTableV5
+                hover 
+                responsive
+                paging={false}
+                searchTop
+                searchBottom={false}
+                barReverse
+                entries={24}
+                data={datatable}
+            />
+        </CardBody>
+     </Card>
+  )
+}
 const ClientProfile = (props) =>{ 
   
   const studentId = props.id;
@@ -304,6 +450,14 @@ const ClientProfile = (props) =>{
       </Col>
       <Col md="7" xl="8">
         <Activities studentId={studentId} />
+      </Col>
+    </Row>
+    <Row>
+      <Col md="5" xl="4">
+        <Comment studentId={studentId} />
+      </Col>
+      <Col md="7" xl="8">
+        <DailyStatus studentId={studentId} />
       </Col>
     </Row>
   </Container>

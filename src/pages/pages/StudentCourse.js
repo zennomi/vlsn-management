@@ -1,5 +1,7 @@
-import React, {} from "react";
-
+import React, {useEffect, useState} from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { selectFullName, selectRole, selectId } from "../../redux/selectors/userLoginInfoSelector";
 import {
   Card,
   CardBody,
@@ -12,15 +14,32 @@ import {
   Clock as ClockIcon,
   Calendar as CalendarIcon
 } from "react-feather";
-
+import ClientApi from "../../api/ClientApi";
 const ListCourse = (props) => {
 
-  const redriectToCourseVideo = () => {
+  const clientIp = props.id;
+
+  const redriectToCourseVideo = (clazz) => {
     props.history.push({
       pathname: '/course/lesson',
-      state: { studentId: 1 }
+      state: { 
+        classId: clazz.id, 
+        grade:clazz.grade,
+        subjectName:clazz.subjectName,
+        teacher:clazz.teacherId
+       }
     })
   }
+
+  const [classes,setClasses] = useState([]);
+
+  useEffect(() => {
+    const getAllClassesOfStudent = async () =>{
+        const res = await ClientApi.getStudentClasses(clientIp);
+        setClasses(res);
+    }
+    getAllClassesOfStudent();
+  }, [clientIp]);
 
   return(
     <>
@@ -31,7 +50,8 @@ const ListCourse = (props) => {
             </p>
         </div>
         <Row>
-            <Col lg="4">
+            {classes.map((clazz,i) =>
+            <Col lg="4" key={i}>
               <div>
                 <Card>
                     <CardBody>
@@ -39,26 +59,26 @@ const ListCourse = (props) => {
                             <img alt=" " style={{width:"100%"}} src={require("../../assets/img/brands/logo.png")}></img>
                           </div>
                           <a  href="google.com">
-                          <h6 style={{fontWeight:"bold"}}>Toán Đại 12A</h6>
+                          <h6 style={{fontWeight:"bold"}}>{clazz.subjectName} {clazz.grade}{clazz.className}</h6>
                           </a>
                         <div>
-                             <h6 style={{fontWeight:"bold"}}>Giáo Viên: Nguyễn Chí Chung</h6>
+                             <h6 style={{fontWeight:"bold"}}>Giáo Viên: {clazz.teacherId.fullName}</h6>
                         </div>
                         <div className="d-flex justify-content-between flex-wrap" >
                               <div>
-                                 <CalendarIcon></CalendarIcon> Thứ 4
+                                 <CalendarIcon></CalendarIcon> {(clazz.schedule === "1") ? "Chủ Nhật" : "Thứ " + clazz.schedule}
                               </div>
                               <div>
-                                  <ClockIcon></ClockIcon> 18h10-19h40
+                                  <ClockIcon></ClockIcon> {clazz.startTime} - {clazz.endTime}
                               </div>
                         </div>
                         
                     </CardBody>
-                    <Button onClick={() => redriectToCourseVideo()} color="primary" style={{borderRadius:"20px",fontWeight:"bold"}}>Học Bài</Button>
+                    <Button onClick={() => redriectToCourseVideo(clazz)} color="primary" style={{borderRadius:"20px",fontWeight:"bold"}}>Học Bài</Button>
                 </Card>
               </div>
             </Col>
-            
+            )}
         </Row>
         
     </>
@@ -80,4 +100,11 @@ const Course = (props) =>{
  
 
 // export default connect(mapGlobalStateToProps, { getAllStudentAction })(Clients);
-export default Course;
+const mapGlobalStateToProps = state => {
+  return {
+    fullName: selectFullName(state),
+    role: selectRole(state),
+    id:selectId(state)
+  };
+};
+export default withRouter(connect(mapGlobalStateToProps)(Course));

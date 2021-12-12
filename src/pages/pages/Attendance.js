@@ -16,7 +16,7 @@ import {
 import Moment from 'moment';
 import { Formik,FastField, Form  } from 'formik';
 import * as Yup from 'yup';
-import { MDBDataTable } from 'mdbreact';
+import { MDBDataTableV5 } from 'mdbreact';
 import { ReactstrapInput } from "reactstrap-formik";
 import AttenDanceApi from "../../api/AttendanceApi";
 import LessonApi from "../../api/LessonApi";
@@ -24,6 +24,12 @@ import ChapterApi from "../../api/ChapterApi";
 import HomeWorkApi from "../../api/HomeWorkApi";
 import { Autocomplete } from '@material-ui/lab'
 import TextField from '@material-ui/core/TextField';
+import Delete from "@material-ui/icons/Delete";
+import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
+import CheckIcon from "@material-ui/icons/Check";
+import { green } from "@material-ui/core/colors";
+
+
 const Attendance = (props) =>{ 
     
     const today = Moment(Date.now()).format('DD-MM-YYYY');
@@ -32,10 +38,16 @@ const Attendance = (props) =>{
    
     const clazz = props.location.state;
 
+    const [isLoading,setIsLoading] = useState(false);
+    const [success,setSuccess] = useState(false);
+
     const [lesson,setLesson] = useState({});
     const [currentLesson, setCurrentLesson] = useState({});
     const [modalSubmitStudentHomeWork,setModalSubmitStudentHomeWork] = useState(false);
-    const [listStudentNotSubmittedHomeWork, setListStudentNotSubmittedHomeWork] = useState([]);
+    const [modalDeleteSubmitStudentHomeWork,setModalDeleteSubmitStudentHomeWork] = useState(false) // modal để thêm các hs thiếu btvn, ( xóa các hs đã nộp btvn )
+    const [listStudentNotSubmittedHomeWork, setListStudentNotSubmittedHomeWork] = useState([]); // danh sach hs chua hoan thanh
+    const [listStudentSubmittedHomeWork, setListStudentSubmittedHomeWork] = useState([]); // danh sach hs da hoan thanh btvn
+
     const submitAbsentStudents = async () => {
         const nowTime = new Date();
         const dateNow = new Date(nowTime.getTime() - 30*60000 );
@@ -76,7 +88,7 @@ const Attendance = (props) =>{
         
     }
 
-    console.log(clazz);
+    
 
     const resetAttendancePage = async () => {
       const absentSt = await AttenDanceApi.getListStudentNotInClassToday(clazz.classId);
@@ -85,6 +97,23 @@ const Attendance = (props) =>{
       setSubList(subStudent);
       setAbsentStudents(absentSt);
       setAttendStudents(attenedSt);
+    }
+
+    const resetHomeWorkPage = async () => {
+      const listSubmittedSt = await HomeWorkApi.getStudentSubmittedHomeWorkInLesson(clazz.classId,currentLesson.id);
+      const listUnSubmittedSt = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.classId,currentLesson.id);
+      if(listSubmittedSt !== "empty"){
+        setListStudentSubmittedHomeWork(listSubmittedSt);
+      }
+      else{
+        setListStudentSubmittedHomeWork([]);
+      }
+      if (listUnSubmittedSt !== "empty"){
+        setListStudentNotSubmittedHomeWork(listUnSubmittedSt);
+      }
+      else{
+        setListStudentNotSubmittedHomeWork([]);
+      }
     }
 
     const [listStudentNotInClass, setAbsentStudents] = useState([]);
@@ -96,6 +125,12 @@ const Attendance = (props) =>{
 
       const data = {
         columns: [
+          {
+            label: 'ID',
+            field: 'id',
+            sort: 'asc',
+            
+          },
           {
             label: 'Họ Tên',
             field: 'fullName',
@@ -112,14 +147,22 @@ const Attendance = (props) =>{
             label: todayInMonth,
             field: 'attendanceStatus',
             sort: 'asc',
-        
+          },
+          {
+            label: '',
+            field: 'action',
           }
-          
         ],
         rows: []
       };
       const data1 = {
         columns: [
+          {
+            label: 'ID',
+            field: 'id',
+            sort: 'asc',
+            
+          },
           {
             label: 'Họ Tên',
             field: 'fullName',
@@ -138,6 +181,12 @@ const Attendance = (props) =>{
       };
       const data3 = {
         columns: [
+          {
+            label: 'ID',
+            field: 'id',
+            sort: 'asc',
+            
+          },
           {
             label: 'Họ Tên',
             field: 'fullName',
@@ -160,6 +209,63 @@ const Attendance = (props) =>{
         ],
         rows: []
       };
+      const data4 = {
+        columns: [
+          {
+            label: 'ID',
+            field: 'id',
+            sort: 'asc',
+            
+          },
+          {
+            label: 'Họ Tên',
+            field: 'fullName',
+            sort: 'asc',
+         
+          },
+          {
+            label: 'Trường',
+            field: 'school',
+            sort: 'asc',
+         
+          },
+          {
+            label: '',
+            field: 'action',
+          }
+          
+        ],
+        rows: []
+      };
+      const data5 = {
+        columns: [
+          {
+            label: 'ID',
+            field: 'id',
+            sort: 'asc',
+            
+          },
+          {
+            label: 'Họ Tên',
+            field: 'fullName',
+            sort: 'asc',
+         
+          },
+          {
+            label: 'Trường',
+            field: 'school',
+            sort: 'asc',
+         
+          },
+          {
+            label: '',
+            field: 'action',
+          }
+          
+        ],
+        rows: []
+      };
+
 
       useEffect(() => {
         const getAllStudentAttendanceInClass = async () =>{
@@ -176,31 +282,52 @@ const Attendance = (props) =>{
 
       useEffect(() => {
         const getCurrentLesson = async () =>{
-            const res = await LessonApi.getCurrentLessonInClassToday(clazz.classId);
-            if(res !== "empty"){
-              setCurrentLesson(res);
+            const lesson = await LessonApi.getCurrentLessonInClassToday(clazz.classId);
+            if(lesson !== "empty"){
+              setCurrentLesson(lesson);
+              const submittedStudent = await HomeWorkApi.getStudentSubmittedHomeWorkInLesson(clazz.classId,lesson.id);
+              const unSubmittedStudent = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.classId,lesson.id);
+              if(submittedStudent !== "empty"){
+                setListStudentSubmittedHomeWork(submittedStudent);
+              }
+              if (unSubmittedStudent !== "empty"){
+                setListStudentNotSubmittedHomeWork(unSubmittedStudent);
+              }
             }
-        }
-        const getStudentNotSubmitedHomeWork = async () =>{
-          const res = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.classId,currentLesson.id);
-          setListStudentNotSubmittedHomeWork(res);
+            else{
+               // không có btvn tuần trước
+                const listStudentInClass = await AttenDanceApi.getListStudentAttendanceToday(clazz.classId);
+                var studentInClass = [];
+                listStudentInClass.map(st => studentInClass.push(st.id));
+                const res = await HomeWorkApi.submitHomework(clazz.classId,studentInClass);
+                if (res === "submit successful!"){
+                  alert("Không có btvn tuần trước! tất cả học sinh đi học đều hoàn thành btvn");
+                }
+              
+                const newListNotSubmit = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.classId,lesson.id);
+                if(newListNotSubmit !== "empty"){
+                  setListStudentNotSubmittedHomeWork(res);
+                }
+            }
+            
+            
         }
         getCurrentLesson();
-        if(Object.keys(currentLesson).length !== 0){
-          getStudentNotSubmitedHomeWork();
-        }
-      }, [clazz.classId,currentLesson.id,currentLesson]);
+      }, [clazz.classId]);
+
 
       useEffect(() => {
         const getLessonInClass = async () =>{
             const response = await LessonApi.getLessonInClassToday(clazz.classId);
             if (response !== "empty"){
                 setLesson(response);
+                
             }
             
         }
         getLessonInClass();
       }, [clazz.classId]);
+      
       useEffect(() => {
         const getAllSuggestChapter = async () =>{
         const response = await ChapterApi.getAllSubjectChapterInGrade(clazz.grade,clazz.subjectName)
@@ -213,15 +340,112 @@ const Attendance = (props) =>{
       data1.rows = listStudentNotInClass;
       data3.rows = subStudentInClass;
 
+      const toggleDelete = async (student) => {
+        var requested = window.confirm("Bạn có chắc chắn muốn xóa điểm danh của " + student.fullName);
       
+        if ( requested) {
+            const res = await AttenDanceApi.deleteAttendance(clazz.classId,student.id,today2);
+            if (res === "delete successful!"){
+                resetHomeWorkPage();
+                alert("Xóa thành công!");
+            }
+        }
+      };
+
+      const toggleDeleteSub = async (student) => {
+        var requested = window.confirm("Bạn có chắc chắn muốn xóa điểm danh của " + student.fullName);
+      
+        if ( requested) {
+            const res = await AttenDanceApi.deleteSubAttendance(clazz.classId,student.id,today2);
+            if (res === "delete compensate successful!"){
+                resetAttendancePage();
+                alert("Xóa thành công!");
+            }
+        }
+      };
+
+      const toggleDeleteSubmitHomeWork = async (student) => {
+        var requested = window.confirm("Bạn có chắc chắn muốn xóa " + student.fullName + " khỏi danh sách thiếu btvn?");
+        // xóa ra khỏi danh sách chưa làm btvn ( thêm vào đã hoàn thành btvn )
+        if ( requested) {
+            const id = [student.id];
+            const studentSubmission = await HomeWorkApi.submitHomework(clazz.classId,id);
+            if (studentSubmission === "submit successful!"){
+                resetHomeWorkPage();
+                alert("Xóa thành công!");
+            }
+        }
+      };
+
+      const submitAll = async () => {
+          if(!isLoading ){
+            setSuccess(false);
+            setIsLoading(true);
+            var studentIds = [];
+            attenedStudents.map(st => studentIds.push(st.id));
+            const submission = await HomeWorkApi.submitHomework(clazz.classId,studentIds);
+            if(submission === "submit successful!"){
+              setSuccess(true);
+              setTimeout(() => {
+                setIsLoading(false);
+                resetHomeWorkPage();
+              },1200)
+              
+            }
+          }
+      }
+
+      data.rows.map(st => st["action"] = 
+        <button style={{background:"none",border:"none"}} onClick={() => toggleDelete(st)}>
+            <Delete color="secondary"/>
+        </button>
+      )
+
+      data3.rows.map(st => st["action"] = 
+        <button style={{background:"none",border:"none"}} onClick={() => toggleDeleteSub(st)}>
+            <Delete color="secondary"/>
+        </button>
+      )
+      
+
       const mapNotSubmittedId = {};
       listStudentNotSubmittedHomeWork.map(st => mapNotSubmittedId[st.id] = st.id);
       var listStudentNotSubmittedHomeWorkId = [];
       listStudentNotSubmittedHomeWork.map(st => listStudentNotSubmittedHomeWorkId.push(st.id));
 
-      const listStudentMustHaveHomeWork = [];
+      var listStudentMustHaveHomeWork = [];
       attenedStudents.map(e => (mapNotSubmittedId[e.id] === undefined) ? listStudentMustHaveHomeWork.push(e) : null);
       subStudentInClass.map(e => listStudentMustHaveHomeWork.push(e));
+
+      listStudentNotSubmittedHomeWork.map(st => data4.rows.push(
+        {
+            id:st.id,
+            fullName:st.fullName,
+            school:st.school,
+            action:<button style={{background:"none",border:"none"}} onClick={() => toggleDeleteSubmitHomeWork(st)}>
+                        <Delete color="secondary"/>
+                    </button>
+        }
+      ))
+
+      attenedStudents.map(st => data5.rows.push(
+        {
+          id:st.id,
+          fullName:st.fullName,
+          school:st.school,
+          action:<button style={{background:"none",border:"none"}} onClick={() => toggleDeleteSubmitHomeWork(st)}>
+                      <Delete color="secondary"/>
+                  </button>
+        }
+      ))
+      listStudentNotInClass.map(st => data5.rows.push(
+        {
+          id:st.id,
+          fullName:st.fullName,
+          school:st.school,
+          action: "Nghỉ học"
+        }
+      ))
 
     return (
         <Container fluid className="p-0">
@@ -350,10 +574,15 @@ const Attendance = (props) =>{
                       </Col>
                     </Row>
                     <CardBody >
-                          <MDBDataTable hover 
-                          scrollY 
+                          <MDBDataTableV5
+                           hover 
                           responsive
-                          entries={150} displayEntries={false} data={data}/>
+                          pagingTop
+                          searchTop
+                          searchBottom={false}
+                          barReverse
+                          entriesOptions={[30,40, 50, 70,100]}
+                          entries={30} data={data}/>
                     </CardBody>
                   </CardBody>
                   <CardBody>
@@ -373,10 +602,15 @@ const Attendance = (props) =>{
                       </Col>
                     </Row>
                     <CardBody>
-                          <MDBDataTable  hover 
-                          scrollY 
+                          <MDBDataTableV5  
+                          hover 
                           responsive
-                          entries={150} displayEntries={false} data={data3} />
+                          pagingTop
+                          searchTop
+                          searchBottom={false}
+                          barReverse
+                          entriesOptions={[30,40, 50, 70,100]}
+                          entries={30}  data={data3} />
                     </CardBody>
                   </CardBody>
                   <CardBody>
@@ -396,10 +630,15 @@ const Attendance = (props) =>{
                       </Col>
                     </Row>
                     <CardBody>
-                          <MDBDataTable  hover 
-                          scrollY 
+                          <MDBDataTableV5  
+                          hover 
                           responsive
-                          entries={150} displayEntries={false} data={data1} />
+                          pagingTop
+                          searchTop
+                          searchBottom={false}
+                          barReverse
+                          entriesOptions={[30,40, 50, 70,100]}
+                          entries={30}  data={data1} />
                           <Button color="primary" onClick={submitAbsentStudents}>Xác Nhận</Button>
                     </CardBody>
                   </CardBody>
@@ -408,8 +647,65 @@ const Attendance = (props) =>{
 
             </Row>
             <Row>
-                {(Object.keys(currentLesson).length !== 0) ? 
-                <Button onClick={() => setModalSubmitStudentHomeWork(true)} color="primary">Học sinh không làm btvn</Button> : null}
+              <Col>
+                {/* Nếu btvn tuần trước không có thì sẽ đánh dấu tất cả hoàn thành btvn,
+                lần đầu vào thì mặc định sẽ chưa có ai nộp btvn nên "listStudentSubmittedHomeWork" sẽ có length = 0 */}
+                {(Object.keys(currentLesson).length !== 0  && listStudentSubmittedHomeWork.length === 0 ) ? 
+                <>
+                  <Card>
+                  <CardHeader>Học sinh thiếu btvn:</CardHeader>
+                  <CardBody>
+                      <Button onClick={() => setModalSubmitStudentHomeWork(true)} color="primary">Học sinh không làm btvn</Button> 
+                      <Button onClick={() => submitAll()} color="primary">Đánh dấu tất cả đều đủ</Button> 
+                      <MDBDataTableV5
+                          hover 
+                          responsive
+                          pagingTop
+                          searchTop
+                          searchBottom={false}
+                          barReverse
+                          entriesOptions={[30,40, 50, 70,100]}
+                          entries={30} data={data5}/>
+                  </CardBody>
+                  
+                  </Card>
+                  <Modal isOpen={isLoading} toggle={setIsLoading}>
+                    <ModalBody>
+                          {!success ? 
+                          <>
+                          Đang lưu danh sách học sinh làm btvn.... 
+                          <CircularProgress />
+                          </> : <> <CheckIcon style={{color:green[500]}}/>lưu danh sách thành công!</> }
+                    </ModalBody>
+                  </Modal>
+                </>
+                : 
+
+                <Card>
+                  <CardHeader>Học sinh thiếu btvn</CardHeader>
+                  <CardBody>
+                      <Button onClick={() => setModalDeleteSubmitStudentHomeWork(true)} color="primary">Thêm học sinh không làm btvn</Button>
+                      <MDBDataTableV5
+                           hover 
+                          responsive
+                          pagingTop
+                          searchTop
+                          searchBottom={false}
+                          barReverse
+                          entriesOptions={[30,40, 50, 70,100]}
+                          entries={30} data={data4}/>
+                  </CardBody>
+                  <Modal isOpen={isLoading} toggle={setIsLoading}>
+                    <ModalBody>
+                          {!success ? 
+                          <>
+                          Đang lưu danh sách học sinh làm btvn.... 
+                          <CircularProgress />
+                          </> : <> <CheckIcon style={{color:green[500]}}/>lưu danh sách thành công!</> }
+                    </ModalBody>
+                  </Modal>
+                </Card>
+                }
                 <Modal isOpen={modalSubmitStudentHomeWork} toggle={setModalSubmitStudentHomeWork}>
                         <ModalBody>
                                 <h1>Học sinh thiếu btvn</h1>
@@ -425,20 +721,27 @@ const Attendance = (props) =>{
                                             var listId = [];
                                             listStudentMustHaveHomeWork.map(st => (mapId[st.id] === undefined) ? listId.push(st.id) :
                                             null)
-                                            console.log(mapId);
-                                            console.log(listId);
-                                            const res = await HomeWorkApi.submitHomework(clazz.classId,listId);
-                                            if (res === "submit successful!"){
-                                              alert("Lưu học sinh không làm btvn thành công!");
-                                              setModalSubmitStudentHomeWork(false);
+
+                                            if(!isLoading ){
+                                              setSuccess(false);
+                                              setIsLoading(true);
+                                              const res = await HomeWorkApi.submitHomework(clazz.classId,listId);
+                                              if(res === "submit successful!"){
+                                                setSuccess(true);
+                                                setTimeout(() => {
+                                                  setIsLoading(false);
+                                                  resetHomeWorkPage();
+                                                },1200)
+                                                setModalSubmitStudentHomeWork(false);
+                                              }
                                             }
                                         }}
                                     
                                     >
-                                    {({setFieldValue, values}) => 
+                                    {({setFieldValue, values, isSubmitting}) => 
                                         <Form>
                                             <ul>
-                                              Học sinh thiếu btvn:
+                                          
                                               {listStudentNotSubmittedHomeWork.map((st,i) => 
                                                   <li key={i}>{st.fullName} - {st.id}</li>
                                               )}
@@ -446,7 +749,7 @@ const Attendance = (props) =>{
                                             <Autocomplete
                                                 multiple
                                                 limitTags={2}
-                                                label="Học Sinh Thiếu BTVN"
+                                                label="Thêm học sinh thiếu btvn"
                                                 id="multiple-limit-tags"
                                                 value={values.listUnSubmittedHomeWork}
                                                 name="listUnSubmittedHomeWork"
@@ -454,19 +757,83 @@ const Attendance = (props) =>{
                                                   setFieldValue("listUnSubmittedHomeWork", value)
                                                 }}
                                                 getOptionSelected={(option, value) => option.id === value.id}
-                                                options={listStudentMustHaveHomeWork}
+                                                options={attenedStudents}
                                                 getOptionLabel={(option) => option.fullName + " - " + option.id }
                                                 renderInput={(params) => (
-                                                  <TextField {...params} name="listUnSubmittedHomeWork" variant="outlined" label="Học Sinh Thiếu BTVN"  />
+                                                  <TextField {...params} name="listUnSubmittedHomeWork" variant="outlined" label="Thêm học sinh thiếu btvn"  />
                                                 )}
                                               />
-                                            <Button color="primary" type="submit">Thêm</Button>
+                                            <Button color="primary" type="submit"  disabled={isSubmitting}>Lưu</Button>
                                             <Button color="primary" onClick={() => setModalSubmitStudentHomeWork(false)}>Hủy</Button>
                                         </Form>
                                       }
                                   </Formik>
                         </ModalBody>
                 </Modal>
+                                    
+                <Modal isOpen={modalDeleteSubmitStudentHomeWork} toggle={setModalDeleteSubmitStudentHomeWork}>
+                      {/* modal này gồm các học sinh đã hoàn thành btvn trong lớp hôm nay, thêm vào danh sách formik
+                      này tức là sẽ xóa đi các submit của học sinh trong danh sách formik này */}
+                        <ModalBody> 
+                                <Formik
+                                        initialValues={
+                                          {
+                                              listSubmittedHomeWork:[]
+                                          }
+                                        }
+                                        onSubmit={async (values) => {
+                                            var studentIds = [];
+                                            values.listSubmittedHomeWork.map(st => studentIds.push(st.id));
+                                  
+                                            
+                                            if(!isLoading ){
+                                              setSuccess(false);
+                                              setIsLoading(true);
+                                              const deleteSubmitsion = await HomeWorkApi.deleteSubmitHomeWork(
+                                                clazz.classId, studentIds, currentLesson.id
+                                              )  
+                                              if(deleteSubmitsion === "delete successful!"){
+                                                setSuccess(true);
+                                                setModalDeleteSubmitStudentHomeWork(false);
+                                                setTimeout(() => {
+                                                  setIsLoading(false);
+                                                  resetHomeWorkPage();
+                                                },1200)
+                                                
+                                              }else{
+                                                alert("Thêm học sinh thiếu btvn thất bại!");
+                                              }
+                                            }
+                                            
+                                        }}
+                                    
+                                    >
+                                    {({setFieldValue, values, isSubmitting}) => 
+                                        <Form>
+                                            <Autocomplete
+                                                multiple
+                                                limitTags={2}
+                                                label="Thêm học sinh thiếu btvn"
+                                                id="multiple-limit-tags"
+                                                name="listSubmittedHomeWork"
+                                                onChange={(e, value) => {
+                                                  setFieldValue("listSubmittedHomeWork", value)
+                                                }}
+                                                getOptionSelected={(option, value) => option.id === value.id}
+                                                options={listStudentSubmittedHomeWork}
+                                                getOptionLabel={(option) => option.fullName + " - " + option.id }
+                                                renderInput={(params) => (
+                                                  <TextField {...params} name="listSubmittedHomeWork" variant="outlined" label="Thêm học sinh thiếu btvn"  />
+                                                )}
+                                              />
+                                            <Button color="primary" type="submit"  disabled={isSubmitting}>Thêm</Button>
+                                            <Button color="primary" onClick={() => setModalDeleteSubmitStudentHomeWork(false)}>Hủy</Button>
+                                        </Form>
+                                      }
+                                  </Formik>
+                        </ModalBody>
+                </Modal>
+              </Col>
             </Row>
 
             

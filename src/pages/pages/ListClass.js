@@ -3,18 +3,19 @@ import {
   Card,
   CardBody,
   Col,
-  CardHeader,
+  
   Container,
   Row,
   Button
 } from "reactstrap";
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import { Formik,FastField, Form  } from 'formik';
-import { ReactstrapInput } from "reactstrap-formik";
+
 import Moment from 'moment';
 import ClassroomApi from "../../api/ClassroomApi"
-
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { selectFullName, selectRole, selectId } from "../../redux/selectors/userLoginInfoSelector";
 const mystyle = {
 with: "100%",
 display: "flex",
@@ -29,9 +30,11 @@ borderRadius: "10px",
 }
 const today = Moment(Date.now()).format('DD-MM-YYYY');
 const weeklyToday = new Date().getDay() + 1;
-const mentorId = 4;
+
 
 const ListClass = (props) => {
+
+  const mentorId = props.id;
 
   const redirect = (clazz) => {
     props.history.push({
@@ -61,13 +64,11 @@ const ListClass = (props) => {
       setListClass(result);
     }
     getAllClassListToday();
-    console.log("render");
+    
   }, []);
   
-  useEffect(() => {
-    console.log("rerender listClass!");
-  });
-  console.log(listClassToday);
+ 
+ 
   listClassToday.map(clazz => 
       products.push(
         {
@@ -93,8 +94,7 @@ const ListClass = (props) => {
     },
     sort: true,
     formatter: (cell,row) => {
-      console.log(row);
-      console.log(weeklyToday);
+      
       var isMentorClazz = false;
       row.mentorList.forEach(element => {
         if(element.mentorId === mentorId){
@@ -116,7 +116,7 @@ const ListClass = (props) => {
                 <div style={mystyle1} key={row.classId} >
                 <h5 >{row.className +" - GV." + row.teacherName + "-"+ 
                   row.start + " - " + row.end} </h5> 
-                      <Button  onClick ={() => redirect(row)}  style ={{marginLeft:"auto", borderRadius:"20px"}}>
+                      <Button color="primary"  onClick ={() => redirect(row)}  style ={{marginLeft:"auto", borderRadius:"20px"}}>
                           Tham Gia
                       </Button>
                 </div> 
@@ -134,80 +134,6 @@ const ListClass = (props) => {
         <Row>
           <Col>
             <Card>
-              <CardHeader>
-              <Formik
-                  initialValues={
-                    {
-                      class: '',
-                      subject: 'Toán Đại',
-                      grade: '6'
-                    }
-                  }
-                  onSubmit={(values) => {
-                    setTimeout(() => {
-                      alert(JSON.stringify(values, null, 2));
-                    }, 500);
-                  }}
-                >
-                  <Form>
-                    <Row style={{ alignItems: "center" }}>
-                        <Col >
-                          
-                          <FastField
-                            label="Tên lớp:"
-                            bsSize="lg"
-                            type="text"
-                            name="class"
-                            placeholder="Nhập tên lớp"
-                            component={ReactstrapInput}
-                          />
-                        </Col>
-                      
-                        <Col  >
-                          
-                          <FastField
-                            label="Chọn Môn Học"
-                            bsSize="lg"
-                            type="select"
-                            name="subject"
-                            placeholder="Nhập môn "
-                            component={ReactstrapInput}
-                            
-                          >
-                            <option>Toán Đại</option>
-                            <option>Toán Hình</option>
-                            <option>Tiếng Anh</option>
-                            <option>Hóa</option>
-                            <option>Văn</option>
-                          </FastField>
-                  
-                        </Col>
-                          <Col  >
-                            <FastField
-                              label="Chọn Khối"
-                              bsSize="lg"
-                              type="select"
-                              name="grade"
-                              placeholder="Chọn khối"
-                              component={ReactstrapInput}
-                            >
-                              <option>6</option>
-                              <option>7</option>
-                              <option>8</option>
-                              <option>9</option>
-                              <option>10</option>
-                              <option>11</option>
-                              <option>12</option>
-                            </FastField>
-                            
-                          </Col>
-                          <Col >
-                              <Button style={{marginTop:"20px", borderRadius:"5px"}} type="submit" >Serach</Button>
-                          </Col>
-                      </Row>
-                  </Form>
-                </Formik>
-              </CardHeader>
               <CardBody>
                   <BootstrapTable 
                     keyField='classId' 
@@ -232,5 +158,12 @@ const ListClass = (props) => {
       </Container>
     );
 } 
+const mapGlobalStateToProps = state => {
+  return {
+    fullName: selectFullName(state),
+    role: selectRole(state),
+    id:selectId(state)
+  };
+};
+export default withRouter(connect(mapGlobalStateToProps)(ListClass));
 
-export default ListClass;

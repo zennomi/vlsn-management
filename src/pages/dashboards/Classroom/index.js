@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { Container, Row, Col, Button, Modal, ModalBody, Label, Input } from "reactstrap";
 
 // import Activity from "./Activity";
@@ -15,16 +15,27 @@ import { Autocomplete } from '@material-ui/lab';
 import { Formik,FastField, Form  } from 'formik';
 import TextField from '@material-ui/core/TextField';
 import TeacherApi from "../../../api/TeacherApi";
-
+import ClassroomApi from "../../../api/ClassroomApi";
 const Ecommerce = (props) =>{
 
   const [clazz, setClass] = useState({});
   const [modal,setModal] = useState(false);
   const [modalUpdateClass, setModalUpdateClass] = useState(false);
-
+  const [grade,setGrade] = useState(12);
   const [suggestTeacher, setSuggestTeacher] = useState([]);
   
   const [suggestMentor, setSuggestMentor] = useState([]);
+
+  const [classes, setClasses] = useState([]);
+
+  useEffect(() => {
+    const getAllClassList = async () =>{
+      const result = await ClassroomApi.getListClassroomInGrade(grade);
+      setClasses(result);
+    }
+    getAllClassList();
+    
+  }, [grade]);
 
   return(
   <Container fluid className="p-0">
@@ -32,6 +43,10 @@ const Ecommerce = (props) =>{
     <Row>
       <Col className="d-flex">
         <ClassList 
+          setGrade={setGrade}
+          grade={grade}
+          classes={classes}
+          setClasses={setClasses}
           setClass={setClass}
           modalUpdateClass={modalUpdateClass}
           setModalUpdateClass={setModalUpdateClass}
@@ -57,11 +72,51 @@ const Ecommerce = (props) =>{
                                             date: (Object.keys(clazz).length === 0) ? "" : clazz.schedule,
                                             start: (Object.keys(clazz).length === 0) ? "" : clazz.startTime,
                                             end: (Object.keys(clazz).length === 0) ? "" : clazz.endTime,
-                                            listMentor: (Object.keys(clazz).length === 0) ? "" : clazz.listMentor
+                                            listMentor: (Object.keys(clazz).length === 0) ? [] : clazz.listMentor
                                           }
                                         }
                                         onSubmit={async (values) => {
-                                            console.log(values);
+                                            const update = await ClassroomApi.updateClass(
+                                              clazz.id,
+                                              values.className,
+                                              values.subject,
+                                              values.grade,
+                                              values.start,
+                                              values.end,
+                                              values.date,
+                                              values.teacher.teacherId
+                                            )
+                                            const body = [];
+                                           
+                                            if(values.listMentor !== 0){
+                                                values.listMentor.map(mentor => body.push({
+                                                classId: clazz.id,
+                                                mentorId: mentor.mentorId
+                                                }))
+                                                const updateMentor = await ClassroomApi.updateMentorClass(
+                                                clazz.id,
+                                                body
+                                                )
+                                                if(updateMentor === "update successful!" && update === "update successful!" ){
+                                                  
+                                                  const result = await ClassroomApi.getListClassroomInGrade(grade);
+                                                  setClasses(result);
+                                                  setModalUpdateClass(false);
+                                                  alert("Cập nhật thành công!");
+                                                }
+                                                else{
+                                                  alert("Cập nhật trợ giảng thất bại!");
+                                                }
+                                            }
+                                            else{
+                                              if(update === "update successful!"){
+                                                alert("Cập nhật thành công!");
+                                                const result = await ClassroomApi.getListClassroomInGrade(grade);
+                                                setClasses(result);
+                                                setModalUpdateClass(false);
+                                              }
+                                            }
+
                                         }}
                                     
                                     >

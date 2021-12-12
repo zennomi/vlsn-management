@@ -199,7 +199,12 @@ const AbsentListInWeek = (props) =>{
         </div>
       </CardHeader>
       <CardBody>
-          <MDBDataTableV5 hover scrollX entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
+          <MDBDataTableV5 
+          hover 
+          responsive
+          searchTop
+          searchBottom={false}
+          entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
       </CardBody>
     </Card>
     
@@ -257,12 +262,6 @@ const AttendanceList = (props) =>{
         label: 'Thời Gian',
         field: 'time',
        
-      },
-      {
-        label: 'Sĩ Số',
-        field: 'total',
-        sort: 'asc',
-      
       },
       {
         label: 'Giáo Viên',
@@ -382,12 +381,12 @@ const AttendanceList = (props) =>{
           theadColor="primary-color" 
           searchTop searchBottom={false} 
           theadTextWhite bordered  hover  entriesOptions={[5,10, 20, 50,100]} 
-          entries={4} pagesAmount={4} data={datatable2} />
+          entries={5} pagesAmount={5} data={datatable2} />
           <br/>
           <MDBDataTableV5 
           responsive theadColor="primary-color" 
           searchTop searchBottom={false} theadTextWhite 
-          bordered borderless={false} hover  entriesOptions={[5,10, 20, 50,100,150]} 
+          bordered borderless={false} hover  entriesOptions={[50,100, 150, 200,300,400]} 
           entries={50} pagesAmount={50} data={datatable} />
       </CardBody>
     </Card>

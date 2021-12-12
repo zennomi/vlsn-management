@@ -15,7 +15,7 @@ const Atten = (props) => {
   const today = Moment(Date.now()).format('YYYY-MM-DD');
   const studentId = props.match.params.id;
   const [status, setStatus] = useState("Điểm Danh");// state này lưu trạng thái status điểm danh
-  const [studentInfo, setStudent] = useState({}); // state này lưu thông tin học sinh
+  const [studentInfo, setStudent] = useState({status:"active"}); // state này lưu thông tin học sinh
   const [listSuggestClass, setListClass] = useState([]); // state này lưu các lớp của học sinh để điểm danh bù
   const [listSuggestClassForSubAttendance, setSubListClass] = useState([]); // state này lưu các lớp hiện tại cùng kiểu với lớp muốn điểm danh bù
   const [classRightNow, setClassNow] = useState([]); // state này lưu lớp học hiện tại phù hợp để điểm danh chính
@@ -152,7 +152,7 @@ const Atten = (props) => {
               className="align-middle text-primary" size={24} />
         </h1>
         
-        {(classRightNow.length === 1) ? 
+        {(classRightNow.length === 1 && studentInfo.status === "active") ? 
               <>
                 <h1 className="h2 mb-3">
                   {status} {classRightNow[0].subjectName + " " + classRightNow[0].grade + classRightNow[0].className}
@@ -168,6 +168,7 @@ const Atten = (props) => {
 
               </>
               : 
+              (classRightNow.length !== 1 && studentInfo.status === "active") ? 
               <>
                 <h1 className="h2 mb-3">
                     {status}
@@ -177,16 +178,17 @@ const Atten = (props) => {
                       <ul style={{listStyle: "none", padding:"0px"}}>
                         {listSuggestClass.map((e,i) =>
                           <li key={i}>
-                            <Button onClick={() => submitCompensate(e)} key={i}>{e.subjectName + " " + e.grade + e.className}</Button>
+                            <Button color="primary" onClick={() => submitCompensate(e)} key={i}>{e.subjectName + " " + e.grade + e.className}</Button>
                           </li> 
                         )}
                       </ul>
                       :
                       null
                   }
-              </>
+              </>:
+              <h4>Học sinh không đủ điều kiện học tập!</h4>
         }
-        {(listSuggestClassForSubAttendance.length > 1) ?
+        {(listSuggestClassForSubAttendance.length > 1 && studentInfo.status ==="active") ?
               <>
                 <h1 className="h2 mb-3">
                     Chọn lớp để học bù hôm nay
@@ -196,7 +198,7 @@ const Atten = (props) => {
                   <ul style={{listStyle: "none", padding:"0px"}}>
                         {listSuggestClassForSubAttendance.map((e,i) =>
                           <li key={i}>
-                            <Button onClick={() => submitAttenCompensateForManyClass(e.id)} key={i}>{e.subjectName + " " + e.grade + e.className}</Button>
+                            <Button color="primary" onClick={() => submitAttenCompensateForManyClass(e.id)} key={i}>{e.subjectName + " " + e.grade + e.className}</Button>
                           </li> 
                         )}
                   </ul>

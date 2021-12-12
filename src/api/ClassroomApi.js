@@ -27,6 +27,9 @@ const getListClassroomWithSameTypeNow =  (dayInWeek,grade,subjectName)  => {
 const getAllClassList = () => {
     return Api.get(`${url}/`);
 }
+const getClassById = (classId) => {
+    return Api.get(`${url}/${classId}`);
+}
 const createClass = (className, subject,  grade, start, end, schedule,teacherId) => {
     
     const body =  {
@@ -42,6 +45,24 @@ const createClass = (className, subject,  grade, start, end, schedule,teacherId)
     }
     return Api.post(`${url}/`,body);
 }
+const deleteClass = (classId) => {
+    return Api.delete(`${url}/${classId}`)
+}
+const updateClass = (classId,className, subject,  grade, start, end, schedule,teacherId) => {
+    
+    const body =  {
+        className: className,
+        subject: subject,
+        grade: grade,
+        startTime: start,
+        endTime: end,
+        schedule: schedule,
+        teacherId: {
+            id: teacherId
+        }
+    }
+    return Api.put(`${url}/${classId}`,body);
+}
 const changeCostStatusStudent = (classId, studentId, status) => {
     const body = {
         classId:classId,
@@ -54,6 +75,10 @@ const changeCostStatusStudent = (classId, studentId, status) => {
 const createMentorClass = (classId,[...listMentor]) => {
     const body = [...listMentor];
     return Api.post(`${url}/${classId}/mentors`,body);
+}
+const updateMentorClass = (classId,[...listMentor]) => {
+    const body = [...listMentor];
+    return Api.put(`${url}/${classId}/mentors`,body);
 }
 const getListStudentCostInfoByStatusInGradeAndSubject = (grade, subject, status) => {
     const parameters = {
@@ -84,6 +109,10 @@ const api = { getListClassroomInGrade,
       changeCostStatusStudent,
       getListClassroomByScheduleAndGrade,
       getAllStudentInClassOnDate,
-      getListSubjectClassroomInGrade
+      getListSubjectClassroomInGrade,
+      updateMentorClass,
+      updateClass,
+      deleteClass,
+      getClassById
     }
 export default api;

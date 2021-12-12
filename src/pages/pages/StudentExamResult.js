@@ -9,15 +9,18 @@ import {
   Container,
   Input,
   Row,
-  Button
+  Button,
+  Modal
 } from "reactstrap";
-
+import { ReactstrapInput } from "reactstrap-formik";
+import { Formik,FastField, Form  } from 'formik';
 import { MDBDataTableV5 } from 'mdbreact';
 import Header from "./Header";
 // import Moment from 'moment';
 // import AttendanceApi from "../../api/AttendanceApi";
 import { Bar } from 'react-chartjs-2';
 import ExamApi from "../../api/ExamApi";
+import Edit from "@material-ui/icons/Edit";
 const StatisticsScorce = (props) =>{
 
   const data = {
@@ -228,6 +231,11 @@ const StudentListScorces = (props) =>{
   const datatable = {
     columns: [
       {
+        label: 'ID',
+        field: 'id',
+  
+      },
+      {
         label: 'Họ Tên',
         field: 'fullName',
   
@@ -245,13 +253,20 @@ const StudentListScorces = (props) =>{
         label: 'STĐ PH',
         field: 'parentNumber',
       },
+      {
+        label: '',
+        field: 'action',
+      }
     ],
     rows: [
       
     ],
   };  
   const [marks, setListMark] = useState([]);
+  const [result,setResult] = useState({});
   const examId = props.examId;
+  const classId = props.classId;
+  const [modalUpdate, setModalUpdate] = useState(false);
 
   useEffect(() => {
     const getAllExamMark = async () =>{
@@ -262,11 +277,25 @@ const StudentListScorces = (props) =>{
     
   }, [examId]);
 
-  datatable.rows = marks;
+  const toggleUpdate =  (mark) => {
+    setResult(mark)
+    setModalUpdate(true);
+  }
+
+  marks.map(mark => datatable.rows.push({
+    id:mark.id,
+    fullName:mark.fullName,
+    school:mark.school,
+    mark:mark.mark,
+    parentNumber:mark.parentNumber,
+    action: <button style={{background:"none",border:"none"}} onClick={() => toggleUpdate(mark)}>
+                <Edit color="action"/>
+            </button>
+  }))
 
   return (
   <>  
-    <Button color="primary">GỬI ĐIỂM PHỤ HUYNH</Button>
+    {/* <Button color="primary">GỬI ĐIỂM PHỤ HUYNH</Button> */}
     <Card className="flex-fill w-100">
       <CardHeader style={{backgroundColor:"#5ddae0"}}>
       <div style={{display:"flex", justifyContent:"flex-start"}}>
@@ -275,9 +304,69 @@ const StudentListScorces = (props) =>{
         </CardTitle>
       </div>
       </CardHeader>
-      <CardBody>
-            <MDBDataTableV5 hover responsive entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} data={datatable} />
+        <CardBody>
+            <MDBDataTableV5 
+            hover 
+            responsive 
+            searchTop
+            searchBottom={false}
+            entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
         </CardBody>
+        <Modal isOpen={modalUpdate} toggle={toggleUpdate}>
+      <Row>
+
+        <Col>
+        <Card>
+        <CardBody>
+          <Formik
+              initialValues={
+                {
+                   mark: (Object.keys(result).length !== 0) ? result.mark : 0
+                }
+              }
+
+
+
+              onSubmit={async (values) => {
+                  const res = await ExamApi.updateExamResult(
+                    result.id,
+                    classId,
+                    examId,
+                    values.mark
+                  )
+                  if (res === "update successful!"){
+                    const examRespone = await ExamApi.getAllStudentMarkInExam(examId);
+                    setListMark(examRespone);
+                    alert("Cập nhật thành công!");
+                    setModalUpdate(false);
+                  }
+              }}
+            >
+             {({isSubmitting}) => 
+             <Form>
+                <Row >
+                      <FastField
+                        label="Nhập điểm"
+                        bsSize="lg"
+                        type="number"
+                        name="mark"
+                        component={ReactstrapInput}
+                      />
+                </Row>
+                <Row>
+                    <Col>
+                      <Button color="primary" type="submit" disabled={isSubmitting} >Cập nhật</Button>
+                      <Button color="primary" onClick={() => setModalUpdate(false)} >Hủy</Button>
+                    </Col>
+                </Row>
+              </Form>
+              }
+            </Formik>
+            </CardBody>
+            </Card>
+          </Col>
+        </Row>
+    </Modal>
     </Card>
   </>
     );
@@ -344,7 +433,13 @@ const WeakStudentListScorces = (props) =>{
       </div>
       </CardHeader>
       <CardBody>
-            <MDBDataTableV5 hover responsive entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} data={datatable} />
+            <MDBDataTableV5 
+            hover 
+            responsive 
+            searchTop
+            searchBottom={false}
+            entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} 
+            data={datatable} />
         </CardBody>
     </Card>
     );

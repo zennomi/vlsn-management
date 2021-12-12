@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React, { useState,useEffect } from "react";
 
 import {
   Card,
@@ -14,6 +14,7 @@ import {
   Play as PlayIcon
 } from "react-feather";
 import ReactPlayer from "react-player";
+import ClientApi from "../../api/ClientApi";
 
 const playerWarpper ={
     position: "relative",
@@ -26,29 +27,81 @@ const reactPlayer = {
 }
 const View = (props) => {
 
+    const propsRef = props.location.state;
+    const classId = propsRef.classId;
+    const grade = propsRef.grade;
+    const subjectName = propsRef.subjectName;
+    const teacher = propsRef.teacher
+
+    const [chapters, setChapters] = useState([]);
+    const [chapterId, setChapterId] = useState(0);
+    const [lessons,setLessons] = useState([]);
+    const [lesson,setLesson] = useState({});
+
+    useEffect(() => {
+        const getAllChapterInGrade = async () =>{
+            const res = await ClientApi.getAllChapterInStudentGrade(grade,subjectName);
+            setChapters(res);
+            if(res.length !== 0){
+                setChapterId(res[0].id);
+                const listLesson = await ClientApi.getStudentClassesLessonInChapter(classId,res[0].id);
+                setLessons(listLesson);
+                if(listLesson.length !== 0){
+                    setLesson(listLesson[0]);
+                }
+            }
+            
+        }
+        getAllChapterInGrade();
+    }, [grade,subjectName,classId]);
+
+    useEffect(() => {
+        const getAllLessonInChapter = async () =>{
+            if(chapterId !== 0){
+                const listLesson = await ClientApi.getStudentClassesLessonInChapter(classId,chapterId);
+                setLessons(listLesson);
+                if(listLesson.length !== 0){
+                    setLesson(listLesson[0]);
+                }
+                
+            }
+        }
+        getAllLessonInChapter();
+    }, [chapterId,classId]);
+    
+
   return(
     <>
         <Row>
               <Col lg="8">
-                <h3 style={{fontWeight:"bold"}}>Bài 1 Tính Đơn Điệu Của Hàm Số</h3>
-                <div style={playerWarpper}>
-                    <ReactPlayer
-                      style={reactPlayer}
-                      url='https://www.youtube.com/watch?v=6hAPVLSSHJE'
-                      width='100%'
-                      height='100%'
-                      controls={true}
-                    />
-                </div>
-                <div style={{marginTop:"10px"}} className="d-flex justify-content-between flex-wrap" >
-                    <div>
-                        <h5 style={{fontWeight:"bold"}}>Giáo Viên: Nguyễn Chí Chung</h5>
-                        <CalendarIcon></CalendarIcon> 02-09-2021
+                {(Object.keys(lesson).length !== 0 ) ? 
+                <>
+                    <h3 style={{fontWeight:"bold"}}>{lesson.lessonName}</h3>
+                    {(lesson.video !== null) ?
+                    <div style={playerWarpper}>
+                        <ReactPlayer
+                        style={reactPlayer}
+                        url={lesson.video.link}
+                        width='100%'
+                        height='100%'
+                        controls={true}
+                        />
+                    </div> : <h2>Không có video</h2> }
+
+                    <div style={{marginTop:"10px"}} className="d-flex justify-content-between flex-wrap" >
+                        <div>
+                            <h5 style={{fontWeight:"bold"}}>Giáo Viên: {teacher.fullName}</h5>
+                            <CalendarIcon></CalendarIcon> {lesson.date}
+                        </div>
+                        <div>
+                            {(lesson.homeWork !== null) ? <a href={lesson.homeWork.link}><Button color="primary">Bài tập về nhà</Button></a> : 
+                                null}
+                            
+                            {(lesson.homeWork !== null ) ?
+                            <a href={lesson.homeWork.keyLink}><Button color="primary">Đáp án</Button></a> : null}
+                        </div>
                     </div>
-                    <div>
-                          <Button color="primary">Bài Tập Về Nhà</Button>
-                    </div>
-                </div>
+                </> : <h2>Chưa có bài học nào</h2> }
               </Col>  
               <Col lg="4">
                   <div  style={{
@@ -61,28 +114,28 @@ const View = (props) => {
                           bsSize="lg"
                           type="select"
                           name="Category"
+                          onChange={ async (e) =>{
+                            setChapterId(e.target.value);
+                          }}
                         >
-                            <option>Chương 1 - Hàm Số</option>
-                            <option>Chương 2 - Mũ Logarit</option>
-                            <option>Chương 3 - Tích Phân</option>
-                            <option>Chương 4 - Số Phức</option>
+                        {chapters.map((chapter,i) => <option key={i} value={chapter.id}>{chapter.chapterName}</option>)}
                           
                         </Input>
                   </div>
                     
-                    <Card>
+                    { (lessons.length !== 0 ) ? lessons.map( (lesson,i) => <Card key={i}>
                         <CardBody>
                             <div className="d-flex justify-content-between ">
                               <div>
                                   <div>
-                                      <h6 style={{fontWeight:"bold"}}>Bài 1 Tính Đơn Điệu Của Hàm Số</h6>
+                                      <h6 style={{fontWeight:"bold"}}>Bài {i + 1} {lesson.lessonName}</h6>
                                   </div>
                                   <div>
-                                        <CalendarIcon></CalendarIcon> 02-09-2021
+                                        <CalendarIcon></CalendarIcon> {lesson.date}
                                   </div>
                               </div>
                               <div >
-                                    <Button color="primary" style={{borderRadius:"15px", padding:"10px 27px"}}>
+                                    <Button onClick={() => setLesson(lesson)} color="primary" style={{borderRadius:"15px", padding:"10px 27px"}}>
                                           <PlayIcon></PlayIcon>
                                     </Button>
                               </div>
@@ -90,126 +143,8 @@ const View = (props) => {
                         </CardBody>
                       
                     </Card>
-                    <Card>
-                        <CardBody>
-                            <div className="d-flex justify-content-between ">
-                              <div>
-                                  <div>
-                                      <h6 style={{fontWeight:"bold"}}>Bài 2 Tính Đơn Điệu Của Hàm Số (Tiếp)</h6>
-                                  </div>
-                                  <div>
-                                        <CalendarIcon></CalendarIcon> 07-09-2021
-                                  </div>
-                              </div>
-                              <div >
-                                    <Button color="primary" style={{borderRadius:"15px", padding:"10px 27px"}}>
-                                          <PlayIcon></PlayIcon>
-                                    </Button>
-                              </div>
-                            </div>
-                        </CardBody>
-                      
-                    </Card>
-                    <Card>
-                        <CardBody>
-                            <div className="d-flex justify-content-between">
-                              <div>
-                                  <div>
-                                      <h6 style={{fontWeight:"bold"}}>Bài 3 Cực Trị Của Hàm Số</h6>
-                                  </div>
-                                  <div>
-                                        <CalendarIcon></CalendarIcon> 14-09-2021
-                                  </div>
-                              </div>
-                              <div >
-                                    <Button color="primary" style={{borderRadius:"15px", padding:"10px 27px"}}>
-                                          <PlayIcon></PlayIcon>
-                                    </Button>
-                              </div>
-                            </div>
-                        </CardBody>
-                      
-                    </Card>
-                    <Card>
-                        <CardBody>
-                            <div className="d-flex justify-content-between">
-                              <div>
-                                  <div>
-                                      <h6 style={{fontWeight:"bold"}}>Bài 4 Cực Trị Của Hàm Số (Tiếp)</h6>
-                                  </div>
-                                  <div>
-                                        <CalendarIcon></CalendarIcon> 21-09-2021
-                                  </div>
-                              </div>
-                              <div >
-                                    <Button color="primary" style={{borderRadius:"15px", padding:"10px 27px"}}>
-                                          <PlayIcon></PlayIcon>
-                                    </Button>
-                              </div>
-                            </div>
-                        </CardBody>
-                      
-                    </Card>
-                    <Card>
-                        <CardBody>
-                            <div className="d-flex justify-content-between ">
-                              <div>
-                                  <div>
-                                      <h6 style={{fontWeight:"bold"}}>Bài 5 Cực Trị Của Hàm Số (Tiếp)</h6>
-                                  </div>
-                                  <div>
-                                        <CalendarIcon></CalendarIcon> 28-09-2021
-                                  </div>
-                              </div>
-                              <div >
-                                    <Button color="primary" style={{borderRadius:"15px", padding:"10px 27px"}}>
-                                          <PlayIcon></PlayIcon>
-                                    </Button>
-                              </div>
-                            </div>
-                        </CardBody>
-                      
-                    </Card>
-                    <Card>
-                        <CardBody>
-                            <div className="d-flex justify-content-between ">
-                              <div>
-                                  <div>
-                                      <h6 style={{fontWeight:"bold"}}>Bài 6 Tìm Min-Max Hàm Số</h6>
-                                  </div>
-                                  <div>
-                                        <CalendarIcon></CalendarIcon> 07-10-2021
-                                  </div>
-                              </div>
-                              <div >
-                                    <Button color="primary" style={{borderRadius:"15px", padding:"10px 27px"}}>
-                                          <PlayIcon></PlayIcon>
-                                    </Button>
-                              </div>
-                            </div>
-                        </CardBody>
-                      
-                    </Card>
-                    <Card>
-                        <CardBody>
-                            <div className="d-flex justify-content-between">
-                              <div>
-                                  <div>
-                                      <h6 style={{fontWeight:"bold"}}>Bài 7 Tìm Min-Max Hàm Số (Tiếp)</h6>
-                                  </div>
-                                  <div>
-                                        <CalendarIcon></CalendarIcon> 17-10-2021
-                                  </div>
-                              </div>
-                              <div >
-                                    <Button color="primary" style={{borderRadius:"15px", padding:"10px 27px"}}>
-                                          <PlayIcon></PlayIcon>
-                                    </Button>
-                              </div>
-                            </div>
-                        </CardBody>
-                      
-                    </Card>
+                    ): <h5>Chưa có bài học nào ở chương này</h5>}
+                   
               </Col> 
         </Row>  
     </>

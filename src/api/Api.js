@@ -20,16 +20,23 @@ axiosClient.interceptors.request.use(async (config) => {
 });
 
 axiosClient.interceptors.response.use((response) => {
+   
     if (response && response.data !== undefined) {
         // only get data
         return response.data;
     }
 
     return response;
-}, (error) => {
+}, async (error) => {
+    // handle token expried
+    // auto redirect to sign in page
+
     // Handle errors
-    if (error.response) {
-        throw error.response;
+    if (error.response.data === "expried token") {
+        await localStorage.clear();
+        window.location.href = "/auth/sign-in";
+        await alert("Phiên làm việc của bạn đã hết hạn! vui lòng đăng nhập lại")
+        throw error.response.data;
     } else if(error.request){
         throw error.request
     }else{

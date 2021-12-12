@@ -25,6 +25,18 @@ const createExamResult = ([...listMarks]) => {
     const body = listMarks;
     return Api.post(`${url}/results/`, body);
 };
+
+const updateExamResult = (studentId, classId, examId, mark) => {
+    const body = {
+        id:{
+            classroomId:classId,
+            examId:examId
+        },
+        mark: mark
+    }
+    return Api.put(`${url}/results/students/${studentId}`, body);
+};
+
 const createExamType = (name) => {
 
     const body = {
@@ -83,6 +95,7 @@ const api = {
     getAllExamType, 
     createExamType, 
     createExam, 
+    updateExamResult,
     createExamResult,
     getAllExamInClass, getAllSubjectExamInMonthAtGrade, getAllStudentMarkInExam,
     getAllStudentNotTakeSubjectExamInMonthAtGrade }

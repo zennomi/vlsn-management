@@ -30,38 +30,28 @@ const CreateClass = () => {
       {
         label: 'Tên Lớp',
         field: 'fullName',
-        width: 150,
-        attributes: {
-          'aria-controls': 'DataTable',
-          'aria-label': 'Name',
-        },
+        
       },
       {
         label: 'Lịch Học',
         field: 'schedule',
-        width: 120,
+     
       },
       {
         label: 'Thời Gian',
         field: 'time',
-        width: 200,
-      },
-      {
-        label: 'Sĩ Số',
-        field: 'total',
-        sort: 'asc',
-        width: 80,
+  
       },
       {
         label: 'Giáo Viên',
         field: 'teacherName',
         sort: 'disabled',
-        width: 150,
+    
       },
       {
         label: 'Action',
         field: 'action',
-        width: 200,
+  
       }
     ],
     rows: [
@@ -71,6 +61,10 @@ const CreateClass = () => {
   
 
   const columns = [
+    {
+      dataField: 'id',
+      text: 'ID'
+    }, 
     {
       dataField: 'fullName',
       text: 'Họ Tên'
@@ -90,10 +84,10 @@ const CreateClass = () => {
   const students = [];
 
   function afterSaveCell(oldValue, newValue) {
-    console.log('--after save cell--');
-    console.log('New Value was apply as');
-    console.log(newValue);
-    console.log(`and the type is ${typeof newValue}`);
+    // console.log('--after save cell--');
+    // console.log('New Value was apply as');
+    // console.log(newValue);
+    // console.log(`and the type is ${typeof newValue}`);
   }
   const [listType, setTypes] = useState([]);
   const [listClazz, setListClass] = useState([]);
@@ -102,8 +96,14 @@ const CreateClass = () => {
   const [classroom,setClassroom] = useState({});
 
   const submitStudentMarkInClass = async (clazz) => {
-        const res = await ClassroomApi.getAllStudentInClassOnDate(clazz.id,examDate)
-        setListStudent(res);
+        const res = await ClassroomApi.getAllStudentInClassOnDate(clazz.id,examDate);
+        if(res.length !== 0){
+          setListStudent(res);
+        }
+        else{
+          const students = await ClassroomApi.getAllStudentInClass(clazz.id);
+          setListStudent(students);
+        }
         setClassroom(clazz);
   }
 
@@ -113,12 +113,10 @@ const CreateClass = () => {
       setTypes(result);
     }
     getSuggestType();
-    console.log("render");
+    
   }, []);
 
-  useEffect(() => {
-    console.log("rerender");
-  });
+  
   listClazz.map(clazz => datatable.rows.push(
     {
       fullName: clazz.subjectName + " " + clazz.grade + clazz.className,
@@ -174,11 +172,10 @@ const CreateClass = () => {
     
             onSubmit={async (values) => {
 
-                  console.log(values);
-                  console.log(students);
+                  
                   const dateFormat = Moment(values.date).format('DD-MM-YYYY');
                   const exam = await ExamApi.createExam(values.examName,values.type.typeId,dateFormat);
-                  console.log(exam);
+              
                   const submitMark = [];
                   students.map(student => submitMark.push({
                     studentId:student.id,
@@ -251,7 +248,7 @@ const CreateClass = () => {
                         bsSize="lg"
                         type="text"
                         name="examName"
-                        placeholder="Enter Date Attendance"
+                        placeholder="VD: Chương 1: Thể tích khối đa diện"
                         component={ReactstrapInput}
                       />
                   </Col>
@@ -267,12 +264,12 @@ const CreateClass = () => {
                             onChange={ async (e) =>{
                               // do something
                               handleChange(e);
-                              console.log(e.target.value);
+                              // console.log(e.target.value);
                               const date = new Date(e.target.value);
-                              console.log(date.getDay() + 1);
+                              // console.log(date.getDay() + 1);
                               const schedule = date.getDay() + 1;
                               const listClass = await ClassroomApi.getListClassroomByScheduleAndGrade(schedule,values.grade);
-                              console.log(listClass);
+                              // console.log(listClass);
                               setListClass(listClass);
                               const dateFormat = Moment(date).format('YYYY-MM-DD');
                               setDate(dateFormat);
@@ -286,7 +283,7 @@ const CreateClass = () => {
               <hr />
               <MDBDataTableV5 
               hover 
-              scrollX 
+              responsive
               searchTop
               searchBottom={false}
               entriesOptions={[5,10, 20, 50,100]} entries={5} pagesAmount={4} data={datatable} />
@@ -295,21 +292,22 @@ const CreateClass = () => {
                   keyField="id"
                   data={ students }
                   columns={ columns }
-                  cellEdit={ cellEditFactory({
-                    mode: 'click',
-                    blurToSave: true,
-                    afterSaveCell
-                  }) }
+                  search
                 >
                   {
                     props => (
                       <div>
+                        <SearchBar { ...props.searchProps } />
+                        <hr />
                         <BootstrapTable
                           { ...props.baseProps }
+                          cellEdit={ cellEditFactory({
+                            mode: 'click',
+                            blurToSave: true,
+                            afterSaveCell
+                          }) }
                         />
-                        <hr />
-                     
-                        <SearchBar { ...props.searchProps } />
+                        
                       </div>
                     )
                   }

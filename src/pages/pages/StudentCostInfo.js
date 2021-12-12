@@ -9,15 +9,24 @@ import {
   Container,
   Input,
   Row,
-  Button
+  Button,
+  Badge,
+  Modal,
+  ModalBody
 } from "reactstrap";
 
 import { MDBDataTableV5 } from 'mdbreact';
 import Header from "./Header";
 import ClassroomApi from "../../api/ClassroomApi";
-
-
-
+import { connect } from "react-redux";
+import {  withRouter } from "react-router-dom";
+import { Filter } from "react-feather";
+import { selectFistName } from "../../redux/selectors/userLoginInfoSelector";
+import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
+import CheckIcon from "@material-ui/icons/Check";
+import { green } from "@material-ui/core/colors";
+import { Box } from "@material-ui/core";
+import ManagerApi from "../../api/ManagerApi";
 
 const StudentCostInfo = (props) =>{ 
 
@@ -26,42 +35,42 @@ const StudentCostInfo = (props) =>{
       {
         label: 'Họ Tên',
         field: 'fullName',
-        width: 200,
+    
       },
       {
         label: 'Trường học',
         field: 'school',
-        width: 200,
+    
       },
       {
         label: 'Học Phí',
         field: 'status',
-        width: 100,
+   
       },
       {
         label: 'Lớp',
         field: 'classroom',
-        width: 100,
+
       },
       {
         label: 'SĐT',
         field: 'studentNumber',
-        width: 200,
+   
       },
       {
         label: 'Tên PH',
         field: 'parentName',
-        width: 150,
+
       },
       {
         label: 'SĐT PH',
         field: 'parentNumber',
-        width: 150,
+
       },
       {
         label: 'Action',
         field: 'action',
-        width: 100,
+   
       },
     ],
     rows: [
@@ -74,42 +83,42 @@ const StudentCostInfo = (props) =>{
       {
         label: 'Họ Tên',
         field: 'fullName',
-        width: 200,
+ 
       },
       {
         label: 'Trường học',
         field: 'school',
-        width: 200,
+
       },
       {
         label: 'Học Phí',
         field: 'status',
-        width: 100,
+
       },
       {
         label: 'Lớp',
         field: 'classroom',
-        width: 100,
+   
       },
       {
         label: 'SĐT',
         field: 'studentNumber',
-        width: 200,
+ 
       },
       {
         label: 'Tên PH',
         field: 'parentName',
-        width: 150,
+     
       },
       {
         label: 'SĐT PH',
         field: 'parentNumber',
-        width: 150,
+
       },
       {
         label: 'Action',
         field: 'action',
-        width: 100,
+
       },
     ],
     rows: [
@@ -121,7 +130,44 @@ const StudentCostInfo = (props) =>{
   const [subject,setSubject] = useState("Toán Đại");
   const [listActiveStudent, setListActive] = useState([]);
   const [listInActiveStudent, setListInActive] = useState([]);
+  const [isLoading,setIsLoading] = useState(false);
+  const [success,setSuccess] = useState(false);
+  const [isLoadingResetMonth,setIsLoadingResetMonth] = useState(false);
+  const [successResetMonth,setSuccesResetMonth] = useState(false);
 
+  const handleResetCostInfo = async () => {
+    var requested = window.confirm("Bạn có chắc chắn muốn tạo lại chu kì học phí mới");
+        if(!isLoading && requested){
+          setSuccess(false);
+          setIsLoading(true);
+          const reset = await ManagerApi.resetCostInSubjectInGrade(subject,grade);
+          if(reset === "reset successful!"){
+            setSuccess(true);
+            resetForm();
+            setTimeout(() => {
+              setIsLoading(false);
+            },1000)
+          }
+        }
+  }
+
+  const handleResetMonth = async () => {
+    var requested = window.confirm("Bạn có chắc chắn muốn xóa các bản điểm danh và bản ghi btvn trước đây 3 tháng ");
+
+    if(!isLoadingResetMonth && requested){
+      setSuccesResetMonth(false);
+      setIsLoadingResetMonth(true);
+      const reset = await ManagerApi.resetMonth();
+      if(reset === "reset successful!"){
+        setSuccesResetMonth(true);
+        setTimeout(() => {
+          setIsLoadingResetMonth(false);
+          resetForm();
+        },1500)
+       
+      }
+    }
+}
 
   const deleteActiveStudentInfo = async (studentId,classId) => {
    
@@ -164,7 +210,9 @@ const StudentCostInfo = (props) =>{
     firstName: st.firstName,
     lastName: st.lastName,
     fullName: st.fullName,
-    status: st.status,
+    status: <Badge color="danger" className="mr-1 my-1">
+                {st.status}
+            </Badge>,
     school: st.school,
     grade: st.grade,
     className: st.className,
@@ -179,7 +227,9 @@ const StudentCostInfo = (props) =>{
     firstName: st.firstName,
     lastName: st.lastName,
     fullName: st.fullName,
-    status: st.status,
+    status: <Badge color="success" className="mr-1 my-1">
+              {st.status}
+            </Badge>,
     school: st.school,
     grade: st.grade,
     className: st.className,
@@ -191,126 +241,178 @@ const StudentCostInfo = (props) =>{
   }))
 
   datatable.rows.map(row => 
-     row.action = <Button color="primary" style={{borderRadius: "25px"}} onClick={() => {if(window.confirm('Bạn có chắc chắn muốn xóa không?')){deleteInActiveStudentInfo(row.id,row.classroomId)};}}>Delete</Button>  
+     row.action = 
+     <Button color="primary" style={{borderRadius: "25px"}} 
+     onClick={() => {
+       if(window.confirm('Bạn có chắc chắn muốn xóa không?')){deleteInActiveStudentInfo(row.id,row.classroomId)};
+      }}>Delete</Button>  
   )
   datatable1.rows.map(row => 
-    row.action = <Button color="primary" style={{borderRadius: "25px"}} onClick={() => {if(window.confirm('Bạn có chắc chắn muốn xóa không?')){deleteActiveStudentInfo(row.id,row.classroomId)};}}>Delete</Button>  
+    row.action = 
+    <Button color="primary" 
+    style={{borderRadius: "25px"}}
+     onClick={() => {if(window.confirm('Bạn có chắc chắn muốn xóa không?')){deleteActiveStudentInfo(row.id,row.classroomId)};}}
+     >Delete</Button>  
 )
   return(
   <> 
-    <Card>
-      <CardHeader>
-        <div style={{display:"flex", justifyContent:"flex-start"}}>
-        <CardTitle tag="h5" className="mb-0">
-          Học Sinh Chưa Nộp Học Phí
-        </CardTitle>
-        
-              <Row className="ml-auto">
-                    <Col  >
-                        <Input 
-                              
-                  
-                              id ="subject"
-                              type="select"
-                              name="subject"
-                              value={subject}
-                              onChange={ async (e) =>{
-                                  setSubject(e.target.value);
-                              }}
-                            >
-                              <option value = "Toán Đại">Toán Đại</option>
-                              <option value = "Toán Hình">Toán Hình</option>
-                              <option value = "Tiếng Anh">Tiếng Anh</option>
-                              <option value = "Lý">Lý</option>
-                              <option value = "Hóa">Hóa</option>
-                              <option value = "Văn">Văn</option>
-                            
-                      </Input>
-                    </Col>
+    <Row >
+      <Col xs="auto" className="ml-auto text-right mt-n1">
+            <Button onClick={() => handleResetCostInfo()} color="primary" className="shadow-sm mr-1">
+              <Filter className="feather" /> Chu kỳ mới
+            </Button>
+            <Button onClick={() => handleResetMonth()} color="primary" className="shadow-sm mr-1">
+              <Filter className="feather" /> Reset tháng
+            </Button>
+      </Col>
+        <Modal isOpen={isLoading} toggle={setIsLoading}>
+          <ModalBody>
+                {!success ? 
+                <>
+                Đang tạo lại chu kỳ học phí mới.... 
+                <CircularProgress />
+                </> : <> <CheckIcon style={{color:green[500]}}/> thành công </> }
+          </ModalBody>
                     
-                    <Col  >
-                        <Input 
-                              id ="grade"
-                              type="select"
-                              name="grade"
-                              value={grade}
-                              onChange={ (e) =>{
-                                  setGrade(e.target.value);
-                              }}
-                            >
-                              <option value = "12">Khối 12</option>
-                              <option value = "11">Khối 11</option>
-                              <option value = "10">Khối 10</option>
-                              <option value = "9">Khối 9</option>
-                              <option value = "8">Khối 8</option>
-                              <option value = "7">Khối 7</option>
-                              <option value = "6">Khối 6</option>
-                      </Input>
-                    </Col>
-                </Row>
+      </Modal> 
+      <Modal isOpen={isLoadingResetMonth} toggle={setIsLoadingResetMonth}>
+          <ModalBody>
+                {!successResetMonth ? 
+                <>
+                Đang xóa các bản ghi cách đây 3 tháng... 
+                <CircularProgress />
+                </> :<Box> <CheckIcon style={{color:green[500]}} /> Xóa thành công </Box> }
+          </ModalBody>
+                    
+      </Modal> 
+    </Row>
+    <Row>
+      <Col>
+        <Card>
+          <CardHeader>
+            <div style={{display:"flex", justifyContent:"flex-start"}}>
+            <CardTitle tag="h5" className="mb-0">
+              Học Sinh Chưa Nộp Học Phí
+            </CardTitle>
             
-        </div>
-      </CardHeader>
-      <CardBody>
-          <MDBDataTableV5 hover scrollX entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
-      </CardBody>
-    </Card>
-    <Card>
-      <CardHeader>
-        <div style={{display:"flex", justifyContent:"flex-start"}}>
-        <CardTitle tag="h5" className="mb-0">
-          Học Sinh Đã Nộp Học Phí
-        </CardTitle>
-        
-              <Row className="ml-auto">
-                    <Col  >
-                        <Input 
-                              
-                  
-                              id ="subject"
-                              type="select"
-                              name="subject"
-                              value={subject}
-                              onChange={ async (e) =>{
-                                  setSubject(e.target.value);
-                              }}
-                            >
-                              <option value = "Toán Đại">Toán Đại</option>
-                              <option value = "Toán Hình">Toán Hình</option>
-                              <option value = "Tiếng Anh">Tiếng Anh</option>
-                              <option value = "Lý">Lý</option>
-                              <option value = "Hóa">Hóa</option>
-                              <option value = "Văn">Văn</option>
-                            
-                      </Input>
-                    </Col>
-                    <Col  >
-                        <Input 
-                              id ="grade"
-                              type="select"
-                              name="grade"
-                              value={grade}
-                              onChange={ (e) =>{
-                                  setGrade(e.target.value);
-                              }}
-                            >
-                              <option value = "12">Khối 12</option>
-                              <option value = "11">Khối 11</option>
-                              <option value = "10">Khối 10</option>
-                              <option value = "9">Khối 9</option>
-                              <option value = "8">Khối 8</option>
-                              <option value = "7">Khối 7</option>
-                              <option value = "6">Khối 6</option>
-                      </Input>
-                    </Col>
-                </Row>
+                  <Row className="ml-auto">
+                        <Col  >
+                            <Input 
+                                  
+                      
+                                  id ="subject"
+                                  type="select"
+                                  name="subject"
+                                  value={subject}
+                                  onChange={ async (e) =>{
+                                      setSubject(e.target.value);
+                                  }}
+                                >
+                                  <option value = "Toán Đại">Toán Đại</option>
+                                  <option value = "Toán Hình">Toán Hình</option>
+                                  <option value = "Tiếng Anh">Tiếng Anh</option>
+                                  <option value = "Lý">Lý</option>
+                                  <option value = "Hóa">Hóa</option>
+                                  <option value = "Văn">Văn</option>
+                                
+                          </Input>
+                        </Col>
+                        
+                        <Col  >
+                            <Input 
+                                  id ="grade"
+                                  type="select"
+                                  name="grade"
+                                  value={grade}
+                                  onChange={ (e) =>{
+                                      setGrade(e.target.value);
+                                  }}
+                                >
+                                  <option value = "12">Khối 12</option>
+                                  <option value = "11">Khối 11</option>
+                                  <option value = "10">Khối 10</option>
+                                  <option value = "9">Khối 9</option>
+                                  <option value = "8">Khối 8</option>
+                                  <option value = "7">Khối 7</option>
+                                  <option value = "6">Khối 6</option>
+                          </Input>
+                        </Col>
+                    </Row>
+                
+            </div>
+          </CardHeader>
+          <CardBody>
+              <MDBDataTableV5 
+              hover 
+              responsive
+              searchTop
+              searchBottom={false}
+              entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader>
+            <div style={{display:"flex", justifyContent:"flex-start"}}>
+            <CardTitle tag="h5" className="mb-0">
+              Học Sinh Đã Nộp Học Phí
+            </CardTitle>
             
-        </div>
-      </CardHeader>
-      <CardBody>
-          <MDBDataTableV5 hover scrollX entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable1} />
-      </CardBody>
-    </Card>
+                  <Row className="ml-auto">
+                        <Col  >
+                            <Input 
+                                  
+                      
+                                  id ="subject"
+                                  type="select"
+                                  name="subject"
+                                  value={subject}
+                                  onChange={ async (e) =>{
+                                      setSubject(e.target.value);
+                                  }}
+                                >
+                                  <option value = "Toán Đại">Toán Đại</option>
+                                  <option value = "Toán Hình">Toán Hình</option>
+                                  <option value = "Tiếng Anh">Tiếng Anh</option>
+                                  <option value = "Lý">Lý</option>
+                                  <option value = "Hóa">Hóa</option>
+                                  <option value = "Văn">Văn</option>
+                                
+                          </Input>
+                        </Col>
+                        <Col  >
+                            <Input 
+                                  id ="grade"
+                                  type="select"
+                                  name="grade"
+                                  value={grade}
+                                  onChange={ (e) =>{
+                                      setGrade(e.target.value);
+                                  }}
+                                >
+                                  <option value = "12">Khối 12</option>
+                                  <option value = "11">Khối 11</option>
+                                  <option value = "10">Khối 10</option>
+                                  <option value = "9">Khối 9</option>
+                                  <option value = "8">Khối 8</option>
+                                  <option value = "7">Khối 7</option>
+                                  <option value = "6">Khối 6</option>
+                          </Input>
+                        </Col>
+                    </Row>
+                
+            </div>
+          </CardHeader>
+          <CardBody>
+              <MDBDataTableV5 
+                hover
+                responsive
+                searchTop
+                searchBottom={false}
+                entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable1} />
+          </CardBody>
+        </Card>
+      </Col>
+    </Row>
   </>
     );
 }
@@ -335,6 +437,13 @@ const CostInfo = (props) => {
 //     students: selectListStudent(state)
 //   };
 // };
+const mapGlobalStateToProps = state => {
+  return {
+    firstName: selectFistName(state),
+    // role: selectRole(state),
 
+  };
+};
+export default withRouter(connect(mapGlobalStateToProps)(CostInfo));
 // export default connect(mapGlobalStateToProps, { getAllStudentAction })(Clients);
-export default CostInfo;
+// export default CostInfo;

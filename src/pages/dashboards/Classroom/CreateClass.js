@@ -3,7 +3,7 @@ import {
   Card,
   CardBody,
   CardHeader,
-  CardTitle,
+ 
   Col,
   Container,
   Row,
@@ -15,6 +15,7 @@ import { Formik,FastField, Form  } from 'formik';
 import { ReactstrapInput } from "reactstrap-formik";
 import { Autocomplete } from '@material-ui/lab';
 import TextField from '@material-ui/core/TextField';
+import * as Yup from 'yup';
 import TeacherApi from "../../../api/TeacherApi";
 import MentorApi from "../../../api/MentorApi";
 import ClassroomApi from "../../../api/ClassroomApi";
@@ -27,6 +28,7 @@ const CreateClass = () => {
   useEffect(() => {
     const getSuggestTeacher = async () =>{
       const result = await TeacherApi.getListTeacherBySubject("Toán");
+      console.log(result);
       setSuggest(result);
     }
     const getSuggestMentor = async () =>{
@@ -35,12 +37,10 @@ const CreateClass = () => {
     }
     getSuggestTeacher();
     getSuggestMentor();
-    console.log("render");
+    
   }, []);
 
-  useEffect(() => {
-    console.log("rerender");
-  });
+  
 
 
   return(
@@ -51,7 +51,7 @@ const CreateClass = () => {
       <Col>
         <Card>
           <CardHeader>
-            <CardTitle tag="h5" className="mb-0">Empty card</CardTitle>
+            
           </CardHeader>
           <CardBody>
           <Formik
@@ -67,8 +67,29 @@ const CreateClass = () => {
                 listMentor: []
               }
             }
+
+            validationSchema={
+              Yup.object({
+                className: Yup.string()
+                  .required('bắt buộc'),
+
+                date: Yup.string()
+                  .required('bắt buộc'),
+
+                start: Yup.string()
+                  .required('bắt buộc'),
+
+                end: Yup.string()
+                  .required('bắt buộc'),
+                
+                
+              })
+            }
+
             onSubmit={async (values) => {
 
+              console.log(values);
+              
               const result = await ClassroomApi.createClass(
                 values.className,
                 values.subject,
@@ -240,7 +261,7 @@ const CreateClass = () => {
                             id="multiple-limit-tags"
                             name="listMentor"
                             onChange={(e, value) => {
-                              console.log(value)
+                             
                               setFieldValue("listMentor", value)
                             }}
                             options={suggestMentor}
@@ -256,7 +277,7 @@ const CreateClass = () => {
               </Row>
               <Row>
                     <Col>
-                      <Button  type="submit" >Tạo lớp học</Button>
+                      <Button color="primary" type="submit" >Tạo lớp học</Button>
                     </Col>
               </Row>
             </Form>

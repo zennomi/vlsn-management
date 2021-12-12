@@ -7,6 +7,19 @@ const getListStudentAttendanceToday = (classId) => {
    
     return Api.get(`${url}/classes/${classId}`);
 }
+
+const deleteAttendance = (classId, studentId, date) => {
+    const body = {
+        dateId: date
+    }
+    return Api.delete(`${url}/classes/${classId}/students/${studentId}`,{ data: body})
+}
+const deleteSubAttendance = (classId, studentId, date) => {
+    const body = {
+        dateId: date
+    }
+    return Api.delete(`${url}/classes/${classId}/sub-students/${studentId}`,{ data: body})
+}
 const getListStudentAttendanceInClass = (classId) => {
    
     return Api.get(`${url}/classes/${classId}/main`);
@@ -54,6 +67,12 @@ const studentListAtten = ([...listAtten]) => {
     const body = [...listAtten];
     return Api.post(`${url}/students/`,body);
 }
+const getTotalStudentInClassInDate = (classId, dateId) => {
+    const parameters = {
+        dateId: dateId
+    }
+    return Api.get(`${url}/students/classes/${classId}/dates`,{params:parameters });
+}
 // export
 const api = {
      getListStudentAttendanceToday,
@@ -65,5 +84,8 @@ const api = {
      getListSubStudentInClassToday,
      studentListAtten,
      getListAbsentStudentInWeeklyDay,
-     getListStudentAttendanceInClass }
+     getListStudentAttendanceInClass,
+     deleteAttendance,
+     deleteSubAttendance,
+     getTotalStudentInClassInDate }
 export default api;

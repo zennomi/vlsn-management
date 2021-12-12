@@ -5,10 +5,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
   Row,
   Col,
   Button,
@@ -19,7 +15,6 @@ import {
   Label
 } from "reactstrap";
 import { MDBDataTableV5 } from 'mdbreact';
-import { MoreHorizontal } from "react-feather";
 import { FastField, Formik, Form } from 'formik';
 import { ReactstrapInput } from "reactstrap-formik";
 import * as Yup from 'yup';
@@ -29,7 +24,11 @@ import LessonApi from "../../../api/LessonApi";
 import VideoApi from "../../../api/VideoApi";
 import ChapterApi from "../../../api/ChapterApi";
 import HomeWorkApi from "../../../api/HomeWorkApi";
+import AttendanceApi from "../../../api/AttendanceApi";
 import Moment from 'moment';
+import View from "@material-ui/icons/Visibility"
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/Delete";
 const CourseList = (props) =>{
 
   const clazz = props.clazz;
@@ -46,14 +45,15 @@ const CourseList = (props) =>{
 
   const [modalCreateLesson, setModalCreateLesson] = useState(false);
   
+  const [listStudentNotSubmittedHomeWork,setListStudentNotSubmittedHomeWork] = useState([]);
+
   const [lessons, setLessons] = useState([]);
   const [lesson,setLesson] = useState({});
+
+  const [totalStudentInDate,setTotalStudentInDate] = useState(0);
+
   const datatable = {
     columns: [
-      {
-        label: '',
-        field: 'action',
-      },
       {
         label: 'ND Bài Học',
         field: 'lessonName',
@@ -70,11 +70,6 @@ const CourseList = (props) =>{
        
       },
       {
-        label: 'Sĩ Số',
-        field: 'numberStudent',
-      
-      },
-      {
         label: 'VIDEO',
         field: 'videoCheck',
       
@@ -89,7 +84,10 @@ const CourseList = (props) =>{
         field: 'misson',
      
       },
-      
+      {
+        label: '',
+        field: 'action',
+      },
     ],
     rows: [
         // {
@@ -113,20 +111,10 @@ const CourseList = (props) =>{
         field: 'school',
  
       },
-      {
-        label: 'SĐT PH',
-        field: 'parentNumber',
-        sort: 'asc',
-      
-      },
       
     ],
     rows: [
-      {
-        fullName:"Phương Xuân Thủy An",
-        school:"FPT",
-        parentNumber:"09045090290"
-      }
+      
     ],
   }; 
   
@@ -140,9 +128,32 @@ const CourseList = (props) =>{
       setLesson(lesson);
       setModalLesson(true);
   } 
+
+  const toggleDelete = async (lesson) => {
+    var requested = window.confirm("Bạn có chắc chắn muốn xóa bài học này? ");
+  
+    if ( requested) {
+        const res = await LessonApi.deleteLesson(lesson.id);
+        if (res === "delete successful!"){
+            const newLessonList = await LessonApi.getAllLessonInClass(clazz.id);
+            setLessons(newLessonList);
+            alert("Xóa bài học thành công!");
+        }
+    }
+  };
+
   const createNewHomeWork = (lesson) => {
       setLesson(lesson);
       setModalHomeWork(true)
+  }
+
+  const watchingStudentNotSubmitedHomeWorkInLesson = async (lesson) => {
+      const res = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.id,lesson.id);
+      const totalStudent = await AttendanceApi.getTotalStudentInClassInDate(clazz.id,lesson.date);
+      setTotalStudentInDate(totalStudent);
+      if (res !== "empty"){
+        setListStudentNotSubmittedHomeWork(res);
+      }
   }
 
     useEffect(() => {
@@ -177,22 +188,20 @@ const CourseList = (props) =>{
             null }
           </>,
           misson: (lesson.homeWork !== null) ? lesson.homeWork.misson : "",
-          numberStudent:"78",
           action:<div style={{display:"flex"}}>
-                    <button >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                        </svg>
+                    <button style={{background:"none",border:"none"}}  onClick={() => watchingStudentNotSubmitedHomeWorkInLesson(lesson)} >
+                          <View color ="primary" />
                     </button>
-                    <button onClick={() => updateLesson(lesson)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"  viewBox="0 0 16 16">
-                          <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                        </svg>
+                    <button style={{background:"none",border:"none"}} onClick={() => updateLesson(lesson)}>
+                          <Edit color="action"/>
+                    </button>
+                    <button style={{background:"none",border:"none"}} onClick={() => toggleDelete(lesson)}>
+                        <Delete color="secondary"/>
                     </button>
                 </div>
     }))
-  
+    
+    datatable2.rows = listStudentNotSubmittedHomeWork;
 
   return(
   <>
@@ -650,12 +659,13 @@ const CourseList = (props) =>{
                   <CardHeader>
                     
                     <CardTitle tag="h5" className="mb-0">
-                        HỌC SINH THIẾU BTVN
+                        HỌC SINH THIẾU BTVN: {datatable2.rows.length}/{totalStudentInDate}
                     </CardTitle>
                   </CardHeader>
                   <CardBody>
                         <MDBDataTableV5 
-                        responsive hover  
+                        responsive 
+                        hover  
                         searchTop searchBottom={false}
                         entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={4} data={datatable2} />
                     </CardBody>
@@ -668,69 +678,80 @@ const CourseList = (props) =>{
 }
 
 const AttendanceList = (props) => {
+
+  const classId = props.clazz.id;
+  const [students,setStudents]=useState([]);
+
   const datatable = {
     columns: [
       {
         label: 'Họ Tên',
         field: 'fullName',
-   
-        attributes: {
-          'aria-controls': 'DataTable',
-          'aria-label': 'Name',
-        },
       },
       {
-        label: 'Trường',
+        label: 'Trường học',
         field: 'school',
- 
+
+      },
+      {
+        label: 'SĐT',
+        field: 'studentNumber',
+
       },
       {
         label: 'SĐT PH',
         field: 'parentNumber',
-        sort: 'asc',
-      
+     
       },
-      
+
     ],
     rows: [
-      
-    ],
-  };  
-  
-
-  useEffect(() => {
-    const getAllExamMark = async () =>{
-      
-    }
-    getAllExamMark();
+       
+    ]
+  }; 
  
-  }, []);
+  useEffect(() => {
+    const getListStudentInClass = async () =>{
+      const listStudents = await AttendanceApi.getListStudentAttendanceInClass(classId);
+      setStudents(listStudents);
+    }
+    getListStudentInClass();
+ 
+  }, [classId]);
 
+  const first = (students[0] !== undefined) ? students[0] : {listAtten:[]};
 
-
-  return (
-    <Card className="flex-fill w-100">
-      <CardHeader>
-        <div className="card-actions float-right">
-          <UncontrolledDropdown>
-            <DropdownToggle tag="a">
-              <MoreHorizontal />
-            </DropdownToggle>
-            <DropdownMenu right>
-              <DropdownItem>Action</DropdownItem>
-              <DropdownItem>Another Action</DropdownItem>
-              <DropdownItem>Something else here</DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        </div>
-        <CardTitle tag="h5" className="mb-0">
-            DANH SÁCH HỌC SINH
-        </CardTitle>
-      </CardHeader>
-      <CardBody>
-            <MDBDataTableV5 responsive hover bordered borderless={false}  entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={4} data={datatable} />
+  first.listAtten.map(res =>
+      datatable.columns.push({
+        label: res.date,
+        field: res.date,
+      })  
+  )
+  students.map(st => 
+      st.listAtten.map(res => 
+          st[res.date] = res.status
+      )
+    
+  )
+  datatable.rows = students;
+  console.log(students);
+  return(
+  <> 
+      <div className='header' style={{marginBottom:"5px"}}>
+        <h1 className='title'>DANH SÁCH ĐIỂM DANH</h1>
+          
+          
+      </div>
+      <Card>
+        <CardBody>
+            <MDBDataTableV5 
+            responsive 
+            searchTop searchBottom={false}
+            bordered borderless={false} hover  entriesOptions={[50,100, 150, 200,300,400]} 
+            entries={50} pagesAmount={50} data={datatable} />
         </CardBody>
-    </Card>
+      </Card>
+  </>
     );
 }
 const Course = (props) =>{
@@ -745,7 +766,7 @@ const Course = (props) =>{
     <CourseList {...props} setExam={setExam} exam={exam} />
     <Row>
         <Col>
-              <AttendanceList/>
+              <AttendanceList {...props}/>
         </Col>
     </Row>
   </>

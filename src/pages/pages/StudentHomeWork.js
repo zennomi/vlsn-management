@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 
 import {
   Card,
@@ -9,16 +9,48 @@ import {
   Container,
   Input,
   Row,
-
+  Badge,
+  Button
 } from "reactstrap";
 
 import { MDBDataTableV5 } from 'mdbreact';
 import Header from "./Header";
 import {HorizontalBar} from 'react-chartjs-2';
-
-
+import HomeWorkApi from "../../api/HomeWorkApi";
+import StudentApi from "../../api/StudentApi";
+function percentage(partialValue, totalValue) {
+  if (totalValue === 0){
+    return 0;
+  }
+  return ((partialValue/totalValue) * 100).toFixed(3);
+} 
 
 const SubmittedStudentInWeek = (props) =>{ 
+
+  
+  
+
+  
+  const resetPage = props.resetPage;
+  const setBlackList = props.setBlackList;
+  const date = new Date();
+  const nowMonth = date.getMonth() + 1;
+ 
+  var weekNow = 0;
+  if(date.getDate() <= 7){
+      weekNow = 1;
+  }else if (date.getDate() > 7 && date.getDate() <= 14){
+      weekNow = 2;
+  }else if (date.getDate() > 14 && date.getDate() <= 21){
+      weekNow = 3;
+  }else if (date.getDate() > 21 && date.getDate() <= 31){
+      weekNow = 4;
+  }
+  
+  const [students, setStudents] = useState([]);
+  const [grade,setGrade] = useState(12);
+  const [subject,setSubject] = useState("Toán Đại");
+  const [month,setMonth] = useState(nowMonth);
 
   const datatable = {
     columns: [
@@ -39,42 +71,33 @@ const SubmittedStudentInWeek = (props) =>{
       },
       {
         label: 'Lớp',
-        field: 'absentClass',
+        field: 'className',
         sort: 'asc',
    
       },
       {
         label: 'Tuần 1',
-        field: 'week1',
+        field: 'first',
        
       },
       {
         label: 'Tuần 2',
-        field: 'week2',
+        field: 'second',
      
       },
       {
         label: 'Tuần 3',
-        field: 'week3',
+        field: 'third',
   
       },
       {
         label: 'Tuần 4',
-        field: 'week4',
+        field: 'fourth',
   
       },
     ],
     rows: [
-       {
-          fullName:"Nguyễn Đức Thắng",
-          school:"Thăng Long",
-          studentNumber:"0965993506",
-          absentClass:"12A",
-          week1:"y",
-          week2:"y",
-          week3:"y",
-          week4:"y",
-       }
+      
     ]
   }; 
   const data = {
@@ -82,7 +105,7 @@ const SubmittedStudentInWeek = (props) =>{
     datasets: [
       {
         label: '% học sinh hoàn thành btvn ',
-        data: [77, 90.5, 80, 88,0],
+        data: [],
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',
@@ -126,19 +149,80 @@ const SubmittedStudentInWeek = (props) =>{
   };
 
   useEffect(() => {
-    const getAllAbsentStudentAttendanceInWeeklyDay = async () =>{
-        
+    const getListStudentSubmitHomeWorkOfSubjectInGrade = async () =>{
+        const res = await HomeWorkApi.getAllSubmitStudentOfSubjectInGrade(grade,subject,month);
+        setStudents(res);
     }
-    getAllAbsentStudentAttendanceInWeeklyDay();
-    console.log("render");
-  }, []);
+    getListStudentSubmitHomeWorkOfSubjectInGrade();
+  }, [grade,subject,month,resetPage]);
+
+  students.map(st => datatable.rows.push(
+    {
+          fullName:st.fullName,
+          school:st.school,
+          studentNumber:st.studentNumber,
+          className: grade+st.className,
+          first:st.first,
+          second:st.second,
+          third:st.third,
+          fourth:st.fourth,
+    }
+  ))
+  
+
+  var total = [0,0,0,0];
+
+  for(var i = 0 ; i < students.length ; i ++){
+    if(students[i].first !== null){
+      total[0]++;
+    }
+    if(students[i].second !== null){
+      total[1]++;
+    }
+    if(students[i].third !== null){
+      total[2]++;
+    }
+    if(students[i].fourth !== null){
+      total[3]++;
+    }
+  }
+  for (var k = 0 ; k < 4 ; k ++){
+      total[k] = percentage(total[k],students.length);
+  }
+  
+  data.datasets[0].data = total;
 
 
   useEffect(() => {
-   
-  });
+    const getBlackList =  () =>{
+      var blackList = [];
+      for (var m = 0 ; m < students.length ; m ++){
+        var totalSubmit = 0;
+        if(students[m].first !== null){
+          totalSubmit++;
+        }
+        if(students[m].second !== null){
+          totalSubmit++;
+        }
+        if(students[m].third !== null){
+          totalSubmit++;
+        }
+        if(students[m].fourth !== null){
+          totalSubmit++;
+        }
+        if (totalSubmit <= weekNow - 2 ){ // thiếu 2 lần btvn
+          blackList.push(students[m]);
+        }
+      }
+      setBlackList(blackList);
+    }
 
- 
+    getBlackList();
+  }, [students,weekNow,setBlackList]);
+
+  
+
+
   
   return(
   <> 
@@ -160,7 +244,7 @@ const SubmittedStudentInWeek = (props) =>{
                                   id="grade"
                                   name="grade"
                                   onChange={ async (e) =>{
-                                    
+                                      setGrade(e.target.value);
                                 }}
                                 >
                                                 <option value = "12">Khối 12</option>
@@ -178,7 +262,7 @@ const SubmittedStudentInWeek = (props) =>{
                                   id="subject"
                                   name="subject"
                                   onChange={ async (e) =>{
-                                    
+                                      setSubject(e.target.value);
                                 }}
                                 >
                                               <option value="Toán Đại">Toán Đại</option>
@@ -193,24 +277,15 @@ const SubmittedStudentInWeek = (props) =>{
                             <Col xs="auto">
                               <Input 
                                   type="select"
-                                  id="subject"
-                                  name="subject"
+                                  id="month"
+                                  name="month"
                                   onChange={ async (e) =>{
-                                    
+                                    setMonth(e.target.value);
                                 }}
                                 >
-                                              <option value="1">Tháng 1</option>
-                                              <option value="2">Tháng 2</option>
-                                              <option value="3">Tháng 3</option>
-                                              <option value="4">Tháng 4</option>
-                                              <option value="5">Tháng 5</option>
-                                              <option value="6">Tháng 6</option>
-                                              <option value="7">Tháng 7</option>
-                                              <option value="8">Tháng 8</option>
-                                              <option value="9">Tháng 9</option>
-                                              <option value="10">Tháng 10</option>
-                                              <option value="11">Tháng 11</option>
-                                              <option value="12">Tháng 12</option>
+                                          {<option value={nowMonth}>Tháng {nowMonth}</option>} 
+                                          {<option value={nowMonth - 1}>Tháng {nowMonth - 1}</option>} 
+                                          {<option value={nowMonth - 2}>Tháng {nowMonth - 2}</option>}
                                 </Input>
                             </Col>
                         </Row>
@@ -222,7 +297,13 @@ const SubmittedStudentInWeek = (props) =>{
       </div>
     <Card>
       <CardBody>
-          <MDBDataTableV5 responsive theadColor="primary-color" theadTextWhite bordered borderless={false} hover  entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
+          <MDBDataTableV5 
+          responsive 
+          searchTop
+          searchBottom={false}
+          theadColor="primary-color" 
+          theadTextWhite bordered borderless={false} hover 
+           entriesOptions={[100,200, 300, 400,500]} entries={100} pagesAmount={100} data={datatable} />
       </CardBody>
     </Card>
     
@@ -230,9 +311,32 @@ const SubmittedStudentInWeek = (props) =>{
     );
 }
 const StudentInBlackList = (props) =>{ 
+  const blackList = props.blackList;
+  const resetPage = props.resetPage;
+  const setResetPage = props.setResetPage;
+
+  const changeStatus = async (st,status) =>{
+    var alertStatus = "Đình Chỉ";
+    if (status === "active"){
+      alertStatus = "Cho phép";
+    }
+    var requested = window.confirm("Bạn có chắc chắn muốn "+alertStatus+" học "+st.fullName);
+    if(requested){
+      const res = await StudentApi.updateStudentStatus(st.id,status);
+      if (res === "Update successful!"){
+        setResetPage(!resetPage);
+        alert(alertStatus + " học " + st.fullName + " thành công!");
+      }
+    }
+  }
 
   const datatable = {
     columns: [
+      {
+        label: 'ID',
+        field: 'id',
+     
+      },
       {
         label: 'Họ Tên',
         field: 'fullName',
@@ -244,23 +348,23 @@ const StudentInBlackList = (props) =>{
   
       },
       {
+        label: 'Tình trạng',
+        field: 'status',
+  
+      },
+      {
         label: 'SĐT',
         field: 'studentNumber',
   
       },
-      {
-        label: 'Lớp',
-        field: 'absentClass',
-        sort: 'asc',
-
-      },
+      
       {
         label: 'SĐT PH',
         field: 'parentNumber',
 
       },
       {
-        label: 'Action',
+        label: '',
         field: 'action',
 
       },
@@ -271,19 +375,23 @@ const StudentInBlackList = (props) =>{
   }; 
  
 
-  useEffect(() => {
-    const getAllAbsentStudentAttendanceInWeeklyDay = async () =>{
-       
-    }
-    getAllAbsentStudentAttendanceInWeeklyDay();
-   
-  }, []);
-
-
-  useEffect(() => {
-    
-  });
-
+  blackList.map(st => datatable.rows.push({
+    id:st.id,
+    fullName:st.fullName,
+    school:st.school,
+    studentNumber:st.studentNumber,
+    parentNumber:st.parentNumber,
+    status: (st.status === "active") ? 
+            <Badge color="success" className="mr-1 my-1">
+                {st.status}
+            </Badge> :
+            <Badge color="danger" className="mr-1 my-1">
+                {st.status}
+            </Badge> ,
+    action: (st.status === "active") ? 
+            <Button color="danger" onClick={() => changeStatus(st,"inactive")} style={{backgroundColor:"orange"}}>Đình chỉ</Button>:
+            <Button color="success" onClick={() => changeStatus(st,"active")} style={{backgroundColor:"green"}}>Cho phép</Button>
+  }))
   
   
   return(
@@ -299,7 +407,11 @@ const StudentInBlackList = (props) =>{
  
       </CardHeader>
       <CardBody>
-          <MDBDataTableV5 responsive hover scrollX entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
+          <MDBDataTableV5 responsive hover 
+          
+          searchTop
+          searchBottom={false}
+           entriesOptions={[100,200, 300, 400,500]} entries={100} pagesAmount={100} data={datatable} />
       </CardBody>
     </Card>
     
@@ -308,7 +420,8 @@ const StudentInBlackList = (props) =>{
 }
 const StudentHomeWork = (props) => {
 
-  
+  const [blackList, setBlackList] = useState([]);
+  const [resetPage, setResetPage] = useState(false);
  
   return(
     
@@ -316,12 +429,12 @@ const StudentHomeWork = (props) => {
     <Header />
     <Row>
       <Col>
-        <SubmittedStudentInWeek {...props}/>
+        <SubmittedStudentInWeek resetPage={resetPage} setBlackList={setBlackList} {...props}/>
       </Col>
     </Row>
     <Row>
       <Col>
-        <StudentInBlackList {...props}/>
+        <StudentInBlackList resetPage={resetPage} setResetPage={setResetPage} blackList={blackList} {...props}/>
       </Col>
     </Row>
   </Container>

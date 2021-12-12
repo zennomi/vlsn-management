@@ -6,7 +6,11 @@ const getAllStudent = () => {
 
     return Api.get(`${url}/`);
 };
-const updateStudentInfo = (id, firstName, lastName, status, school, grade, studentNumber, parentNumber,parentName) => {
+const getAllStudentInGrade = (grade) => {
+
+    return Api.get(`${url}/grade/${grade}`);
+};
+const updateStudentInfo = (id, firstName, lastName, status, school, grade, studentNumber, parentNumber,parentName,social) => {
     const body =  {
         id:id,
         firstName:firstName,
@@ -17,23 +21,36 @@ const updateStudentInfo = (id, firstName, lastName, status, school, grade, stude
         studentNumber:studentNumber,
         parentNumber:parentNumber,
         parentName: (parentName !== "Chưa có tên PH") ? parentName : "",
+        social:social
     }
     return Api.put(`${url}/${id}`,body);
 }
-const createStudent = (username, password, firstName, lastName,  school, grade, studentNumber, parentNumber,parentName) => {
+const updateStudentStatus = (id,status) => {
+    const body =  {
+        status:status,
+    }
+    return Api.put(`${url}/${id}/status/`,body);
+}
+const createStudent = (username, password, firstName, lastName,  school, grade, studentNumber, parentNumber,parentName,social) => {
     
     const body =  {
         userName: username,
         password: password,
+        role:"STUDENT",
+        status:"active",
         firstName:firstName,
         lastName:lastName,
         school:school,
         grade:grade,
         studentNumber:studentNumber,
         parentNumber:parentNumber,
+        social:social,
         parentName: (parentName !== "Chưa có tên PH") ? parentName : "",
     }
     return Api.post(`${url}/`,body);
+}
+const deleteStudent = (studentId) => {
+    return Api.delete(`${url}/${studentId}`)
 }
 const getStudentById = (id) => {
     return Api.get(`${url}/${id}`);
@@ -100,8 +117,10 @@ const api = {
     getAllStudent,
     updateStudentInfo, 
     updateStudentClass, 
+    updateStudentStatus,
     getStudentById, 
     createStudent,
+    deleteStudent,
     createStudentClass, 
     getStudentByPhoneNumber, 
     getClassInPresentStudent, 
@@ -110,5 +129,6 @@ const api = {
     getStudentByStatus,
     getStatictisSubjectAvgMarkInGrade,
     getStudentSubjectAvgMarkInGrade,
+    getAllStudentInGrade,
     getWeakStudentSubjectAvgMarkInGrade }
 export default api;

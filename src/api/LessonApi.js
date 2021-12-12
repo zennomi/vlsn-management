@@ -23,17 +23,21 @@ const updateLesson = (lessonId,lessonName, date,chapterId,videoId) => {
     }
     return Api.put(`${url}/${lessonId}`,body);
 };
+const deleteLesson = (lessonId) => {
+    return Api.delete(`${url}/${lessonId}`);
+}
 const getLessonInClassToday = (classId) => {
     return Api.get(`${url}/classes/${classId}/today-lesson`);
 }
 const getCurrentLessonInClassToday = (classId) => {
-    return Api.get(`${url}/classes/${classId}/current-homework`);
+    return Api.get(`${url}/classes/${classId}/current-lesson`);
 }
 // export
 const api = { 
     getAllLessonInClass,
     createNewLessonInClass,
     updateLesson,
+    deleteLesson,
     getLessonInClassToday,
     getCurrentLessonInClassToday
      }

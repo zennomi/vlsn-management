@@ -1,22 +1,26 @@
-import React,{useState, useEffect} from "react";
+import React from "react";
 
 import {
   CardBody,
   Card,
   CardHeader,
   CardTitle,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
-  
+  Row,
+  Col,
+  Input
 } from "reactstrap";
 import { MDBDataTableV5 } from 'mdbreact';
-import { MoreHorizontal } from "react-feather";
-import ClassroomApi from "../../../api/ClassroomApi";
+
+import ClassroomApi from "../../../api/ClassroomApi"
 import TeacherApi from "../../../api/TeacherApi";
 import MentorApi from "../../../api/MentorApi";
+import View from "@material-ui/icons/Visibility"
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/Delete";
 const ClassList = (props) => {
+
+
+
   const datatable = {
     columns: [
       {
@@ -51,7 +55,7 @@ const ClassList = (props) => {
 
       },
       {
-        label: 'Action',
+        label: '',
         field: 'action',
       }
     ],
@@ -59,37 +63,53 @@ const ClassList = (props) => {
       
     ],
   };  
-  const [classes, setClasses] = useState([]);
+  
   const setModalUpdateClass = props.setModalUpdateClass;
   const setSuggestMentor = props.setSuggestMentor;
   const setSuggestTeacher = props.setSuggestTeacher;
   const setClassroom = props.setClass;
   const setWatch = props.setWatch;
-  
-  const watchingClass = (clazz) =>{
-      setClassroom(clazz);
+  const classes = props.classes;
+  const setClasses = props.setClasses;
+  const grade = props.grade;
+  const setGrade = props.setGrade;
+
+  const watchingClass = async (clazz) =>{
+      const res = await ClassroomApi.getClassById(clazz.id);
+      setClassroom(res);
       setWatch(true);
   }
 
   const updatingClass = async (clazz) => {
-      setClassroom(clazz);
-      console.log(clazz);
-      const teachers = await TeacherApi.getListTeacherBySubject(clazz.subjectName);
-      setSuggestTeacher(teachers);
+      const res = await ClassroomApi.getClassById(clazz.id);
+      setClassroom(res);
+    
+      if(clazz.subjectName === "Toán Đại" || clazz.subjectName === "Toán Hình"){
+        const teachers = await TeacherApi.getListTeacherBySubject("Toán");
+        setSuggestTeacher(teachers);
+      }
+      else{
+        const teachers = await TeacherApi.getListTeacherBySubject(clazz.subjectName);
+        setSuggestTeacher(teachers);
+      }
       const mentors = await MentorApi.getAllMentor();
       setSuggestMentor(mentors);
       setModalUpdateClass(true);
 
   }
-
-  useEffect(() => {
-    const getAllClassList = async () =>{
-      const result = await ClassroomApi.getAllClassList();
-      setClasses(result);
+  const toggleDelete = async (clazz) => {
+    var requested = window.confirm("Bạn có chắc chắn muốn xóa lớp học này?");
+  
+    if ( requested) {
+        const res = await ClassroomApi.deleteClass(clazz.id);
+        if (res === "delete successful!"){
+            const newClassList = await ClassroomApi.getListClassroomInGrade(grade);
+            setClasses(newClassList);
+            alert("Xóa lớp học thành công!");
+        }
     }
-    getAllClassList();
-    console.log("render");
-  }, []);
+  };
+  
 
   classes.map(clazz => datatable.rows.push(
     {
@@ -99,16 +119,14 @@ const ClassList = (props) => {
       time: clazz.startTime +" - "+clazz.endTime,
       teacherName: clazz.teacherId.fullName,
       action: <>
-                <button onClick={() => watchingClass(clazz)}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                  </svg>
+                <button style={{background:"none",border:"none"}} onClick={() => watchingClass(clazz)}>
+                    <View color ="primary" />
                 </button>
-                <button onClick={() => updatingClass(clazz)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"  viewBox="0 0 16 16">
-                      <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                    </svg>
+                <button style={{background:"none",border:"none"}} onClick={() => updatingClass(clazz)}>
+                    <Edit color="action"/>
+                </button>
+                <button style={{background:"none",border:"none"}} onClick={() => toggleDelete(clazz)}>
+                    <Delete color="secondary"/>
                 </button>
               </>
     }
@@ -118,28 +136,39 @@ const ClassList = (props) => {
   return (
     <Card className="flex-fill w-100">
       <CardHeader>
-        <div className="card-actions float-right">
-          <UncontrolledDropdown>
-            <DropdownToggle tag="a">
-              <MoreHorizontal />
-            </DropdownToggle>
-            <DropdownMenu right>
-              <DropdownItem>Action</DropdownItem>
-              <DropdownItem>Another Action</DropdownItem>
-              <DropdownItem>Something else here</DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
+        <div style={{display:"flex", justifyContent:"flex-start"}}>
+            <CardTitle tag="h5" className="mb-0">
+              Danh Sách Lớp Học
+            </CardTitle>
+                <Row className="ml-auto">
+                  <Col xs="auto">
+                    <Input 
+                              id ="grade"
+                              type="select"
+                              name="grade"
+                              value={grade}
+                              onChange={ (e) =>{
+                                setGrade(e.target.value);
+                              }}
+                            >
+                              <option value = "12">Khối 12</option>
+                              <option value = "11">Khối 11</option>
+                              <option value = "10">Khối 10</option>
+                              <option value = "9">Khối 9</option>
+                              <option value = "8">Khối 8</option>
+                              <option value = "7">Khối 7</option>
+                              <option value = "6">Khối 6</option>
+                      </Input>
+                    </Col>
+                  </Row>
         </div>
-        <CardTitle tag="h5" className="mb-0">
-          Danh Sách Lớp Học
-        </CardTitle>
       </CardHeader>
       <CardBody>
             <MDBDataTableV5 
             hover 
             responsive
             searchTop searchBottom={false}
-            entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={4} data={datatable} />
+            entriesOptions={[10,20, 30, 50,100]} entries={10} pagesAmount={10} data={datatable} />
         </CardBody>
     </Card>
     );

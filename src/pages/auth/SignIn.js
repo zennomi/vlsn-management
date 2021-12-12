@@ -10,7 +10,7 @@ import {
 
 } from "reactstrap";
 
-import avatar from "../../assets/img/avatars/avatar.jpg";
+import avatar from "../../assets/img/avatars/logo-100.jpg";
 import { Formik, FastField, Form } from 'formik';
 import * as Yup from 'yup';
 import { ReactstrapInput } from "reactstrap-formik";
@@ -42,10 +42,6 @@ const SignIn = (props) => {
 
   return (
     <React.Fragment>
-      <div className="text-center mt-4">
-        <h2>Welcome to TCT Tâm Chí Tài</h2>
-        <p className="lead">Web quản lý học sinh tại TCT. Xin mời đăng nhập để tiếp tục!</p>
-      </div>
 
       <Formik
         initialValues={
@@ -57,14 +53,10 @@ const SignIn = (props) => {
         validationSchema={
           Yup.object({
             username: Yup.string()
-              .required('Required')
-              .max(50, 'Must be between 6 to 50 characters')
-              .min(6, 'Must be between 6 to 50 characters'),
+              .required('bắt buộc'),
 
             password: Yup.string()
-              .max(50, 'Must be between 6 to 50 characters')
-              .min(6, 'Must be between 6 to 50 characters')
-              .required('Required')
+              .required('bắt buộc')
           })
         }
         onSubmit={
@@ -75,10 +67,10 @@ const SignIn = (props) => {
                 values.username,
                 values.password
               );
-              console.log(result);
+              
               //check user active
               if (result.token === null || result.token === undefined) {
-                showErrorNotification("Login Fail!", "Wrong Username or Password");  
+                showErrorNotification("Đăng nhập thất bại", "Sai tài khoản hoặc mật khẩu");  
               } else {
                 // set remember me
                 storage.setRememberMe(isRememberMe);
@@ -114,7 +106,7 @@ const SignIn = (props) => {
             } catch (error) {
               if (error.status === 401) {
                 //show error notification
-                showErrorNotification("Login Fail!", "Wrong Username or Password");
+                showErrorNotification("Đăng nhập thất bại", "Sai tài khoản hoặc mật khẩu");
               } else {
                 //redirect to page error server
                 props.history.push("/auth/500");
@@ -132,8 +124,8 @@ const SignIn = (props) => {
               <img
                 src={avatar}
                 alt="Chris Wood"
-                className="img-fluid rounded-circle"
-                width="132"
+                className="img-fluid "
+                width="264"
                 height="132"
               />
             </div>
@@ -142,7 +134,7 @@ const SignIn = (props) => {
             {/* username */}
               <FormGroup>
                 <FastField
-                  label="Username"
+                  label="Tài khoản"
                   bsSize="lg"
                   type="text"
                   name="username"
@@ -154,7 +146,7 @@ const SignIn = (props) => {
             {/* password */}
               <FormGroup>
                 <FastField
-                  label="Password"
+                  label="Mật khẩu"
                   bsSize="lg"
                   type="password"
                   name="password"
@@ -172,15 +164,15 @@ const SignIn = (props) => {
                 <CustomInput
                   type="checkbox"
                   id="rememberMe"
-                  label="Remember me next time"
+                  label="Lưu mật khẩu"
                   checked={isRememberMe || false}
                   onChange={e => setRememberMe(e.target.checked)}
                 />
               </div>
               {/* submit */}
               <div className="text-center mt-3">
-                <Button type="submit" color="primary" size="lg" disabled={isSubmitting}>
-                  Sign in
+                <Button type="submit" color="primary"  disabled={isSubmitting}>
+                  Đăng Nhập
                 </Button>
               </div>
             </Form>
