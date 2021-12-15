@@ -160,6 +160,16 @@ const MarkList = (props) => {
 
   datatable.rows = marks;
 
+  var avgMark = 0;
+
+  marks.map(mark => avgMark += mark.mark);
+  
+  if(marks.length !== 0) {
+    avgMark = (avgMark/marks.length).toFixed(2);
+  }
+  
+
+
   return (
     <Card className="flex-fill w-100">
       <CardHeader>
@@ -176,7 +186,7 @@ const MarkList = (props) => {
           </UncontrolledDropdown>
         </div>
         <CardTitle tag="h5" className="mb-0">
-            Điểm số học sinh
+            Điểm trung bình: {avgMark}
         </CardTitle>
       </CardHeader>
       <CardBody>

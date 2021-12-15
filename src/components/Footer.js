@@ -8,19 +8,19 @@ const Footer = () => (
         <Col xs="6" className="text-left">
           <ul className="list-inline">
             <li className="list-inline-item">
-              <span className="text-muted" href="https://www.facebook.com/thaychungtoan.edu.vn">
-                Fanpage
-              </span>
+              <a href="https://www.facebook.com/thaychungtoan.edu.vn">
+                Fanpage  
+              </a>
             </li>
             <li className="list-inline-item">
-              <span className="text-muted" href="https://www.facebook.com/groups/539298657268877">
-                Group học tập
-              </span>
+              <a href="https://www.facebook.com/groups/539298657268877">
+                Group Học Tập  
+              </a>
             </li>
             <li className="list-inline-item">
-              <span className="text-muted" href="#">
-                Hotline: 0967076809
-              </span>
+              <a href="tel:0967076809">
+                Hotline:0967076809
+              </a>
             </li>
             
           </ul>

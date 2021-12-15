@@ -280,7 +280,7 @@ const CourseList = (props) =>{
                                     }}
                                 
                                 >
-                                {({setFieldValue, values}) => 
+                                {({setFieldValue, values, isSubmitting}) => 
                                     <Form>
                                           <FastField
                                                 label="Thêm Link Video"
@@ -290,7 +290,7 @@ const CourseList = (props) =>{
                                                 component={ReactstrapInput}
                                               />
 
-                                          <Button color="primary" type="submit" >Thêm</Button>
+                                          <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
                                     </Form>
                                   }
                               </Formik>
@@ -345,7 +345,7 @@ const CourseList = (props) =>{
                                     }}
                                 
                                 >
-                                {({setFieldValue, values}) => 
+                                {({setFieldValue, values, isSubmitting}) => 
                                     <Form>
                                         <FastField
                                                 label="Thêm Link BTVN"
@@ -368,7 +368,7 @@ const CourseList = (props) =>{
                                                 name="misson"
                                                 component={ReactstrapInput}
                                               />
-                                        <Button color="primary" type="submit">Thêm</Button>
+                                        <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
                                     </Form>
                                   }
                               </Formik>
@@ -438,7 +438,7 @@ const CourseList = (props) =>{
                                     }}
                                 
                                 >
-                                {({setFieldValue, values}) => 
+                                {({setFieldValue, values, isSubmitting}) => 
                                     <Form>
                                         <FastField
                                                 label="Tên bài học"
@@ -493,7 +493,7 @@ const CourseList = (props) =>{
                                                 component={ReactstrapInput}
                                               /> 
                                           </>: null }
-                                        <Button color="primary" type="submit">Lưu</Button>
+                                        <Button color="primary" type="submit" disabled={isSubmitting}>Lưu</Button>
                                     </Form>
                                   }
                               </Formik>
@@ -532,7 +532,7 @@ const CourseList = (props) =>{
                                     }}
                                 
                                 >
-                                {({setFieldValue, values}) => 
+                                {({setFieldValue, values, isSubmitting}) => 
                                     <Form>
                                         <FastField
                                                 label="Tên chương học:"
@@ -548,7 +548,7 @@ const CourseList = (props) =>{
                                             )}
                                         </ul>
 
-                                        <Button color="primary" type="submit">Thêm</Button>
+                                        <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
                                     </Form>
                                   }
                               </Formik>
@@ -611,7 +611,7 @@ const CourseList = (props) =>{
                                     }}
                                 
                                 >
-                                {({setFieldValue, values}) => 
+                                {({setFieldValue, values, isSubmitting}) => 
                                     <Form>
                                         <FastField
                                                 label="Tên bài học:"
@@ -641,7 +641,7 @@ const CourseList = (props) =>{
                                             <TextField {...params} name="chapterId" variant="outlined" label="Chọn chương học" />
                                           )}
                                         />
-                                        <Button color="primary" type="submit">Thêm</Button>
+                                        <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
                                     </Form>
                                   }
                               </Formik>

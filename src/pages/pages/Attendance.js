@@ -296,18 +296,8 @@ const Attendance = (props) =>{
             }
             else{
                // không có btvn tuần trước
-                const listStudentInClass = await AttenDanceApi.getListStudentAttendanceToday(clazz.classId);
-                var studentInClass = [];
-                listStudentInClass.map(st => studentInClass.push(st.id));
-                const res = await HomeWorkApi.submitHomework(clazz.classId,studentInClass);
-                if (res === "submit successful!"){
-                  alert("Không có btvn tuần trước! tất cả học sinh đi học đều hoàn thành btvn");
-                }
-              
-                const newListNotSubmit = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.classId,lesson.id);
-                if(newListNotSubmit !== "empty"){
-                  setListStudentNotSubmittedHomeWork(res);
-                }
+                alert("Không có btvn tuần trước! tất cả học sinh đi học không phải nộp btvn");
+  
             }
             
             
@@ -679,7 +669,7 @@ const Attendance = (props) =>{
                     </ModalBody>
                   </Modal>
                 </>
-                : 
+                : (Object.keys(currentLesson).length !== 0  && listStudentSubmittedHomeWork.length !== 0 ) ?
 
                 <Card>
                   <CardHeader>Học sinh thiếu btvn</CardHeader>
@@ -705,6 +695,7 @@ const Attendance = (props) =>{
                     </ModalBody>
                   </Modal>
                 </Card>
+                : null 
                 }
                 <Modal isOpen={modalSubmitStudentHomeWork} toggle={setModalSubmitStudentHomeWork}>
                         <ModalBody>

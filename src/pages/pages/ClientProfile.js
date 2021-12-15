@@ -383,7 +383,7 @@ const DailyStatus = (props) => {
     ],
     rows: []
   };
-
+  listDailyInfo.reverse();
   listDailyInfo.map(day => datatable.rows.push(
     {
         lessonName: day.lessonName,

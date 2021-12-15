@@ -430,7 +430,7 @@ const DailyStatus = (props) => {
     ],
     rows: []
   };
-
+  // listDailyInfo.reverse();
   listDailyInfo.map(day => datatable.rows.push(
     {
         lessonName: day.lessonName,
@@ -447,12 +447,16 @@ const DailyStatus = (props) => {
               Nghỉ học
           </Badge>,
         homeWorkStatus: (day.homeWorkStatus === "P") ? 
-            <Badge color="success" className="mr-1 my-1">
-                Hoàn thành
-            </Badge> :
-            <Badge color="warning" className="mr-1 my-1">
-                Không hoàn thành
-            </Badge>,
+                <Badge color="success" className="mr-1 my-1">
+                    Hoàn thành
+                </Badge> :
+                (day.homeWorkStatus === "none") ?
+                <Badge color="warning" className="mr-1 my-1">
+                    Không có
+                </Badge> :
+                <Badge color="danger" className="mr-1 my-1">
+                    Chưa hoàn thành
+                </Badge>,
         lessonLink:(day.lessonLink !== "none") ? 
         <a style={{color:"blue",fontWeight:"bolder"}} href={day.lessonLink}>Xem bài giảng</a> : "Không có video"
     }

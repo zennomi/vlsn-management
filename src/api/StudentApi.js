@@ -44,7 +44,7 @@ const createStudent = (username, password, firstName, lastName,  school, grade, 
         grade:grade,
         studentNumber:studentNumber,
         parentNumber:parentNumber,
-        social:social,
+        social:(social !== '') ? social : null,
         parentName: (parentName !== "Chưa có tên PH") ? parentName : "",
     }
     return Api.post(`${url}/`,body);

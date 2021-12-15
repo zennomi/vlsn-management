@@ -476,9 +476,6 @@ const Single = (props) => {
                   firstName: Yup.string()
                     .required('bắt buộc'),
   
-                  school: Yup.string()
-                    .required('bắt buộc'),
-  
                   studentPhone: Yup.string()
                     .required('bắt buộc')
                     .min(10, 'SĐT phải có 10 chữ số')
