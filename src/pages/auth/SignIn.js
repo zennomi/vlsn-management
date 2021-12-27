@@ -138,7 +138,7 @@ const SignIn = (props) => {
                   bsSize="lg"
                   type="text"
                   name="username"
-                  placeholder="Enter your username"
+                  placeholder="Nhập tên tài khoản"
                   component={ReactstrapInput}
                 />
               </FormGroup>
@@ -150,7 +150,7 @@ const SignIn = (props) => {
                   bsSize="lg"
                   type="password"
                   name="password"
-                  placeholder="Enter password"
+                  placeholder="Nhập mật khẩu"
                   component={ReactstrapInput}
                 />
               {/* forgot password */}

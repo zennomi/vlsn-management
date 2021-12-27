@@ -129,11 +129,11 @@ const NavbarDropdownItem = ({ icon, title, description, time, spacing }) => (
   </ListGroupItem>
 );
 
-const NavbarComponent = ({ dispatch,fullName }, props) => {
+const NavbarComponent = ({ dispatch,fullName,history }) => {
 
   const signOut = async () => {
     await localStorage.clear();
-    props.history.push("/auth/sign-in");
+    history.push("/auth/sign-in");
   }
 
   return (
@@ -230,7 +230,7 @@ const NavbarComponent = ({ dispatch,fullName }, props) => {
             </span>
             <DropdownMenu right>
               <DropdownItem divider />
-              <DropdownItem onClick={() => signOut()}>Sign out</DropdownItem>
+              <DropdownItem onClick={() => signOut()}>Đăng xuất</DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
         </Nav>

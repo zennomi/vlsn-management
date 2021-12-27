@@ -2,7 +2,7 @@ import axios from 'axios';
 import storage from '../Storage/storage';
 
 const axiosClient = axios.create({
-    baseURL: `http://tctmanagementsystem-env.eba-uh33vr3k.ap-southeast-1.elasticbeanstalk.com/api/v1`,
+    baseURL: `http://localhost:5000/api/v1`,
     //timeout: 5000, // default is `0` (no timeout)
     // responseType: 'json'
 });
@@ -34,7 +34,8 @@ axiosClient.interceptors.response.use((response) => {
     // Handle errors
     if (error.response.data === "expried token") {
         await localStorage.clear();
-        window.location.href = "/auth/sign-in";
+        await sessionStorage.clear();
+        window.location.href = "/";
         await alert("Phiên làm việc của bạn đã hết hạn! vui lòng đăng nhập lại")
         throw error.response.data;
     } else if(error.request){
