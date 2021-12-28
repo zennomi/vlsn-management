@@ -56,6 +56,7 @@ const setUserInfo = (user) => {
     setItem("userName", user.userName);
     setItem("role", user.role);
     setItem("status", user.status);
+    setItem("avatarUrl",user.avatarUrl);
 }
 
 const getUserInfo = () => {
@@ -66,6 +67,7 @@ const getUserInfo = () => {
         "userName": getItem("userName"),
         "role": getItem("role"),
         "status": getItem("status"),
+        "avatarUrl":getItem("avatarUrl")
     };
 }
 
@@ -76,6 +78,7 @@ const removeUserInfo = () => {
     removeItem("userName");
     removeItem("role");
     removeItem("status");
+    removeItem("avatarUrl");
 };
 
 

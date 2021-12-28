@@ -25,7 +25,7 @@ import { selectFistName } from "../../redux/selectors/userLoginInfoSelector";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import CheckIcon from "@material-ui/icons/Check";
 import { green } from "@material-ui/core/colors";
-import { Box } from "@material-ui/core/";
+import { Box } from "@material-ui/core";
 import ManagerApi from "../../api/ManagerApi";
 
 const StudentCostInfo = (props) =>{ 

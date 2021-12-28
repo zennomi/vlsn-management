@@ -28,7 +28,7 @@ import {
 
   UserPlus
 } from "react-feather";
-import { selectFullName, selectRole } from "../redux/selectors/userLoginInfoSelector";
+import { selectFullName, selectRole, selectAvatarUrl } from "../redux/selectors/userLoginInfoSelector";
 
 
 import avatar1 from "../assets/img/avatars/avatar.jpg";
@@ -129,7 +129,7 @@ const NavbarDropdownItem = ({ icon, title, description, time, spacing }) => (
   </ListGroupItem>
 );
 
-const NavbarComponent = ({ dispatch,fullName,history }) => {
+const NavbarComponent = ({ dispatch,fullName,history,avatarUrl }) => {
 
   const signOut = async () => {
     await localStorage.clear();
@@ -221,9 +221,10 @@ const NavbarComponent = ({ dispatch,fullName,history }) => {
             <span className="d-none d-sm-inline-block">
               <DropdownToggle nav caret>
                 <img
-                  src={avatar1}
+                  src={(avatarUrl !== null) ? (`${process.env.REACT_APP_AVATAR_URL}/${avatarUrl}`) : avatar1 }
+                  alt={fullName}
                   className="avatar img-fluid rounded-circle mr-1"
-                  alt="Chris Wood"
+                  
                 />
                 <span className="text-dark">{fullName}</span>
               </DropdownToggle>
@@ -245,6 +246,7 @@ const mapGlobalStateToProps = state => {
     layout: state.layout,
     fullName: selectFullName(state),
     role: selectRole(state),
+    avatarUrl :selectAvatarUrl(state)
   };
 };
 export default withRouter(connect(mapGlobalStateToProps)(NavbarComponent));

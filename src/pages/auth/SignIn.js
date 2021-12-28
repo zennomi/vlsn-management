@@ -67,6 +67,8 @@ const SignIn = (props) => {
                 values.username,
                 values.password
               );
+
+              
               
               //check user active
               if (result.token === null || result.token === undefined) {
@@ -83,7 +85,8 @@ const SignIn = (props) => {
                   "lastName": result.lastName,
                   "userName": result.userName,
                   "role": result.role,
-                  "status": result.status
+                  "status": result.status,
+                  "avatarUrl": result.avatarUrl
                 }
                 storage.setUserInfo(user);
 

@@ -17,7 +17,7 @@ import {
 
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { selectFullName, selectRole, selectId } from "../../redux/selectors/userLoginInfoSelector";
+import { selectFullName, selectRole, selectId, selectAvatarUrl } from "../../redux/selectors/userLoginInfoSelector";
 
 
 import avatar4 from "../../assets/img/avatars/avatar-4.jpg";
@@ -28,8 +28,8 @@ const ProfileDetails = (props) => (
   
     <CardBody className="text-center">
       <img
-        src={avatar4}
-        alt="Stacie Hall"
+        src={(props.avatarUrl !== null) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : avatar4 }
+        alt={props.fullName}
         className="img-fluid rounded-circle mb-2"
         width="128"
         height="128"
@@ -65,7 +65,8 @@ const mapGlobalStateToProps = state => {
   return {
     fullName: selectFullName(state),
     role: selectRole(state),
-    id:selectId(state)
+    id:selectId(state),
+    avatarUrl:selectAvatarUrl(state)
   };
 };
 export default withRouter(connect(mapGlobalStateToProps)(Profile));

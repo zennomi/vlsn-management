@@ -11,7 +11,7 @@ import { faCircle } from "@fortawesome/free-solid-svg-icons";
 
 import routes,{studentDashboard} from "../routes/index";
 import avatar from "../assets/img/avatars/avatar.jpg";
-import { selectFullName, selectRole } from "../redux/selectors/userLoginInfoSelector";
+import { selectFullName, selectRole, selectAvatarUrl } from "../redux/selectors/userLoginInfoSelector";
 const initOpenRoutes = (location) => {
   /* Open collapse element that matches current url */
   const pathName = location.pathname;
@@ -221,8 +221,8 @@ const Sidebar = (props) => {
               <div className="media">
                 <img
                   className="rounded-circle mr-3"
-                  src={avatar}
-                  alt="Chris Wood"
+                  src={(props.avatarUrl !== null) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : avatar }
+                  alt={props.fullName}
                   width="40"
                   height="40"
                 />
@@ -252,6 +252,7 @@ const mapGlobalStateToProps = state => {
     layout: state.layout,
     fullName: selectFullName(state),
     role: selectRole(state),
+    avatarUrl: selectAvatarUrl(state)
   };
 };
 export default withRouter(connect(mapGlobalStateToProps)(Sidebar));
