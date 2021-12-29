@@ -1,11 +1,11 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useRef } from "react";
 // import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { selectFullName, selectRole, selectId } from "../../redux/selectors/userLoginInfoSelector";
 import {
   Badge,
-  // Button,
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -18,15 +18,16 @@ import {
 } from "reactstrap";
 import { MDBDataTableV5 } from 'mdbreact';
 import ClientApi from "../../api/ClientApi";
-
+import FileApi from "../../api/FileApi";
 
 
 
 
 import avatar1 from "../../assets/img/avatars/avatar.jpg";
 import avatar4 from "../../assets/img/avatars/avatar-4.jpg";
-
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { toastr } from "react-redux-toastr";
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import {
   Clock as ClockIcon,
   // Camera as CameraIcon
@@ -71,13 +72,64 @@ const StudentProfileDetails = (props) =>{
     avgStudentMark = totalMark/takedSubjectExam;
   }
   
+  const avatarInputFileRef = useRef(null);
+
+  const [previewAvatarUrl, setPreviewAvatarUrl] = useState();
+
+  const [previewAvatarFile, setPreviewAvatarFile] = useState();
+
+  const [isDisabledSaveButton, setDisabledSaveButton] = useState(false);
+
+  const onChangeAvatarInputFile = (e) => {
+    let reader = new FileReader();
+    let file = e.target.files[0];
+    reader.readAsDataURL(file);
+
+    reader.onloadend = () => {
+      setPreviewAvatarUrl(reader.result);
+      setPreviewAvatarFile(file);
+    }
+  };
+
+  const showSucessNotification = (title, message) => {
+    const options = {
+      timeOut: 2500,
+      showCloseButton: false,
+      progressBar: false,
+      position: "top-right"
+    };
+
+    // show notification
+    toastr.success(title, message, options);
+  }
+
+  const handleSave = async () => {
+    try {
+      setDisabledSaveButton(true);
+      // upload avatar
+      const nameImage = await FileApi.uploadUserAvatarImage(previewAvatarFile,studentId);
+      localStorage.setItem("avatarUrl",nameImage);
+      sessionStorage.setItem("avatarUrl",nameImage);
+      setDisabledSaveButton(false);
+      showSucessNotification(
+        "Change Profile",
+        "Change Profile Successfully!"
+      );
+    } catch (error) {
+      setDisabledSaveButton(false);
+      console.log(error);
+    }
+  }
   
   return(
   <Card>
    
     <CardBody className="text-center">
       <img
-        src={(student.avatarUrl !== "null" && student.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${student.avatarUrl}`) : avatar4 }
+        src={
+          previewAvatarUrl ?
+          previewAvatarUrl :
+          (student.avatarUrl !== "null" && student.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${student.avatarUrl}`) : avatar4 }
         alt={student.fullName}
         className="img-fluid rounded-circle mb-2"
         width="128"
@@ -87,7 +139,17 @@ const StudentProfileDetails = (props) =>{
             <h4>{student.fullName} - Lớp {student.grade}</h4>
             <h5>Số sao: {student.score} <StarIcon style={{color:"yellow",marginBottom:"4px"}}/></h5>
       </CardTitle>
-     
+      <input id="avatarInput"
+                    type="file"
+                    accept="image/*"
+                    ref={avatarInputFileRef}
+                    onChange={onChangeAvatarInputFile}
+                    style={{ display: 'none' }}
+        />
+        <Button color="primary" onClick={(e) => avatarInputFileRef.current.click()}>
+            <FontAwesomeIcon icon={faUpload} /> Upload
+        </Button>
+        <Button color="primary" disabled={isDisabledSaveButton} onClick={handleSave}>Save changes</Button>
 
       {/* <div>
         <Button size="sm" color="primary" className="mr-1">
