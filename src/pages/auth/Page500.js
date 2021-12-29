@@ -9,7 +9,7 @@ const Page500 = () => (
     <p className="h2 font-weight-normal mt-3 mb-4">
       Bạn không có quyền dùng chức năng này
     </p>
-    <Link to="/dashboard/default">
+    <Link to="/">
       <Button color="primary" size="lg">
         quay lại website
       </Button>

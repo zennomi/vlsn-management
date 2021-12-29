@@ -28,6 +28,7 @@ const reactPlayer = {
 const View = (props) => {
 
     const propsRef = props.location.state;
+
     const classId = propsRef.classId;
     const grade = propsRef.grade;
     const subjectName = propsRef.subjectName;

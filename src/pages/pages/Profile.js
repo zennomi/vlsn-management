@@ -23,28 +23,32 @@ import { selectFullName, selectRole, selectId, selectAvatarUrl } from "../../red
 import avatar4 from "../../assets/img/avatars/avatar-4.jpg";
 
 
-const ProfileDetails = (props) => (
-  <Card>
+const ProfileDetails = (props) =>{
+   
   
-    <CardBody className="text-center">
-      <img
-        src={(props.avatarUrl !== null) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : avatar4 }
-        alt={props.fullName}
-        className="img-fluid rounded-circle mb-2"
-        width="128"
-        height="128"
-      />
-      <CardTitle tag="h5" className="mb-0">
-        {props.fullName}
-      </CardTitle>
-      <div className="text-muted mb-2"><Badge color="success">{props.role}</Badge></div>
-
-     
-    </CardBody>
+  
+  return(
+    <Card>
     
-  </Card>
-);
+      <CardBody className="text-center">
+        <img
+          src={(props.avatarUrl !== "null" && props.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : avatar4 }
+          alt={props.fullName}
+          className="img-fluid rounded-circle mb-2"
+          width="128"
+          height="128"
+        />
+        <CardTitle tag="h5" className="mb-0">
+          {props.fullName}
+        </CardTitle>
+        <div className="text-muted mb-2"><Badge color="success">{props.role}</Badge></div>
 
+      
+      </CardBody>
+      
+    </Card>
+  );
+}
 
 
 const Profile = (props) => (

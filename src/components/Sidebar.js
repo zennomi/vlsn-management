@@ -221,7 +221,7 @@ const Sidebar = (props) => {
               <div className="media">
                 <img
                   className="rounded-circle mr-3"
-                  src={(props.avatarUrl !== null) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : avatar }
+                  src={(props.avatarUrl !== "null" && props.avatarUrl !== null) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : avatar }
                   alt={props.fullName}
                   width="40"
                   height="40"

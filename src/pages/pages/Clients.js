@@ -498,7 +498,7 @@ const Single = (props) => {
 
 
               onSubmit={async (values) => {
-                console.log(values);
+              
                 
                 var lastNameDeleteSpace = values.lastName.replace(/\s+/g, ''); // xóa khoảng trắng
                 const lastName = capitalizeFirstLetter(lastNameDeleteSpace);  // viết hoa chữ cái đầu
@@ -507,7 +507,7 @@ const Single = (props) => {
                 const firstName = capitalizeFirstLetter(firstNameDeleteSpace);  // viết hoa chữ cái đầu
                 const resFirst = removeAccents(firstName); // bỏ dấu tiếng việt
                 const password = resLast+resFirst;
-                console.log(password);
+               
 
                 const newStudentId = await StudentApi.createStudent(
                   values.studentPhone, // username là sđt của học sinh

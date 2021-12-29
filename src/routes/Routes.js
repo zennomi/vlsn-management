@@ -4,7 +4,8 @@ import {
   landing as landingRoutes,
   dashboard as dashboardRoutes,
   page as pageRoutes,
-  studentDashboard as stDashboard,
+  // studentDashboard as stDashboard,
+  student as studentDashboard
 } from "./index";
 
 import DashboardLayout from "../layouts/Dashboard";
@@ -51,7 +52,7 @@ const Routes = (props) => (
     <ScrollToTop>
       <Switch>
         {childRoutes(DashboardLayout, landingRoutes)}
-        {(props.role === "STUDENT") ? childRoutes(DashboardLayout, stDashboard) : 
+        {(props.role === "STUDENT") ? childRoutes(DashboardLayout, studentDashboard) : 
         childRoutes(DashboardLayout, dashboardRoutes) }
 
         {childRoutes(AuthLayout, pageRoutes)}

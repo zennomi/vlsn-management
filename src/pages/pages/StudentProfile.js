@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { selectFullName, selectRole, selectId } from "../../redux/selectors/userLoginInfoSelector";
+import { selectFullName, selectRole, selectId, selectAvatarUrl } from "../../redux/selectors/userLoginInfoSelector";
 import { Formik,FastField, Form  } from 'formik';
 import { ReactstrapInput } from "reactstrap-formik";
 import {
@@ -51,7 +51,7 @@ const StudentProfileDetails = (props) =>{
     const getStudentStudyStatus = async () =>{
         const res = await ClientApi.getStudentStudyInfo(studentId);
         setStudent(res);
-        console.log(res);
+        
     }
     getStudentStudyStatus();
     
@@ -69,13 +69,14 @@ const StudentProfileDetails = (props) =>{
   }
   
   
+  
   return(
   <Card>
    
     <CardBody className="text-center">
       <img
-        src={avatar4}
-        alt="Stacie Hall"
+        src={(props.avatarUrl !== "null" && props.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : avatar4 }
+        alt={props.fullName}
         className="img-fluid rounded-circle mb-2"
         width="128"
         height="128"
@@ -88,9 +89,9 @@ const StudentProfileDetails = (props) =>{
       
       <div>
           <div>
-              <a href="https://www.google.com/">LINK ĐIỂM DANH</a>
+              <a href={`${window.location.origin}/attend/info/${studentId}`}>LINK ĐIỂM DANH</a>
           </div>
-          <QRCode value="https://www.google.com/" />
+          <QRCode value={`${window.location.origin}/attend/info/${studentId}`} />
       </div>
       
     </CardBody>
@@ -175,7 +176,7 @@ const Activities = (props) => {
     const getStudentStudyStatus = async () =>{
         const res = await ClientApi.getStudentStudyInfo(studentId);
         setStudent(res);
-        console.log(res);
+     
     }
     getStudentStudyStatus();
     
@@ -208,7 +209,7 @@ const Activities = (props) => {
           )
     
   )
-    console.log(listDataTable);
+ 
   return(
   <Card>
     <CardHeader>
@@ -498,7 +499,7 @@ const StudentProfile = (props) =>{
 
     <Row>
       <Col md="5" xl="4">
-        <StudentProfileDetails studentId={studentId} />
+        <StudentProfileDetails studentId={studentId} {...props} />
       </Col>
       <Col md="7" xl="8">
         <Activities studentId={studentId} />
@@ -519,7 +520,8 @@ const mapGlobalStateToProps = state => {
   return {
     fullName: selectFullName(state),
     role: selectRole(state),
-    id:selectId(state)
+    id:selectId(state),
+    avatarUrl:selectAvatarUrl(state)
   };
 };
 export default withRouter(connect(mapGlobalStateToProps)(StudentProfile));

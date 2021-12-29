@@ -77,8 +77,8 @@ const StudentProfileDetails = (props) =>{
    
     <CardBody className="text-center">
       <img
-        src={avatar4}
-        alt="Stacie Hall"
+        src={(student.avatarUrl !== "null" && student.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${student.avatarUrl}`) : avatar4 }
+        alt={student.fullName}
         className="img-fluid rounded-circle mb-2"
         width="128"
         height="128"

@@ -221,7 +221,7 @@ const NavbarComponent = ({ dispatch,fullName,history,avatarUrl }) => {
             <span className="d-none d-sm-inline-block">
               <DropdownToggle nav caret>
                 <img
-                  src={(avatarUrl !== null) ? (`${process.env.REACT_APP_AVATAR_URL}/${avatarUrl}`) : avatar1 }
+                  src={(avatarUrl !== null && avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${avatarUrl}`) : avatar1 }
                   alt={fullName}
                   className="avatar img-fluid rounded-circle mr-1"
                   

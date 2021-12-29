@@ -295,11 +295,7 @@ const CourseStudentRoutes = {
       name: "Danh Sách Lớp Học",
       component: StudentCourse
     },
-    {
-      path: "/course/lesson",
-      name: "Danh Sách Bài Học",
-      component: CourseView
-    },
+    
   ]
   
 };
@@ -324,6 +320,11 @@ const privateRoutes = {
       name: "Thông Tin Học Sinh",
       component: StudentProfile
     },
+    {
+      path: "/course/lesson",
+      name: "Danh Sách Bài Học",
+      component: CourseView
+    },
   ]
 };
 
@@ -344,7 +345,8 @@ export const landing = [landingRoutes];
 
 // Auth specific routes
 export const page = [authRoutes];
-export const studentDashboard = [ studentProfileRouter,dashboardStudentRoutes, CourseStudentRoutes];
+export const studentDashboard = [ studentProfileRouter,dashboardStudentRoutes, CourseStudentRoutes ];
+export const student = [studentProfileRouter,dashboardStudentRoutes, CourseStudentRoutes, privateRoutes]
 // All routes
 export default [
   dashboardRoutes,
