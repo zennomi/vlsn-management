@@ -41,11 +41,15 @@ const CourseList = (props) =>{
 
   const [modalHomeWork,setModalHomeWork] = useState(false);
 
+  const [modalIsWatchingLessonStudentDetail, setIsWatchingLessonStudentDetail] = useState(false);
+
   const [modalCreateChapter,setModalCreateChapter] = useState(false);
 
   const [modalCreateLesson, setModalCreateLesson] = useState(false);
   
   const [listStudentNotSubmittedHomeWork,setListStudentNotSubmittedHomeWork] = useState([]);
+
+  const [listAbsentStudentInLesson, setListAbsentStudentInLesson] = useState([])
 
   const [lessons, setLessons] = useState([]);
   const [lesson,setLesson] = useState({});
@@ -103,6 +107,10 @@ const CourseList = (props) =>{
   const datatable2 = {
     columns: [
       {
+        label: 'ID',
+        field: 'id',
+      },
+      {
         label: 'Họ Tên',
         field: 'fullName',
       },
@@ -117,7 +125,27 @@ const CourseList = (props) =>{
       
     ],
   }; 
-  
+  const datatable3 = {
+    columns: [
+      {
+        label: 'ID',
+        field: 'id',
+      },
+      {
+        label: 'Họ Tên',
+        field: 'fullName',
+      },
+      {
+        label: 'Trường',
+        field: 'school',
+ 
+      },
+      
+    ],
+    rows: [
+      
+    ],
+  }; 
   const updateLessonVideo = (lesson) => {
 
       setLesson(lesson);
@@ -150,10 +178,14 @@ const CourseList = (props) =>{
   const watchingStudentNotSubmitedHomeWorkInLesson = async (lesson) => {
       const res = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.id,lesson.id);
       const totalStudent = await AttendanceApi.getTotalStudentInClassInDate(clazz.id,lesson.date);
+      const listAbsent = await AttendanceApi.getStatusStudentInClassInDate(clazz.id,lesson.date,"A");
       setTotalStudentInDate(totalStudent);
       if (res !== "empty"){
         setListStudentNotSubmittedHomeWork(res);
       }
+      setListAbsentStudentInLesson(listAbsent);
+      setIsWatchingLessonStudentDetail(true);
+      
   }
 
     useEffect(() => {
@@ -202,11 +234,12 @@ const CourseList = (props) =>{
     }))
     
     datatable2.rows = listStudentNotSubmittedHomeWork;
-
+    datatable3.rows = listAbsentStudentInLesson;
+    console.log(listAbsentStudentInLesson);
   return(
   <>
       <Row>
-            <Col lg="8">
+            <Col>
                 <Card className="flex-fill w-100">
                     <CardHeader>
                       <CardTitle tag="h5" className="mb-0">
@@ -654,23 +687,29 @@ const CourseList = (props) =>{
 
        
             </Col>
-            <Col lg="4">
-                <Card className="flex-fill w-100">
-                  <CardHeader>
-                    
-                    <CardTitle tag="h5" className="mb-0">
-                        HỌC SINH THIẾU BTVN: {datatable2.rows.length}/{totalStudentInDate}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardBody>
-                        <MDBDataTableV5 
-                        responsive 
-                        hover  
-                        searchTop searchBottom={false}
-                        entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={4} data={datatable2} />
-                    </CardBody>
-                </Card>
-            </Col>
+            <Modal size="xl" isOpen={modalIsWatchingLessonStudentDetail}  toggle={setIsWatchingLessonStudentDetail}>
+                <ModalHeader>
+                    Thông tin buổi học
+                </ModalHeader>
+                <ModalBody>
+                  Học sinh thiếu BTVN: {datatable2.rows.length}/{totalStudentInDate}
+                  <MDBDataTableV5 
+                    responsive 
+                    hover  
+                    searchTop searchBottom={false}
+                    entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={4} data={datatable2} />
+                  Học sinh nghỉ học
+                    <MDBDataTableV5 
+                    responsive 
+                    hover  
+                    searchTop searchBottom={false}
+                    entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={4} data={datatable3} />
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="primary" onClick={() => setIsWatchingLessonStudentDetail(false)}>Thoát</Button>
+                </ModalFooter>
+             
+            </Modal>
       </Row>
       
   </>

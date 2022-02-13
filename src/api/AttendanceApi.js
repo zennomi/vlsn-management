@@ -73,6 +73,13 @@ const getTotalStudentInClassInDate = (classId, dateId) => {
     }
     return Api.get(`${url}/students/classes/${classId}/dates`,{params:parameters });
 }
+const getStatusStudentInClassInDate = (classId, dateId, status) => {
+    const parameters = {
+        dateId: dateId,
+        status: status
+    }
+    return Api.get(`${url}/students/classes/${classId}/lessons/absent`,{params:parameters });
+}
 // export
 const api = {
      getListStudentAttendanceToday,
@@ -87,5 +94,6 @@ const api = {
      getListStudentAttendanceInClass,
      deleteAttendance,
      deleteSubAttendance,
-     getTotalStudentInClassInDate }
+     getTotalStudentInClassInDate,
+     getStatusStudentInClassInDate }
 export default api;
