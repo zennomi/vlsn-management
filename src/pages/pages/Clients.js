@@ -192,9 +192,11 @@ const ClientsList = (props) =>{
           <MDBDataTableV5 
           hover 
           responsive
+          pagingTop
           searchTop
           searchBottom={false}
           barReverse
+          exportToCSV
           entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
       </CardBody>
     </Card>

@@ -2,12 +2,13 @@ import Api from './Api';
 
 const url = "/homeworks";
 
-const createHomeWork = (lessonId, name, misson, link,keyLink) => {
+const createHomeWork = (lessonId, name, misson, link,keyLink,type) => {
     const body = {
         name:name,
         misson:misson,
         link:link,
-        keyLink:keyLink
+        keyLink:keyLink,
+        type:type
     }
     return Api.post(`${url}/lessons/${lessonId}`,body);
 };

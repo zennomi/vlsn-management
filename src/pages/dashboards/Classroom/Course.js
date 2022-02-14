@@ -50,6 +50,8 @@ const CourseList = (props) =>{
   const [lessons, setLessons] = useState([]);
   const [lesson,setLesson] = useState({});
 
+  const [isMCHomeWork,setIsMCHomeWork] = useState(false);
+
   const [totalStudentInDate,setTotalStudentInDate] = useState(0);
 
   const datatable = {
@@ -302,7 +304,7 @@ const CourseList = (props) =>{
                     </Modal> 
                
                       {/* modal create lesson homework */}
-                    <Modal isOpen={modalHomeWork} toggle={setModalHomeWork}>
+                    <Modal size="xl" isOpen={modalHomeWork} toggle={setModalHomeWork}>
                           <ModalHeader>
                                 Thêm BTVN
                           </ModalHeader>
@@ -312,7 +314,8 @@ const CourseList = (props) =>{
                                       {
                                           linkHomeWork:"",
                                           linkHomeWorkAnswer:"",
-                                          misson:""
+                                          misson:"",
+                                          type:""
                                       }
                                     }
                                     validationSchema={
@@ -347,27 +350,69 @@ const CourseList = (props) =>{
                                 >
                                 {({setFieldValue, values, isSubmitting}) => 
                                     <Form>
-                                        <FastField
-                                                label="Thêm Link BTVN"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="linkHomeWork"
-                                                component={ReactstrapInput}
-                                              />
-                                        <FastField
-                                                label="Thêm Link Đáp Án"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="linkHomeWorkAnswer"
-                                                component={ReactstrapInput}
-                                              />
-                                        <FastField
-                                                label="Yêu cầu"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="misson"
-                                                component={ReactstrapInput}
-                                              />
+                                        <Row>
+                                            <Col>
+                                                  <FastField
+                                                    label="Thêm Link BTVN"
+                                                    bsSize="lg"
+                                                    type="text"
+                                                    name="linkHomeWork"
+                                                    component={ReactstrapInput}
+                                                  />
+                                            </Col>
+                                            <Col>
+                                                  <FastField
+                                                    label="Thêm Link Đáp Án"
+                                                    bsSize="lg"
+                                                    type="text"
+                                                    name="linkHomeWorkAnswer"
+                                                    component={ReactstrapInput}
+                                                  />
+                                            </Col>
+                                            
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                <FastField
+                                                    label="Yêu cầu"
+                                                    bsSize="lg"
+                                                    type="textarea"
+                                                    name="misson"
+                                                    component={ReactstrapInput}
+                                                  />
+
+                                            </Col>
+                                          
+                                        </Row>
+                                        <Row>
+                                              <Col>
+                                                  <FastField
+                                                    label="Hạn nộp"
+                                                    bsSize="lg"
+                                                    type="datetime-local"
+                                                    name="deadline"
+                                                    component={ReactstrapInput}
+                                                  />
+                                              </Col>
+                                              <Col>
+                                                  <FastField
+                                                    label="Loại"
+                                                    bsSize="lg"
+                                                    type="select"
+                                                    name="type"
+                                                    onChange={e => {
+
+                                                    }}
+                                                    component={ReactstrapInput}
+                                                  >
+                                                    <option value = "ES">Tự luận</option>
+                                                    <option value = "MC">Trắc nghiệm</option>
+                                                
+                                                  </FastField>
+                                                  
+                                              </Col>
+                                        </Row>
+                                       
                                         <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
                                     </Form>
                                   }
