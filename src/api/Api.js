@@ -2,7 +2,7 @@ import axios from 'axios';
 import storage from '../Storage/storage';
 
 const axiosClient = axios.create({
-    baseURL: `http://localhost:5000/api/v1`,
+    baseURL: `http://Tct-env.eba-d7jybsha.ap-southeast-1.elasticbeanstalk.com/api/v1`,
     //timeout: 5000, // default is `0` (no timeout)
     // responseType: 'json'
 });

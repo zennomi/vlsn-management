@@ -17,11 +17,6 @@ const Footer = () => (
                 Group  
               </a>
             </li>
-            <li className="list-inline-item">
-              <a href="tel:0967076809">
-                HotLine:0967076809
-              </a>
-            </li>
             
           </ul>
         </Col>
