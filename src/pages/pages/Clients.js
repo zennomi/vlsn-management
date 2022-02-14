@@ -27,8 +27,21 @@ import FacebookIcon from '@material-ui/icons/Facebook';
 import View from "@material-ui/icons/Visibility"
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/Delete";
+import { CSVLink } from "react-csv";
+
 import * as Yup from 'yup';
 
+const headers = [
+  { label: "Họ và Đệm", key: "lastName" },
+  { label: "Tên", key: "firstName" },
+  { label: "Trường", key: "lastName" },
+  { label: "SĐT", key: "studentNumber" },
+  { label: "Lớp", key: "grade" },
+  { label: "trường học", key: "school" },
+  { label: "Tên PH", key: "parentName" },
+  { label: "SĐT PH", key: "parentNumber" },
+  { label: "Facebook", key: "facebookLink" },
+];
 
 const removeAccents = (str) => {
   return str.normalize('NFD')
@@ -189,16 +202,23 @@ const ClientsList = (props) =>{
                   </Row>
       </CardHeader>
       <CardBody>
-          <MDBDataTableV5 
-          hover 
-          responsive
-          pagingTop
-          searchTop
-          searchBottom={false}
-          barReverse
-          exportToCSV
-          entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
-      </CardBody>
+          <Row>
+                <Col>
+                  
+                      <MDBDataTableV5 
+                      hover 
+                      responsive
+                      pagingTop
+                      searchTop
+                      searchBottom={false}
+                      barReverse
+                      exportToCSV
+                      entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
+                  
+                      <CSVLink headers={headers} data={listStudent}>Export to CSV</CSVLink>
+                </Col>
+          </Row>
+      </CardBody> 
     </Card>
     <Modal isOpen={modalUpdate} toggle={toggleUpdate}>
       <Row>

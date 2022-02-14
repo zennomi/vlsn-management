@@ -39,6 +39,12 @@ const removeLastThreeChar = (str) => {
   return str.slice(0,-3)
 }
 
+const translateRoleToVietnamese = role => {
+  if (role === "MENTOR") return "TRỢ GIẢNG";
+  else if (role === "TEACHER") return "GIÁO VIÊN";
+  else if (role === "MANAGER") return "QUẢN LÍ";
+}
+
 const StudentProfileDetails = (props) =>{ 
 
   const studentId = props.studentId;
@@ -376,7 +382,7 @@ const Comment = (props) => {
           alt="Chris Wood"
         />
         <Media body>
-          <strong>{comment.role} - {comment.fullName}</strong> đã đăng lời nhận xét{" "}
+          <strong>{translateRoleToVietnamese(comment.role)} - {comment.fullName}</strong> đã đăng lời nhận xét{" "}
           <br />
           <small className="text-muted">{comment.commentDate}</small>
           <h5 className="border text-muted p-2 mt-1">

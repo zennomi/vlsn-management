@@ -168,7 +168,7 @@ const ClassList = (props) => {
             hover 
             responsive
             searchTop searchBottom={false}
-            entriesOptions={[10,20, 30, 50,100]} entries={10} pagesAmount={10} data={datatable} />
+            entriesOptions={[5,10, 20, 50,100]} entries={5} pagesAmount={5} data={datatable} />
         </CardBody>
     </Card>
     );

@@ -25,6 +25,7 @@ import VideoApi from "../../../api/VideoApi";
 import ChapterApi from "../../../api/ChapterApi";
 import HomeWorkApi from "../../../api/HomeWorkApi";
 import AttendanceApi from "../../../api/AttendanceApi";
+import ClassroomApi from "../../../api/ClassroomApi";
 import Moment from 'moment';
 import View from "@material-ui/icons/Visibility"
 import Edit from "@material-ui/icons/Edit";
@@ -53,8 +54,6 @@ const CourseList = (props) =>{
 
   const [lessons, setLessons] = useState([]);
   const [lesson,setLesson] = useState({});
-
-  const [isMCHomeWork,setIsMCHomeWork] = useState(false);
 
   const [totalStudentInDate,setTotalStudentInDate] = useState(0);
 
@@ -179,11 +178,14 @@ const CourseList = (props) =>{
 
   const watchingStudentNotSubmitedHomeWorkInLesson = async (lesson) => {
       const res = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.id,lesson.id);
-      const totalStudent = await AttendanceApi.getTotalStudentInClassInDate(clazz.id,lesson.date);
+      const listPresent = await AttendanceApi.getStatusStudentInClassInDate(clazz.id,lesson.date,"P");
       const listAbsent = await AttendanceApi.getStatusStudentInClassInDate(clazz.id,lesson.date,"A");
-      setTotalStudentInDate(totalStudent);
-      if (res !== "empty"){
+      setTotalStudentInDate(listPresent.length);
+      if (res !== "empty"){ // 
         setListStudentNotSubmittedHomeWork(res);
+      }
+      else{
+        setListStudentNotSubmittedHomeWork(listPresent); // empty tức là chưa ai làm bài tập = cả lớp thiếu btvn
       }
       setListAbsentStudentInLesson(listAbsent);
       setIsWatchingLessonStudentDetail(true);
@@ -237,7 +239,7 @@ const CourseList = (props) =>{
     
     datatable2.rows = listStudentNotSubmittedHomeWork;
     datatable3.rows = listAbsentStudentInLesson;
-    console.log(listAbsentStudentInLesson);
+  
   return(
   <>
       <Row>
@@ -769,6 +771,10 @@ const AttendanceList = (props) => {
   const datatable = {
     columns: [
       {
+        label: 'ID',
+        field: 'id',
+      },
+      {
         label: 'Họ Tên',
         field: 'fullName',
       },
@@ -796,33 +802,20 @@ const AttendanceList = (props) => {
  
   useEffect(() => {
     const getListStudentInClass = async () =>{
-      const listStudents = await AttendanceApi.getListStudentAttendanceInClass(classId);
+      const listStudents = await ClassroomApi.getAllStudentInClass(classId);
       setStudents(listStudents);
     }
     getListStudentInClass();
  
   }, [classId]);
 
-  const first = (students[0] !== undefined) ? students[0] : {listAtten:[]};
-
-  first.listAtten.map(res =>
-      datatable.columns.push({
-        label: res.date,
-        field: res.date,
-      })  
-  )
-  students.map(st => 
-      st.listAtten.map(res => 
-          st[res.date] = res.status
-      )
-    
-  )
+  
   datatable.rows = students;
   console.log(students);
   return(
   <> 
       <div className='header' style={{marginBottom:"5px"}}>
-        <h1 className='title'>DANH SÁCH ĐIỂM DANH</h1>
+        <h1 className='title'>DANH SÁCH HỌC SINH</h1>
           
           
       </div>
