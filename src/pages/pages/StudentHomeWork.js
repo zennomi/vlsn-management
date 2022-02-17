@@ -18,6 +18,10 @@ import Header from "./Header";
 import {HorizontalBar} from 'react-chartjs-2';
 import HomeWorkApi from "../../api/HomeWorkApi";
 import StudentApi from "../../api/StudentApi";
+import Check from "@material-ui/icons/Check";
+import Close from "@material-ui/icons/Close";
+
+
 function percentage(partialValue, totalValue) {
   if (totalValue === 0){
     return 0;
@@ -33,24 +37,39 @@ const SubmittedStudentInWeek = (props) =>{
   
   const resetPage = props.resetPage;
   const setBlackList = props.setBlackList;
+
   const date = new Date();
   const nowMonth = date.getMonth() + 1;
- 
-  var weekNow = 0;
-  if(date.getDate() <= 7){
-      weekNow = 1;
-  }else if (date.getDate() > 7 && date.getDate() <= 14){
-      weekNow = 2;
-  }else if (date.getDate() > 14 && date.getDate() <= 21){
-      weekNow = 3;
-  }else if (date.getDate() > 21 && date.getDate() <= 31){
-      weekNow = 4;
-  }
   
   const [students, setStudents] = useState([]);
   const [grade,setGrade] = useState(12);
   const [subject,setSubject] = useState("Toán Đại");
   const [month,setMonth] = useState(nowMonth);
+
+  const [weekNow,setWeekNow] = useState(4);
+
+      
+    
+  useEffect(() => {
+
+    if(date.getDate() <= 7 && month === nowMonth ){
+      setWeekNow(1);
+    }
+    else if (date.getDate() > 7 && date.getDate() <= 14 && month.toString() === nowMonth.toString()){
+      setWeekNow(2);
+    }
+    else if (date.getDate() > 14 && date.getDate() <= 21 && month.toString() === nowMonth.toString()){
+      setWeekNow(3);
+    }
+    else if (date.getDate() > 21 && date.getDate() <= 31 && month.toString() === nowMonth.toString()){
+      setWeekNow(4);
+    }else{
+      setWeekNow(4);
+    }
+    
+  }, [month,nowMonth,date]);
+
+  
 
   const datatable = {
     columns: [
@@ -156,16 +175,20 @@ const SubmittedStudentInWeek = (props) =>{
     getListStudentSubmitHomeWorkOfSubjectInGrade();
   }, [grade,subject,month,resetPage]);
 
+  console.log(weekNow);
+  console.log(month);
+  console.log(nowMonth);
+
   students.map(st => datatable.rows.push(
     {
           fullName:st.fullName,
           school:st.school,
           studentNumber:st.studentNumber,
           className: grade+st.className,
-          first:st.first,
-          second:st.second,
-          third:st.third,
-          fourth:st.fourth,
+          first:(st.first && weekNow >= 1) ? <div className="d-flex justify-content-center"><Check color="action"/></div> : (!st.first && weekNow >= 1) ? <div className="d-flex justify-content-center"><Close color="error"/></div> : "",
+          second:(st.second && weekNow >= 2) ? <div className="d-flex justify-content-center"><Check color="action"/></div> :(!st.first && weekNow >= 2) ? <div className="d-flex justify-content-center"><Close color="error"/></div> : "",
+          third:(st.third && weekNow >= 3) ? <div className="d-flex justify-content-center"><Check color="action"/></div> : (!st.first && weekNow >= 3) ?<div className="d-flex justify-content-center"><Close color="error"/></div> : "",
+          fourth:(st.fourth && weekNow >= 4) ? <div className="d-flex justify-content-center"><Check color="action"/></div> : (!st.first && weekNow >= 4) ? <div className="d-flex justify-content-center"><Close color="error"/></div> : "",
     }
   ))
   
@@ -284,8 +307,8 @@ const SubmittedStudentInWeek = (props) =>{
                                 }}
                                 >
                                           {<option value={nowMonth}>Tháng {nowMonth}</option>} 
-                                          {<option value={nowMonth - 1}>Tháng {nowMonth - 1}</option>} 
-                                          {<option value={nowMonth - 2}>Tháng {nowMonth - 2}</option>}
+                                          {<option value={(nowMonth - 1 !== 0) ? (nowMonth - 1) : 12}>Tháng {(nowMonth - 1 !== 0) ? (nowMonth - 1) : 12}</option>} 
+                                          {<option value={(nowMonth - 2 !== 0) ? (nowMonth - 2) : 12}>Tháng {(nowMonth - 2 !== 0) ? (nowMonth - 2) : 12}</option>}
                                 </Input>
                             </Col>
                         </Row>

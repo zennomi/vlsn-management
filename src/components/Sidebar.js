@@ -4,7 +4,7 @@ import { NavLink, withRouter } from "react-router-dom";
 
 import { Badge, Collapse } from "reactstrap";
 import PerfectScrollbar from "react-perfect-scrollbar";
-
+import { toggleSidebar } from "../redux/actions/sidebarActions";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
@@ -75,13 +75,13 @@ const SidebarCategory = withRouter(
 );
 
 const SidebarItem = withRouter(
-  ({ name, badgeColor, badgeText, icon: Icon, location, to }) => {
+  ({ name, badgeColor, badgeText, icon: Icon, location, to, onClick }) => {
     const getSidebarItemClass = path => {
       return location.pathname === path ? "active" : "";
     };
 
     return (
-      <li className={"sidebar-item " + getSidebarItemClass(to)}>
+      <li onClick={onClick} className={"sidebar-item " + getSidebarItemClass(to)}>
         <NavLink to={to} className="sidebar-link" activeClassName="active">
           {Icon ? <Icon size={18} className="align-middle mr-3" /> : null}
           {name}
@@ -100,13 +100,16 @@ const Sidebar = (props) => {
   const [openRoutes, setOpenRoutes] = useState(() => initOpenRoutes(props.location));
 
   const toggle = index => {
-    // Collapse all elements
+    
+    // Collapse all element
     Object.keys(openRoutes).forEach(
       item => openRoutes[index] || setOpenRoutes(openRoutes => Object.assign({}, openRoutes, {[item]: false}))
     )
     
     // Toggle selected element
     setOpenRoutes(openRoutes => Object.assign({}, openRoutes, {[index]: !openRoutes[index]}));
+    
+    
   }
   
   return (
@@ -154,6 +157,9 @@ const Sidebar = (props) => {
                                  to={route.path}
                                  badgeColor={route.badgeColor}
                                  badgeText={route.badgeText}
+                                 onClick={() => setTimeout(() => {
+                                  props.dispatch(toggleSidebar())
+                                },200)}
                                />
                              ))}
                            </SidebarCategory>
@@ -164,6 +170,9 @@ const Sidebar = (props) => {
                              icon={category.icon}
                              badgeColor={category.badgeColor}
                              badgeText={category.badgeText}
+                             onClick={() => setTimeout(() => {
+                              props.dispatch(toggleSidebar())
+                            },200)}
                            />
                          )}
                        </React.Fragment>
@@ -196,6 +205,9 @@ const Sidebar = (props) => {
                                  to={route.path}
                                  badgeColor={route.badgeColor}
                                  badgeText={route.badgeText}
+                                 onClick={() => setTimeout(() => {
+                                  props.dispatch(toggleSidebar())
+                                },200)}
                                />
                              ))}
                            </SidebarCategory>
@@ -206,6 +218,9 @@ const Sidebar = (props) => {
                              icon={category.icon}
                              badgeColor={category.badgeColor}
                              badgeText={category.badgeText}
+                             onClick={() => setTimeout(() => {
+                              props.dispatch(toggleSidebar())
+                            },200)}
                            />
                          )}
                        </React.Fragment>

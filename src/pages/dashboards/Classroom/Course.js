@@ -179,13 +179,17 @@ const CourseList = (props) =>{
   const watchingStudentNotSubmitedHomeWorkInLesson = async (lesson) => {
       const res = await HomeWorkApi.getStudentNotSubmittedHomeWorkInLesson(clazz.id,lesson.id);
       const listPresent = await AttendanceApi.getStatusStudentInClassInDate(clazz.id,lesson.date,"P");
+      const listLate = await AttendanceApi.getStatusStudentInClassInDate(clazz.id,lesson.date,"L");
       const listAbsent = await AttendanceApi.getStatusStudentInClassInDate(clazz.id,lesson.date,"A");
-      setTotalStudentInDate(listPresent.length);
+
+      const listStudentInClass = [...listLate, ...listPresent];
+
+      setTotalStudentInDate(listStudentInClass.length);
       if (res !== "empty"){ // 
         setListStudentNotSubmittedHomeWork(res);
       }
       else{
-        setListStudentNotSubmittedHomeWork(listPresent); // empty tức là chưa ai làm bài tập = cả lớp thiếu btvn
+        setListStudentNotSubmittedHomeWork(listStudentInClass); // empty tức là chưa ai làm bài tập = cả lớp thiếu btvn
       }
       setListAbsentStudentInLesson(listAbsent);
       setIsWatchingLessonStudentDetail(true);
