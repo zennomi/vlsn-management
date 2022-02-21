@@ -19,11 +19,25 @@ import * as Yup from 'yup';
 import TeacherApi from "../../../api/TeacherApi";
 import MentorApi from "../../../api/MentorApi";
 import ClassroomApi from "../../../api/ClassroomApi";
+import ScheduleApi from "../../../api/ScheduleApi";
+import { produce } from "immer";
+
 const CreateClass = () => {
   
   const [suggestTeacher, setSuggest] = useState([]);
   
   const [suggestMentor, setSuggestMentor] = useState([]);
+
+  const [id,setId] = useState(1);
+
+  const [schedule, setSchedule] = useState([
+    {
+        id:0,
+        startTime:"",
+        endTime:"",
+        schedule:"2"
+    }
+  ]);
 
   useEffect(() => {
     const getSuggestTeacher = async () =>{
@@ -61,9 +75,6 @@ const CreateClass = () => {
                 subject: "Toán Đại",
                 className: '',
                 teacher:{},
-                date: 2,
-                start: "",
-                end: "",
                 listMentor: []
               }
             }
@@ -73,14 +84,7 @@ const CreateClass = () => {
                 className: Yup.string()
                   .required('bắt buộc'),
 
-                date: Yup.string()
-                  .required('bắt buộc'),
-
-                start: Yup.string()
-                  .required('bắt buộc'),
-
-                end: Yup.string()
-                  .required('bắt buộc'),
+               
                 
                 
               })
@@ -89,19 +93,18 @@ const CreateClass = () => {
             onSubmit={async (values) => {
 
               console.log(values);
-              
+              console.log(schedule);
               const result = await ClassroomApi.createClass(
                 values.className,
                 values.subject,
                 values.grade, 
-                values.start,
-                values.end,
-                values.date,
                 values.teacher.teacherId
                 )
               
+              const createSchedule = await ScheduleApi.createClassSchedule(result,schedule);
+              
               const listMentor = [];
-              if(values.listMentor.length !== 0 && result !== null){
+              if(values.listMentor.length !== 0 && result !== null && createSchedule !== null){
                   values.listMentor.map(mentor => listMentor.push(
                       {
                         classId: result,
@@ -113,13 +116,14 @@ const CreateClass = () => {
                     alert("Thêm lớp học mới thành công!");
                   }
               }
-              else if (values.listMentor.length === 0 && result !== null){
+              else if (values.listMentor.length === 0 && result !== null && createSchedule !== null){
                   console.log(result);
                   alert("Thêm lớp học mới thành công! lớp học chưa có trợ giảng vui lòng vào DS Lớp học để cập nhật trợ giảng");
               }
               else{
                 alert("Thêm lớp học mới thất bại!");
               }
+
 
             }}
           >
@@ -186,7 +190,7 @@ const CreateClass = () => {
                         bsSize="lg"
                         type="text"
                         name="className"
-                        placeholder="Enter Date Attendance"
+                        placeholder="VD: 12C1, 12C3, 12N4,..."
                         component={ReactstrapInput}
                       />
                   </Col>
@@ -210,45 +214,110 @@ const CreateClass = () => {
                   </Col>
                     
               </Row> 
+              {
+                schedule.map((s,index) => 
+                  <Row key={index}>
+                      <Col >
+                              <Label for="schedule" style={{marginBottom: "4px"}}>Chọn thời khóa biểu</Label>
+                              <Input
+                                label="Chọn thời khóa biểu"
+                                bsSize="lg"
+                                type="select"
+                                name="schedule"
+                                onChange={e => {
+                                  const sc = e.target.value;
+                                  setSchedule(currentSchedule =>
+                                    produce(currentSchedule, v => {
+                                      v[index].schedule = sc;
+                                    })
+                                  );
+                                }}
+                                value={s.schedule}
+                                
+                              >
+                                <option value="2">Thứ 2</option>
+                                <option value="3">Thứ 3</option>
+                                <option value="4">Thứ 4</option>
+                                <option value="5">Thứ 5</option>
+                                <option value="6">Thứ 6</option>
+                                <option value="7">Thứ 7</option>
+                                <option value="1">Chủ Nhật</option>
+                              </Input>
+                      </Col>
+                      <Col>   
+                              <Label for="start" style={{marginBottom: "4px"}}>Thời gian bắt đầu</Label>
+                              <Input
+                                label="Thời gian bắt đầu"
+                                bsSize="lg"
+                                type="time"
+                                name="startTime"
+                                onChange={e => {
+                                  const startTime = e.target.value;
+                                  setSchedule(currentSchedule =>
+                                    produce(currentSchedule, v => {
+                                      v[index].startTime = startTime;
+                                    })
+                                  );
+                                }}
+                                value={s.startTime}
+                              />
+                      </Col>
+                      <Col>
+                              <Label for="endTime" style={{marginBottom: "4px"}}>Thời gian kết thúc</Label>
+                              <Input
+                                label="Thời gian kết thúc"
+                                bsSize="lg"
+                                type="time"
+                                name="endTime"
+                                onChange={e => {
+                                  const endTime = e.target.value;
+                                  setSchedule(currentSchedule =>
+                                    produce(currentSchedule, v => {
+                                      v[index].endTime = endTime;
+                                    })
+                                  );
+                                }}
+                                value={s.endTime}
+                              />
+                      </Col>
+                      <button
+                        style={{
+                          backgroundColor:"white",
+                          border:"none",
+                          fontWeight:"bolder",
+                          fontSize:"larger"
+                        }}
+
+                        onClick={() => {
+                          setSchedule(currentSchedule =>
+                            currentSchedule.filter(x => x.id !== s.id)
+                          );
+                        }}
+                      >
+                        x
+                      </button>
+                  </Row>
+                )
+              }
               <Row>
                   <Col>
-                         
-                          <FastField
-                            label="Chọn thời khóa biểu"
-                            bsSize="lg"
-                            type="select"
-                            name="date"
-                            component={ReactstrapInput}
-                            
-                          >
-                            <option value="2">Thứ 2</option>
-                            <option value="3">Thứ 3</option>
-                            <option value="4">Thứ 4</option>
-                            <option value="5">Thứ 5</option>
-                            <option value="6">Thứ 6</option>
-                            <option value="7">Thứ 7</option>
-                            <option value="1">Chủ Nhật</option>
-                          </FastField>
-                  </Col>
-                  <Col>
-                          <FastField
-                            label="Thời gian bắt đầu"
-                            bsSize="lg"
-                            type="time"
-                            name="start"
-                            component={ReactstrapInput}
-                            
-                          />
-                  </Col>
-                  <Col>
-                          <FastField
-                            label="Thời gian kết thúc"
-                            bsSize="lg"
-                            type="time"
-                            name="end"
-                            component={ReactstrapInput}
-                            
-                          />
+                    <Button
+                      color="primary"
+                      size="sm"
+                      onClick={() => {
+                        setSchedule(currentSchedule => [
+                          ...currentSchedule,
+                          {
+                            id:id,
+                            schedule: "2",
+                            startTime: "",
+                            endTime: ""
+                          }
+                        ]);
+                        var newId = id + 1;
+                        setId(newId);
+                      }}                    
+                    >Thêm lịch</Button>
                   </Col>
               </Row>
               <Row>

@@ -16,6 +16,9 @@ import { Formik,FastField, Form  } from 'formik';
 import TextField from '@material-ui/core/TextField';
 import TeacherApi from "../../../api/TeacherApi";
 import ClassroomApi from "../../../api/ClassroomApi";
+import ScheduleApi from "../../../api/ScheduleApi";
+import { produce } from "immer";
+
 const Ecommerce = (props) =>{
 
   const [clazz, setClass] = useState({});
@@ -26,7 +29,11 @@ const Ecommerce = (props) =>{
   
   const [suggestMentor, setSuggestMentor] = useState([]);
 
+  const [schedule,setSchedule] = useState([]);
+
   const [classes, setClasses] = useState([]);
+
+  const [id,setId] = useState(1);
 
   useEffect(() => {
     const getAllClassList = async () =>{
@@ -37,6 +44,7 @@ const Ecommerce = (props) =>{
     
   }, [grade]);
 
+
   return(
   <Container fluid className="p-0">
     <Header />
@@ -46,6 +54,7 @@ const Ecommerce = (props) =>{
           setGrade={setGrade}
           grade={grade}
           classes={classes}
+          setSchedule={setSchedule}
           setClasses={setClasses}
           setClass={setClass}
           modalUpdateClass={modalUpdateClass}
@@ -59,7 +68,7 @@ const Ecommerce = (props) =>{
     </Row>
     {(modal) ? <Statistics clazz={clazz} {...props} /> : null}
     {(modal) ? <Course clazz={clazz} {...props} /> : null}
-    <Modal isOpen={modalUpdateClass} toggle={setModalUpdateClass}>
+    <Modal size="lg" isOpen={modalUpdateClass} toggle={setModalUpdateClass}>
                         <ModalBody>
                                 <h1>Cập nhật thông tin lớp học</h1>
                                 <Formik
@@ -69,9 +78,6 @@ const Ecommerce = (props) =>{
                                             subject: (Object.keys(clazz).length === 0) ? "" : clazz.subjectName,
                                             className: (Object.keys(clazz).length === 0) ? "" : clazz.className,
                                             teacher:(Object.keys(clazz).length === 0) ? "" : clazz.teacherId,
-                                            date: (Object.keys(clazz).length === 0) ? "" : clazz.schedule,
-                                            start: (Object.keys(clazz).length === 0) ? "" : clazz.startTime,
-                                            end: (Object.keys(clazz).length === 0) ? "" : clazz.endTime,
                                             listMentor: (Object.keys(clazz).length === 0) ? [] : clazz.listMentor
                                           }
                                         }
@@ -81,11 +87,9 @@ const Ecommerce = (props) =>{
                                               values.className,
                                               values.subject,
                                               values.grade,
-                                              values.start,
-                                              values.end,
-                                              values.date,
                                               values.teacher.teacherId
-                                            )
+                                            );
+                                            const updateSchedule = await ScheduleApi.updateClassSchedule(clazz.id,schedule);
                                             const body = [];
                                            
                                             if(values.listMentor !== 0){
@@ -97,7 +101,7 @@ const Ecommerce = (props) =>{
                                                 clazz.id,
                                                 body
                                                 )
-                                                if(updateMentor === "update successful!" && update === "update successful!" ){
+                                                if(updateMentor === "update successful!" && update === "update successful!" && updateSchedule === "update successful!" ){
                                                   
                                                   const result = await ClassroomApi.getListClassroomInGrade(grade);
                                                   setClasses(result);
@@ -109,7 +113,7 @@ const Ecommerce = (props) =>{
                                                 }
                                             }
                                             else{
-                                              if(update === "update successful!"){
+                                              if(update === "update successful!" && updateSchedule === "update successful!"){
                                                 alert("Cập nhật thành công!");
                                                 const result = await ClassroomApi.getListClassroomInGrade(grade);
                                                 setClasses(result);
@@ -209,27 +213,110 @@ const Ecommerce = (props) =>{
                                                   </Col>
                                                     
                                               </Row> 
+                                              {
+                                                schedule.map((s,index) => 
+                                                  <Row key={index}>
+                                                      <Col >
+                                                              <Label for="schedule" style={{marginBottom: "4px"}}>Chọn thời khóa biểu</Label>
+                                                              <Input
+                                                                label="Chọn thời khóa biểu"
+                                                                bsSize="lg"
+                                                                type="select"
+                                                                name="schedule"
+                                                                onChange={e => {
+                                                                  const sc = e.target.value;
+                                                                  setSchedule(currentSchedule =>
+                                                                    produce(currentSchedule, v => {
+                                                                      v[index].schedule = sc;
+                                                                    })
+                                                                  );
+                                                                }}
+                                                                value={s.schedule}
+                                                                
+                                                              >
+                                                                <option value="2">Thứ 2</option>
+                                                                <option value="3">Thứ 3</option>
+                                                                <option value="4">Thứ 4</option>
+                                                                <option value="5">Thứ 5</option>
+                                                                <option value="6">Thứ 6</option>
+                                                                <option value="7">Thứ 7</option>
+                                                                <option value="1">Chủ Nhật</option>
+                                                              </Input>
+                                                      </Col>
+                                                      <Col>   
+                                                              <Label for="start" style={{marginBottom: "4px"}}>Thời gian bắt đầu</Label>
+                                                              <Input
+                                                                label="Thời gian bắt đầu"
+                                                                bsSize="lg"
+                                                                type="time"
+                                                                name="startTime"
+                                                                onChange={e => {
+                                                                  const startTime = e.target.value;
+                                                                  setSchedule(currentSchedule =>
+                                                                    produce(currentSchedule, v => {
+                                                                      v[index].startTime = startTime;
+                                                                    })
+                                                                  );
+                                                                }}
+                                                                value={s.startTime}
+                                                              />
+                                                      </Col>
+                                                      <Col>
+                                                              <Label for="endTime" style={{marginBottom: "4px"}}>Thời gian kết thúc</Label>
+                                                              <Input
+                                                                label="Thời gian kết thúc"
+                                                                bsSize="lg"
+                                                                type="time"
+                                                                name="endTime"
+                                                                onChange={e => {
+                                                                  const endTime = e.target.value;
+                                                                  setSchedule(currentSchedule =>
+                                                                    produce(currentSchedule, v => {
+                                                                      v[index].endTime = endTime;
+                                                                    })
+                                                                  );
+                                                                }}
+                                                                value={s.endTime}
+                                                              />
+                                                      </Col>
+                                                      <button
+                                                        style={{
+                                                          backgroundColor:"white",
+                                                          border:"none",
+                                                          fontWeight:"bolder",
+                                                          fontSize:"larger"
+                                                        }}
+
+                                                        onClick={() => {
+                                                          setSchedule(currentSchedule =>
+                                                            currentSchedule.filter(x => x.id !== s.id)
+                                                          );
+                                                        }}
+                                                      >
+                                                        x
+                                                      </button>
+                                                  </Row>
+                                                )
+                                              }
                                               <Row>
-                                            
                                                   <Col>
-                                                          <FastField
-                                                            label="Thời gian bắt đầu"
-                                                            bsSize="lg"
-                                                            type="time"
-                                                            name="start"
-                                                            component={ReactstrapInput}
-                                                            
-                                                          />
-                                                  </Col>
-                                                  <Col>
-                                                          <FastField
-                                                            label="Thời gian kết thúc"
-                                                            bsSize="lg"
-                                                            type="time"
-                                                            name="end"
-                                                            component={ReactstrapInput}
-                                                            
-                                                          />
+                                                    <Button
+                                                      color="primary"
+                                                      size="sm"
+                                                      onClick={() => {
+                                                        setSchedule(currentSchedule => [
+                                                          ...currentSchedule,
+                                                          {
+                                                            id:id,
+                                                            schedule: "2",
+                                                            startTime: "",
+                                                            endTime: ""
+                                                          }
+                                                        ]);
+                                                        var newId = id + 1;
+                                                        setId(newId);
+                                                      }}                    
+                                                    >Thêm lịch</Button>
                                                   </Col>
                                               </Row>
                                               <Row>
@@ -255,25 +342,7 @@ const Ecommerce = (props) =>{
                                                           />
                                                         </div>
                                                     </Col>
-                                                    <Col>
-                                                        
-                                                          <FastField
-                                                            label="Chọn thời khóa biểu"
-                                                            bsSize="lg"
-                                                            type="select"
-                                                            name="date"
-                                                            component={ReactstrapInput}
-                                                            
-                                                          >
-                                                            <option value="2">Thứ 2</option>
-                                                            <option value="3">Thứ 3</option>
-                                                            <option value="4">Thứ 4</option>
-                                                            <option value="5">Thứ 5</option>
-                                                            <option value="6">Thứ 6</option>
-                                                            <option value="7">Thứ 7</option>
-                                                            <option value="1">Chủ Nhật</option>
-                                                          </FastField>
-                                                  </Col>
+                                                    
                                               </Row>
 
                                             

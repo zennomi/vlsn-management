@@ -30,15 +30,13 @@ const getAllClassList = () => {
 const getClassById = (classId) => {
     return Api.get(`${url}/${classId}`);
 }
-const createClass = (className, subject,  grade, start, end, schedule,teacherId) => {
+const createClass = (className, subject,  grade, teacherId) => {
     
     const body =  {
         className: className,
         subject: subject,
         grade: grade,
-        startTime: start,
-        endTime: end,
-        schedule: schedule,
+        
         teacherId: {
             id: teacherId
         }
@@ -48,15 +46,12 @@ const createClass = (className, subject,  grade, start, end, schedule,teacherId)
 const deleteClass = (classId) => {
     return Api.delete(`${url}/${classId}`)
 }
-const updateClass = (classId,className, subject,  grade, start, end, schedule,teacherId) => {
+const updateClass = (classId,className, subject,  grade, teacherId) => {
     
     const body =  {
         className: className,
         subject: subject,
         grade: grade,
-        startTime: start,
-        endTime: end,
-        schedule: schedule,
         teacherId: {
             id: teacherId
         }

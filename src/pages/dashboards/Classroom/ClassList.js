@@ -17,6 +17,11 @@ import MentorApi from "../../../api/MentorApi";
 import View from "@material-ui/icons/Visibility"
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/Delete";
+
+const removeLastThreeChar = (str) => {
+  return str.slice(0,-3)
+}
+
 const ClassList = (props) => {
 
 
@@ -40,13 +45,8 @@ const ClassList = (props) => {
       },
       {
         label: 'Lịch Học',
-        field: 'schedule',
+        field: 'listTime',
     
-      },
-      {
-        label: 'Thời Gian',
-        field: 'time',
-
       },
       {
         label: 'Giáo Viên',
@@ -64,6 +64,7 @@ const ClassList = (props) => {
     ],
   };  
   
+  const setSchedule = props.setSchedule;
   const setModalUpdateClass = props.setModalUpdateClass;
   const setSuggestMentor = props.setSuggestMentor;
   const setSuggestTeacher = props.setSuggestTeacher;
@@ -83,7 +84,7 @@ const ClassList = (props) => {
   const updatingClass = async (clazz) => {
       const res = await ClassroomApi.getClassById(clazz.id);
       setClassroom(res);
-    
+      setSchedule(res.listSchedule);
       if(clazz.subjectName === "Toán Đại" || clazz.subjectName === "Toán Hình"){
         const teachers = await TeacherApi.getListTeacherBySubject("Toán");
         setSuggestTeacher(teachers);
@@ -115,9 +116,13 @@ const ClassList = (props) => {
     {
       id:clazz.id,
       fullName: clazz.subjectName + " " + clazz.grade + clazz.className,
-      schedule: (clazz.schedule !== "1") ? "Thứ "+clazz.schedule : "Chủ Nhật",
-      time: clazz.startTime +" - "+clazz.endTime,
+      // listSchedule:  (clazz.schedule !== "1") ? "Thứ "+clazz.schedule : "Chủ Nhật",
       teacherName: clazz.teacherId.fullName,
+      listTime : (clazz.listSchedule.map((s,i) => 
+                  <div key={i}>
+                    {removeLastThreeChar(s.startTime)} - {removeLastThreeChar(s.endTime)} {(s.schedule !== "1") ? "Thứ "+s.schedule : "Chủ Nhật"}
+                    <br/>
+                  </div>)),
       action: <>
                 <button style={{background:"none",border:"none"}} onClick={() => watchingClass(clazz)}>
                     <View color ="primary" />
