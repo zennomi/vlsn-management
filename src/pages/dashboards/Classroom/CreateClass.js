@@ -75,7 +75,11 @@ const CreateClass = () => {
                 subject: "Toán Đại",
                 className: '',
                 teacher:{},
-                listMentor: []
+                listMentor: [],
+                schedule:[],
+                startTime:[],
+                endTime:[]
+                
               }
             }
 
@@ -83,7 +87,7 @@ const CreateClass = () => {
               Yup.object({
                 className: Yup.string()
                   .required('bắt buộc'),
-
+                
                
                 
                 
@@ -94,34 +98,49 @@ const CreateClass = () => {
 
               console.log(values);
               console.log(schedule);
-              const result = await ClassroomApi.createClass(
-                values.className,
-                values.subject,
-                values.grade, 
-                values.teacher.teacherId
-                )
-              
-              const createSchedule = await ScheduleApi.createClassSchedule(result,schedule);
-              
-              const listMentor = [];
-              if(values.listMentor.length !== 0 && result !== null && createSchedule !== null){
-                  values.listMentor.map(mentor => listMentor.push(
-                      {
-                        classId: result,
-                        mentorId: mentor.mentorId
+
+              var validationSchedule = true;
+
+              for (var i = 0 ; i < schedule.length ; i ++){
+                if(schedule[i].startTime === "" || schedule[i].endTime === ""){
+                  validationSchedule = false;
+                  break;
+                }
+              }
+
+              if(validationSchedule){
+                  const result = await ClassroomApi.createClass(
+                    values.className,
+                    values.subject,
+                    values.grade, 
+                    values.teacher.teacherId
+                    )
+                  
+                  
+                  const createSchedule = await ScheduleApi.createClassSchedule(result,schedule);
+                  
+                  const listMentor = [];
+                  if(values.listMentor.length !== 0 && result !== null && createSchedule !== null){
+                      values.listMentor.map(mentor => listMentor.push(
+                          {
+                            classId: result,
+                            mentorId: mentor.mentorId
+                          }
+                      ))
+                      const res = await ClassroomApi.createMentorClass(result,listMentor);
+                      if(res === "create successful!"){
+                        alert("Thêm lớp học mới thành công!");
                       }
-                  ))
-                  const res = await ClassroomApi.createMentorClass(result,listMentor);
-                  if(res === "create successful!"){
-                    alert("Thêm lớp học mới thành công!");
                   }
-              }
-              else if (values.listMentor.length === 0 && result !== null && createSchedule !== null){
-                  console.log(result);
-                  alert("Thêm lớp học mới thành công! lớp học chưa có trợ giảng vui lòng vào DS Lớp học để cập nhật trợ giảng");
-              }
-              else{
-                alert("Thêm lớp học mới thất bại!");
+                  else if (values.listMentor.length === 0 && result !== null && createSchedule !== null){
+                      console.log(result);
+                      alert("Thêm lớp học mới thành công! lớp học chưa có trợ giảng vui lòng vào DS Lớp học để cập nhật trợ giảng");
+                  }
+                  else{
+                    alert("Thêm lớp học mới thất bại!");
+                  }
+              }else{
+                alert("Lịch học không thể trống thời gian bắt đầu hoặc kết thúc");
               }
 
 
@@ -245,7 +264,7 @@ const CreateClass = () => {
                               </Input>
                       </Col>
                       <Col>   
-                              <Label for="start" style={{marginBottom: "4px"}}>Thời gian bắt đầu</Label>
+                              <Label for="startTime" style={{marginBottom: "4px"}}>Thời gian bắt đầu</Label>
                               <Input
                                 label="Thời gian bắt đầu"
                                 bsSize="lg"
@@ -281,6 +300,7 @@ const CreateClass = () => {
                               />
                       </Col>
                       <button
+                        type="button"
                         style={{
                           backgroundColor:"white",
                           border:"none",

@@ -82,6 +82,17 @@ const Ecommerce = (props) =>{
                                           }
                                         }
                                         onSubmit={async (values) => {
+
+                                          var validationSchedule = true;
+
+                                          for (var i = 0 ; i < schedule.length ; i ++){
+                                            if(schedule[i].startTime === "" || schedule[i].endTime === ""){
+                                              validationSchedule = false;
+                                              break;
+                                            }
+                                          }
+
+                                          if(validationSchedule){
                                             const update = await ClassroomApi.updateClass(
                                               clazz.id,
                                               values.className,
@@ -120,6 +131,12 @@ const Ecommerce = (props) =>{
                                                 setModalUpdateClass(false);
                                               }
                                             }
+                                          }else{
+                                            alert("Lịch học không thể trống thời gian bắt đầu hoặc kết thúc");
+                                          }
+
+
+                                            
 
                                         }}
                                     
@@ -280,6 +297,7 @@ const Ecommerce = (props) =>{
                                                               />
                                                       </Col>
                                                       <button
+                                                        type="button"
                                                         style={{
                                                           backgroundColor:"white",
                                                           border:"none",
