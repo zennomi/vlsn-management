@@ -30,6 +30,21 @@ import Moment from 'moment';
 import View from "@material-ui/icons/Visibility"
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/Delete";
+import ReactPlayer from "react-player";
+import {
+  Calendar as CalendarIcon,
+  
+} from "react-feather";
+const playerWarpper ={
+  position: "relative",
+  paddingTop: "56.25%" /* Player ratio: 100 / (1280 / 720) */
+}
+const reactPlayer = {
+  position: "absolute",
+  top: "0",
+  left: "0",
+}
+
 const CourseList = (props) =>{
 
   const clazz = props.clazz;
@@ -47,10 +62,18 @@ const CourseList = (props) =>{
   const [modalCreateChapter,setModalCreateChapter] = useState(false);
 
   const [modalCreateLesson, setModalCreateLesson] = useState(false);
+
+  const [modalAddExistLesson, setModalAddExistLesson] = useState(false);
   
   const [listStudentNotSubmittedHomeWork,setListStudentNotSubmittedHomeWork] = useState([]);
 
-  const [listAbsentStudentInLesson, setListAbsentStudentInLesson] = useState([])
+  const [listAbsentStudentInLesson, setListAbsentStudentInLesson] = useState([]);
+
+  const [listExistLesson, setListExistLesson] = useState([]);
+
+  const  [listSelectedLesson, setListSelectedLesson] = useState([]);
+
+  const [page, setPage] = useState(0);
 
   const [lessons, setLessons] = useState([]);
   const [lesson,setLesson] = useState({});
@@ -59,6 +82,11 @@ const CourseList = (props) =>{
 
   const datatable = {
     columns: [
+      {
+        label: 'ID',
+        field: 'id',
+       
+      },
       {
         label: 'ND Bài Học',
         field: 'lessonName',
@@ -158,6 +186,46 @@ const CourseList = (props) =>{
       setModalLesson(true);
   } 
 
+  const openAddExistsLessonToClass = async () => {
+    const listSuggestLesson = await LessonApi.getAllLessonSubjectAtGrade(clazz.subjectName, clazz.grade, 0, 12);
+    setListExistLesson(listSuggestLesson);
+    setModalAddExistLesson(true);
+  }
+
+  const submitExistLessonToClass = async () => {
+
+    var mapToCheckUniqueLesson = {};
+    var isVaild = true;
+    for (var i = 0 ; i < listSelectedLesson.length ; i ++){
+      if(mapToCheckUniqueLesson[listSelectedLesson[i].id] === undefined){
+        mapToCheckUniqueLesson[listSelectedLesson[i].id] = listSelectedLesson[i].id;
+      }
+      else{
+        isVaild = false;
+        break;
+      }
+    }
+    if(isVaild){
+      var listIds = [];
+      listSelectedLesson.map(les => listIds.push(les.id));
+      try {
+        const res = await LessonApi.addExistsLessonsToClass(clazz.id,listIds);
+        if (res === "create successful!"){
+          alert("Thêm thành công!");
+          const response = await LessonApi.getAllLessonInClass(clazz.id);
+          setLessons(response);
+          setModalAddExistLesson(false);
+        }
+      } catch (error) {
+        alert("Thêm thất bại!");
+      }
+
+    }else{
+      alert("Không được chọn bài giống nhau!");
+    }
+    
+  }
+
   const toggleDelete = async (lesson) => {
     var requested = window.confirm("Bạn có chắc chắn muốn xóa bài học này? ");
   
@@ -214,6 +282,7 @@ const CourseList = (props) =>{
     }, [clazz.grade,clazz.subjectName]);
 
     lessons.map(lesson => datatable.rows.push({
+          id:lesson.id,
           lessonName:lesson.lessonName,
           chapterName:lesson.chapter.chapterName,
           date:lesson.date,
@@ -257,7 +326,8 @@ const CourseList = (props) =>{
                     <CardBody>
                           <div>
                               <div style={{marginLeft:"auto"}}>
-                                <Button color="primary" onClick={() => setModalCreateLesson(true)}>Thêm bài học</Button>
+                                <Button color="primary" onClick={() => setModalCreateLesson(true)}>Tạo bài học mới</Button>
+                                <Button color="primary" onClick={() => openAddExistsLessonToClass()}>Thêm bài học</Button>
                                 <Button color="primary" onClick={() => setModalCreateChapter(true)}>Thêm chương</Button>
                               </div>
                               
@@ -272,6 +342,138 @@ const CourseList = (props) =>{
                           entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={4} data={datatable} />
                       </CardBody>
                   </Card>
+                      
+                      <Modal size="xl" isOpen={modalAddExistLesson}  toggle={setModalAddExistLesson}>
+                          <ModalHeader>
+                                Chọn bài học
+                          </ModalHeader>
+                          <ModalBody>
+                            Danh sách bài đã chọn:
+                            <Row>
+                              <Col>
+                              <div>
+                                  {listSelectedLesson.map((les,i) =>
+                                    <button style={{
+                                      zIndex:"-1",
+                                      border:"none",
+                                      borderRadius:"15px",
+                                      padding:"10px",
+                                      marginRight:"10px",
+                                      marginTop:"5px",
+                                      marginBottom:"5px",
+                                      backgroundColor:"lightgrey"
+                                      }} key={i}>
+                                    <div style={{display:"flex", justifyContent:"flex-start"}}>
+                                      <div>ID:{les.id} - {les.lessonName} - {les.date}</div>
+                                      <div>
+                                        <button
+                                          type="button"
+                                          style={{
+                                            marginTop:"-1px",
+                                            border:"none",
+                                            fontWeight:"bolder",
+                                            color:"black",
+                                            backgroundColor:"lightgrey"
+                                          }}
+                  
+                                          onClick={() => {
+                                            setListSelectedLesson(current =>
+                                              current.filter(x => x.id !== les.id)
+                                            );;
+                                          }}
+                                        >
+                                            x
+                                        </button>
+                                      </div>
+                                    </div>
+                                    </button>
+                                  )}
+
+                              </div>
+                              
+                              </Col>
+                              
+                            </Row>
+                            
+                            <Row>
+                                {listExistLesson.map((lesson,i) => 
+                                <Col key={i} lg="3">
+                                  <div 
+                                  onClick={() => {
+                                      setListSelectedLesson(current => [
+                                        ...current,
+                                        {
+                                          id:lesson.id,
+                                          lessonName:lesson.lessonName,
+                                          date:lesson.date
+                                        }
+                                      ]);
+                                     
+                                    }}                
+                                  >
+                                    <Card>
+                                      <CardBody>
+                                      {(lesson.video !== null) ?
+                                        <div style={playerWarpper}>
+                                            <ReactPlayer
+                                            style={reactPlayer}
+                                            url={lesson.video.link}
+                                            width='100%'
+                                            height='100%'
+                                            controls={true}
+                                            />
+                                        </div> 
+                                        : 
+                                        <div style={{padding:"15px",borderRadius:"10px"}}>
+                                          <img alt="Video" style={{width:"100%"}} src={require("../../../assets/img/brands/logo.png")}></img>
+                                        </div>
+                                        }
+                                        <h4>{lesson.lessonName}</h4>
+                                        <div className="d-flex justify-content-between flex-wrap" >
+                                              <div>
+                                                <h5 style={{fontWeight:"bold"}}>ID: {lesson.id}</h5>
+                                              </div>
+                                              <div>
+                                                  <CalendarIcon></CalendarIcon> {lesson.date}
+                                              </div> 
+                                        </div>
+                                      </CardBody>
+                                    </Card>
+                                  </div>
+                                </Col>
+                                )}
+                              </Row>
+                              <Row>
+                                <Col>
+                                  <button type="button" 
+                                    onClick={async () => {
+                                      
+                                        const nextListSuggestLesson = await LessonApi.getAllLessonSubjectAtGrade(clazz.subjectName, clazz.grade, page +1, 12);
+                                        setListExistLesson(current => [
+                                          ...current,
+                                          ...nextListSuggestLesson
+                                        ]);
+                                        setPage(page + 1);
+                                    }}
+                                    style={
+                                    {
+                                      border:"none",
+                                      backgroundColor:"white",
+                                      fontSize:"lager",
+                                      fontWeight:"bold",
+                                      color:"blue"
+                                    }}>
+                                      Xem thêm bài học...
+                                  </button>
+                                </Col>
+                              </Row>
+                          </ModalBody>
+                          <ModalFooter>
+                            <Button color="primary" onClick={() => submitExistLessonToClass()} >Thêm</Button>
+                            <Button color="primary" onClick={() => setModalAddExistLesson(false)}>Hủy</Button>
+                          </ModalFooter>
+                      </Modal>
+
                     {/* modal create video lesson */}
                     <Modal isOpen={modalLessonVideo}  toggle={setModalLessonVideo}>
                           <ModalHeader>
@@ -661,8 +863,8 @@ const CourseList = (props) =>{
                                       Yup.object({
                                         lessonName: Yup.string()
                                           .required('Bắt buộc')
-                                          .max(50, 'Tên bài học không được vượt quá 50 kí tự')
-                                          .min(6, 'Tên bài học ít nhất 6 kí tự'),
+                                          .max(50, 'Tên bài học không được vượt quá 50 kí tự'),
+                                          
                                         date: Yup.string()
                                           .required("Bắt buộc"),
                                         chapterId: Yup.string()

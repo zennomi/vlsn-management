@@ -14,6 +14,18 @@ const createNewLessonInClass = (classId, lessonName, date, chapterId) => {
     }
     return Api.post(`${url}/classes/${classId}`,body);
 };
+const addExistsLessonsToClass = (classId, [...listLessonId]) => {
+    const body =  [...listLessonId];
+    return Api.post(`${url}/exist/classes/${classId}`,body);
+};
+const getAllLessonSubjectAtGrade = (subject, grade, page, pageSize) => {
+    const parameters = {
+        subject: subject,
+        page: page,
+        pageSize:pageSize
+    }
+    return Api.get(`${url}/grade/${grade}/`, { params: parameters});
+}
 const updateLesson = (lessonId,lessonName, date,chapterId,videoId) => {
     const body =  {
         lessonName:lessonName,
@@ -36,9 +48,11 @@ const getCurrentLessonInClassToday = (classId) => {
 const api = { 
     getAllLessonInClass,
     createNewLessonInClass,
+    addExistsLessonsToClass,
     updateLesson,
     deleteLesson,
     getLessonInClassToday,
+    getAllLessonSubjectAtGrade,
     getCurrentLessonInClassToday
      }
 export default api;

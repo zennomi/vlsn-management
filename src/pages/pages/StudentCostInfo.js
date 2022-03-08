@@ -171,7 +171,7 @@ const StudentCostInfo = (props) =>{
 
   const deleteActiveStudentInfo = async (studentId,classId) => {
    
-      const res = await ClassroomApi.changeCostStatusStudent(classId,studentId,"inactive");
+      const res = await ClassroomApi.changeCostStatusStudent(subject,studentId,"inactive");
       if(res === "update successful!"){
         alert("Cập nhật thành công!");
         resetForm();
@@ -179,7 +179,7 @@ const StudentCostInfo = (props) =>{
   }
   const deleteInActiveStudentInfo = async (studentId,classId) => {
   
-    const res = await ClassroomApi.changeCostStatusStudent(classId,studentId,"active");
+    const res = await ClassroomApi.changeCostStatusStudent(subject,studentId,"active");
     if(res === "update successful!"){
       alert("Cập nhật thành công!");
       resetForm();

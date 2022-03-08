@@ -58,13 +58,14 @@ const updateClass = (classId,className, subject,  grade, teacherId) => {
     }
     return Api.put(`${url}/${classId}`,body);
 }
-const changeCostStatusStudent = (classId, studentId, status) => {
+const changeCostStatusStudent = (subject, studentId, status) => {
     const body = {
-        classId:classId,
-        studentId:studentId,
         status:status
     }
-    return Api.put(`${url}/students/${studentId}/cost-info`,body);
+    const prametter = {
+        subject: subject
+    }
+    return Api.put(`${url}/students/${studentId}/cost-info`,body,{params:prametter});
 }
 
 const createMentorClass = (classId,[...listMentor]) => {

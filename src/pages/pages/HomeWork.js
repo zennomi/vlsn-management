@@ -98,15 +98,15 @@ const SubmittedHomeWork = (props) => {
                           <a  href={homework.link}>
                             <h6 style={{fontWeight:"bold"}}>{homework.name}</h6>
                           </a>
-                        <div className="d-flex justify-content-between flex-wrap" >
-                              <div>
-                                 <BookIcon></BookIcon> <a href={homework.link}>Đề bài</a>
-                              </div>
-                              {(homework.keyLink !== undefined) ?
-                              <div>
-                                  <KeyIcon></KeyIcon> <a href={homework.keyLink}>Đáp án</a>
-                              </div> : null }
-                        </div>
+                          <div className="d-flex justify-content-between flex-wrap" >
+                                <div>
+                                  <BookIcon></BookIcon> <a href={homework.link}>Đề bài</a>
+                                </div>
+                                {(homework.keyLink !== undefined) ?
+                                <div>
+                                    <KeyIcon></KeyIcon> <a href={homework.keyLink}>Đáp án</a>
+                                </div> : null }
+                          </div>
                     </CardBody>
               
                 </Card>

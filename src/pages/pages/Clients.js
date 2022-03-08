@@ -280,7 +280,7 @@ const ClientsList = (props) =>{
                     const res = await StudentApi.updateStudentClass(student.id,listUpdateClass);
                     if(res === "Update successful!"){
                         alert("Cập nhật học sinh thành công!");
-                        const result = await StudentApi.getAllStudent();
+                        const result = await StudentApi.getAllStudentInGrade(grade);
                         setListStudent(result);
                         setModalUpdate(!modalUpdate);
                     }
@@ -288,7 +288,7 @@ const ClientsList = (props) =>{
                       alert("Cập nhật lớp học thất bại");
                     }
                 }else if (result === "Update successful!" && notChange === true){
-                      const result = await StudentApi.getAllStudent();
+                      const result = await StudentApi.getAllStudentInGrade(grade);
                       setListStudent(result);
                       alert("Cập nhật học sinh thành công!");
                       setModalUpdate(!modalUpdate);
