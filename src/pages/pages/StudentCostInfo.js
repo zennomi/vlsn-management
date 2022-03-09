@@ -215,9 +215,12 @@ const StudentCostInfo = (props) =>{
             </Badge>,
     school: st.school,
     grade: st.grade,
-    className: st.className,
-    classroomId:st.classroomId,
-    classroom: st.grade + st.className,
+    classroom: (st.listClass.map((c,i) =>
+                    <div key={i}>
+                        {c.grade + c.className}
+                        <br/>
+                    </div>
+                )),
     studentNumber: st.studentNumber,
     parentNumber: st.parentNumber,
     parentName: st.parentName
@@ -232,9 +235,12 @@ const StudentCostInfo = (props) =>{
             </Badge>,
     school: st.school,
     grade: st.grade,
-    className: st.className,
-    classroomId:st.classroomId,
-    classroom: st.grade + st.className,
+    classroom: (st.listClass.map((c,i) =>
+                    <div key={i}>
+                        {c.grade + c.className}
+                        <br/>
+                    </div>
+                )),
     studentNumber: st.studentNumber,
     parentNumber: st.parentNumber,
     parentName: st.parentName
