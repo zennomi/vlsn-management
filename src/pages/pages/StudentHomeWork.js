@@ -29,6 +29,32 @@ function percentage(partialValue, totalValue) {
   return ((partialValue/totalValue) * 100).toFixed(3);
 } 
 
+function printNotSubmit  (number)  {
+  var listX = [];
+  for(var i = 0 ; i < number ; i ++){
+    listX.push(
+      <>
+        <Close key={i} color="error"/>
+        <br/>
+      </>
+    )
+  }
+  return listX;
+}
+
+function printSubmit  (number)  {
+  var listV = [];
+  for(var i = 0 ; i < number ; i ++){
+    listV.push(
+      <>
+        <Check key={i} color="action"/>
+        <br/>
+      </>
+    )
+  }
+  return listV;
+}
+
 const SubmittedStudentInWeek = (props) =>{ 
 
   
@@ -90,7 +116,7 @@ const SubmittedStudentInWeek = (props) =>{
       },
       {
         label: 'Lớp',
-        field: 'className',
+        field: 'classroom',
         sort: 'asc',
    
       },
@@ -179,16 +205,59 @@ const SubmittedStudentInWeek = (props) =>{
   console.log(month);
   console.log(nowMonth);
 
-  students.map(st => datatable.rows.push(
+  students.map(st => 
+    datatable.rows.push(
     {
           fullName:st.fullName,
           school:st.school,
           studentNumber:st.studentNumber,
-          className: grade+st.className,
-          first:(st.first && weekNow >= 1) ? <div className="d-flex justify-content-center"><Check color="action"/></div> : (!st.first && weekNow >= 1) ? <div className="d-flex justify-content-center"><Close color="error"/></div> : "",
-          second:(st.second && weekNow >= 2) ? <div className="d-flex justify-content-center"><Check color="action"/></div> :(!st.first && weekNow >= 2) ? <div className="d-flex justify-content-center"><Close color="error"/></div> : "",
-          third:(st.third && weekNow >= 3) ? <div className="d-flex justify-content-center"><Check color="action"/></div> : (!st.first && weekNow >= 3) ?<div className="d-flex justify-content-center"><Close color="error"/></div> : "",
-          fourth:(st.fourth && weekNow >= 4) ? <div className="d-flex justify-content-center"><Check color="action"/></div> : (!st.first && weekNow >= 4) ? <div className="d-flex justify-content-center"><Close color="error"/></div> : "",
+          classroom: (st.listClass.map((c,i) =>
+                    <div key={i}>
+                        {grade + c.className}
+                        <br/>
+                    </div>
+                )),
+
+          first:(st.first && weekNow >= 1) ? 
+                  <div>
+                      {printSubmit(st.first.length)}
+                      {printNotSubmit(st.listClass.length - st.first.length)}
+                  </div>
+                    :
+                    <>
+                      {printNotSubmit(st.listClass.length)}
+                    </>
+                    ,
+          second:(st.second && weekNow >= 2) ? 
+                    <div>
+                      {printSubmit(st.first.length)}
+                      {printNotSubmit(st.listClass.length - st.second.length)}
+                  </div>
+                    :
+                    <>
+                      {printNotSubmit(st.listClass.length)}
+                    </>
+                    ,
+          third:(st.third && weekNow >= 3) ? 
+                    <div>
+                      {printSubmit(st.first.length)}
+                      {printNotSubmit(st.listClass.length - st.third.length)}
+                  </div>
+                    :
+                    <>
+                      {printNotSubmit(st.listClass.length)}
+                    </>
+                    ,
+          fourth:(st.fourth && weekNow >= 4) ? 
+                  <div>
+                    {printSubmit(st.first.length)}
+                    {printNotSubmit(st.listClass.length - st.fourth.length)}
+                  </div>
+                  :
+                  <>
+                    {printNotSubmit(st.listClass.length)}
+                  </>
+                  ,
     }
   ))
   
