@@ -204,7 +204,7 @@ const SubmittedStudentInWeek = (props) =>{
   console.log(weekNow);
   console.log(month);
   console.log(nowMonth);
-
+  console.log(students);
   students.map(st => 
     datatable.rows.push(
     {
@@ -220,8 +220,8 @@ const SubmittedStudentInWeek = (props) =>{
 
           first:(st.first && weekNow >= 1) ? 
                   <div>
-                      {printSubmit(st.first.length)}
-                      {printNotSubmit(st.listClass.length - st.first.length)}
+                      { (st.first !== null) ? printSubmit(st.first.length): printSubmit(0)}
+                      { (st.first !== null) ? printNotSubmit(st.listClass.length - st.first.length) : printNotSubmit(st.listClass.length)}
                   </div>
                     :
                     <>
@@ -230,8 +230,8 @@ const SubmittedStudentInWeek = (props) =>{
                     ,
           second:(st.second && weekNow >= 2) ? 
                     <div>
-                      {printSubmit(st.first.length)}
-                      {printNotSubmit(st.listClass.length - st.second.length)}
+                      { (st.second !== null) ? printSubmit(st.second.length): printSubmit(0)}
+                      { (st.second !== null) ? printNotSubmit(st.listClass.length - st.second.length) : printNotSubmit(st.listClass.length)}
                   </div>
                     :
                     <>
@@ -240,8 +240,8 @@ const SubmittedStudentInWeek = (props) =>{
                     ,
           third:(st.third && weekNow >= 3) ? 
                     <div>
-                      {printSubmit(st.first.length)}
-                      {printNotSubmit(st.listClass.length - st.third.length)}
+                      { (st.third !== null) ? printSubmit(st.third.length): printSubmit(0)}
+                      { (st.third !== null) ? printNotSubmit(st.listClass.length - st.third.length) : printNotSubmit(st.listClass.length)}
                   </div>
                     :
                     <>
@@ -250,8 +250,8 @@ const SubmittedStudentInWeek = (props) =>{
                     ,
           fourth:(st.fourth && weekNow >= 4) ? 
                   <div>
-                    {printSubmit(st.first.length)}
-                    {printNotSubmit(st.listClass.length - st.fourth.length)}
+                    { (st.fourth !== null) ? printSubmit(st.fourth.length): printSubmit(0)}
+                    { (st.fourth !== null) ? printNotSubmit(st.listClass.length - st.fourth.length) : printNotSubmit(st.listClass.length)}
                   </div>
                   :
                   <>

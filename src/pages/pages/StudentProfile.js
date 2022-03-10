@@ -101,16 +101,22 @@ const StudentProfileDetails = (props) =>{
     <CardBody>
       <CardTitle >Lớp học đã đăng ký</CardTitle>
       {student.listClass.map((clazz,i) => 
-        <div key={i} className="d-flex justify-content-between flex-wrap">
-            <div>
-                {clazz.subjectName} {clazz.grade}{clazz.className}
-            </div>
-            <div>
-                <ClockIcon></ClockIcon> 
-                {(clazz.schedule === "1") ? "CN" : "T"+clazz.schedule } - {removeLastThreeChar(clazz.startTime)} - {removeLastThreeChar(clazz.endTime)}
-            </div>
+        <div key={i}>
+          <div key={i} className="d-flex justify-content-between flex-wrap">
+              <div>
+                  {clazz.subjectName} {clazz.grade}{clazz.className}
+              </div>
+              <div>
+                {clazz.listSchedule.map((schedule,i) => 
+                <div key={i}>
+                  <ClockIcon></ClockIcon> 
+                  {(schedule.schedule === "1") ? "CN" : "T"+schedule.schedule } - {removeLastThreeChar(schedule.startTime)} - {removeLastThreeChar(schedule.endTime)}
+                </div>
+                )}
+              </div>
+          </div>
+          <br/>
         </div>
-        
       )}
       
     </CardBody>
