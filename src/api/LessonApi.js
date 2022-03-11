@@ -26,6 +26,15 @@ const getAllLessonSubjectAtGrade = (subject, grade, page, pageSize) => {
     }
     return Api.get(`${url}/grade/${grade}/`, { params: parameters});
 }
+const getSearchAllLessonSubjectAtGrade = (subject, grade,lessonName, page, pageSize) => {
+    const parameters = {
+        subject: subject,
+        lessonName:lessonName,
+        page: page,
+        pageSize:pageSize
+    }
+    return Api.get(`${url}/grade/${grade}/search`, { params: parameters});
+}
 const updateLesson = (lessonId,lessonName, date,chapterId,videoId) => {
     const body =  {
         lessonName:lessonName,
@@ -53,6 +62,7 @@ const api = {
     deleteLesson,
     getLessonInClassToday,
     getAllLessonSubjectAtGrade,
-    getCurrentLessonInClassToday
+    getCurrentLessonInClassToday,
+    getSearchAllLessonSubjectAtGrade
      }
 export default api;

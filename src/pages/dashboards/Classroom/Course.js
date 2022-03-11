@@ -12,7 +12,8 @@ import {
   ModalBody,
   ModalHeader,
   ModalFooter,
-  Label
+  Label,
+ 
 } from "reactstrap";
 import { MDBDataTableV5 } from 'mdbreact';
 import { FastField, Formik, Form } from 'formik';
@@ -74,6 +75,10 @@ const CourseList = (props) =>{
   const  [listSelectedLesson, setListSelectedLesson] = useState([]);
 
   const [page, setPage] = useState(0);
+
+  const [isSearching, setIsSearching] = useState(false);
+
+  const [searchText,setSearchText] = useState("");
 
   const [lessons, setLessons] = useState([]);
   const [lesson,setLesson] = useState({});
@@ -350,6 +355,55 @@ const CourseList = (props) =>{
                           <ModalBody>
                             Danh sách bài đã chọn:
                             <Row>
+                                <Col>
+                                    {/* <Input
+                                      type="text"
+                                      placeholder = "Nhập ID của bài học hoặc tên bài học cần tìm"
+                                      onSubmit={() => {
+
+                                       
+                                      }}  
+                                    /> */}
+                                    <form >
+                                      <input style={
+                                        {
+                                          padding: "10px",
+                                          fontSize: "17px",
+                                          border: "none",
+                                          float: "left",
+                                          width: "80%",
+                                          background: "#f1f1f1",
+                                        }
+                                      } 
+                                        onChange={(e) => {
+                                          setSearchText(e.target.value);
+                                        }}
+                                      type="text" placeholder="nhập id hoặc tên bài học" />
+                                      <button style={{
+                                        float: "left",
+                                        width: "20%",
+                                        padding: "10px",
+                                        background: "#2196F3",
+                                        color: "white",
+                                        fontSize: "17px",
+                                        border: "none",
+                                        cursor: "pointer",
+                                      }} 
+                                      type="button"
+                                      onClick={async () => {
+                                          
+                                          const searchList = await LessonApi.getSearchAllLessonSubjectAtGrade(clazz.subjectName,clazz.grade,searchText,0,12);
+                                          setListExistLesson(searchList);
+                                          setPage(0);
+                                          setIsSearching(true);
+                                      }}
+                                      ><i class="fa fa-search"></i></button>
+                                    </form>
+                                </Col>
+                                <Col></Col>
+                                <Col></Col>
+                            </Row>
+                            <Row style={{marginTop:"10px"}}>
                               <Col>
                               <div>
                                   {listSelectedLesson.map((les,i) =>
@@ -395,7 +449,7 @@ const CourseList = (props) =>{
                               
                             </Row>
                             
-                            <Row>
+                            <Row style={{marginTop:"10px"}}>
                                 {listExistLesson.map((lesson,i) => 
                                 <Col key={i} lg="3">
                                   <div 
@@ -445,6 +499,7 @@ const CourseList = (props) =>{
                               </Row>
                               <Row>
                                 <Col>
+                                  {(!isSearching) ? 
                                   <button type="button" 
                                     onClick={async () => {
                                       
@@ -465,6 +520,26 @@ const CourseList = (props) =>{
                                     }}>
                                       Xem thêm bài học...
                                   </button>
+                                  :
+                                  <button type="button" 
+                                    onClick={async () => {
+                                      
+                                        const nextListSuggestLesson = await LessonApi.getSearchAllLessonSubjectAtGrade(clazz.subjectName, clazz.grade,searchText, page +1, 12);
+                                        setListExistLesson(nextListSuggestLesson);
+                                        setPage(page + 1);
+                                    }}
+                                    style={
+                                    {
+                                      border:"none",
+                                      backgroundColor:"white",
+                                      fontSize:"lager",
+                                      fontWeight:"bold",
+                                      color:"blue"
+                                    }}>
+                                      Xem thêm bài học...
+                                  </button>
+                                  }
+                          
                                 </Col>
                               </Row>
                           </ModalBody>

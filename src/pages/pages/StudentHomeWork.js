@@ -263,23 +263,26 @@ const SubmittedStudentInWeek = (props) =>{
   
 
   var total = [0,0,0,0];
+  var totalSubmissionNeed = 0;
 
   for(var i = 0 ; i < students.length ; i ++){
+    totalSubmissionNeed += students[i].listClass.length;
+
     if(students[i].first !== null){
-      total[0]++;
+      total[0] += students[i].first.length ;
     }
     if(students[i].second !== null){
-      total[1]++;
+      total[1] += students[i].second.length ;
     }
     if(students[i].third !== null){
-      total[2]++;
+      total[2] += students[i].third.length ;
     }
     if(students[i].fourth !== null){
-      total[3]++;
+      total[3] += students[i].fourth.length ;
     }
   }
   for (var k = 0 ; k < 4 ; k ++){
-      total[k] = percentage(total[k],students.length);
+      total[k] = percentage(total[k],totalSubmissionNeed);
   }
   
   data.datasets[0].data = total;
@@ -290,19 +293,21 @@ const SubmittedStudentInWeek = (props) =>{
       var blackList = [];
       for (var m = 0 ; m < students.length ; m ++){
         var totalSubmit = 0;
+        var totalNotSubmit = 0;
         if(students[m].first !== null){
-          totalSubmit++;
+          totalSubmit += students[m].first.length;
         }
         if(students[m].second !== null){
-          totalSubmit++;
+          totalSubmit += students[m].second.length;
         }
         if(students[m].third !== null){
-          totalSubmit++;
+          totalSubmit += students[m].third.length;
         }
         if(students[m].fourth !== null){
-          totalSubmit++;
+          totalSubmit += students[m].fourth.length;
         }
-        if (totalSubmit <= weekNow - 2 ){ // thiếu 2 lần btvn
+        totalNotSubmit = students[m].listClass.length * weekNow - totalSubmit;
+        if (totalNotSubmit >= 1 ){ // thiếu 1 lần btvn
           blackList.push(students[m]);
         }
       }
