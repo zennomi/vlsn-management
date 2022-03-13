@@ -28,7 +28,7 @@ import View from "@material-ui/icons/Visibility"
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/Delete";
 import { CSVLink } from "react-csv";
-
+import avatar1 from "../../assets/img/avatars/avatar.jpg";
 import * as Yup from 'yup';
 
 const headers = [
@@ -42,6 +42,14 @@ const headers = [
   { label: "SĐT PH", key: "parentNumber" },
   { label: "Facebook", key: "facebookLink" },
 ];
+
+function printSchedule (listSchedule) {
+    var schedules = "Thứ ";
+    for (var i = 0 ; i < listSchedule.length ; i ++){
+      schedules += (listSchedule[i].schedule !== "1") ? listSchedule[i].schedule +", " : "Chủ Nhật, ";
+    }
+    return schedules.slice(0,-2);
+}
 
 const removeAccents = (str) => {
   return str.normalize('NFD')
@@ -149,7 +157,16 @@ const ClientsList = (props) =>{
   listStudent.map(st => datatable.rows.push(
     {
       id:st.id,
-      fullName:st.fullName,
+      fullName:<>
+                    <img
+                    src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : avatar1 }
+                    width="36"
+                    height="36"
+                    className="rounded-circle mr-2"
+                    alt={st.fullName}
+                    />
+                    {st.fullName}
+                </>,
       school:st.school,
       grade:st.grade,
       studentNumber:st.studentNumber,
@@ -375,7 +392,7 @@ const ClientsList = (props) =>{
                           getOptionSelected={(option, value) => option.id === value.id}
                           options={suggestClass}
                           getOptionLabel={(option) => option.subjectName +" - "+option.grade + option.className +" - GV."+ option.teacherId.fullName +" - "+
-                                                   ((option.schedule !== "1") ? "Thứ "+option.schedule : "Chủ Nhật")}
+                                                   printSchedule(option.listSchedule)}
                           renderInput={(params) => (
                             <TextField {...params} name="listClass" variant="outlined" label="Chọn lớp học" placeholder="Tên lớp" />
                           )}
@@ -664,7 +681,8 @@ const Single = (props) => {
                           options={suggestClass}
                           getOptionSelected={(option, value) => option.id === value.id}
                           getOptionLabel={(option) =>option.subjectName +" - "+option.grade + option.className +" - GV."+ option.teacherId.fullName +" - "+
-                                               ((option.schedule !== "1") ? "Thứ "+option.schedule : "Chủ Nhật")}
+                                          printSchedule(option.listSchedule)    
+                                          }
                           renderInput={(params) => (
                             <TextField {...params} name="listClass" variant="outlined" label="Đăng ký học lớp"  placeholder="Tên lớp" />
                           )}

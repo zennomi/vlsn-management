@@ -27,6 +27,9 @@ const getWeeklyDay = (dayInNumber) => {
     }
     return Moment(todayTransfer).format('YYYY-MM-DD');;
 }
+const removeLastThreeChar = (str) => {
+  return str.slice(0,-3)
+}
 
 const AbsentListInWeek = (props) =>{ 
 
@@ -255,13 +258,8 @@ const AttendanceList = (props) =>{
       },
       {
         label: 'Lịch Học',
-        field: 'schedule',
+        field: 'listTime',
         
-      },
-      {
-        label: 'Thời Gian',
-        field: 'time',
-       
       },
       {
         label: 'Giáo Viên',
@@ -295,9 +293,11 @@ const AttendanceList = (props) =>{
 
   classes.map(clazz => datatable2.rows.push({
       fullName: clazz.subjectName + " " + clazz.grade + clazz.className,
-      schedule: (clazz.schedule !== "1") ? "Thứ "+clazz.schedule : "Chủ Nhật",
-      time: clazz.startTime +" - "+clazz.endTime,
-      total: clazz.totalStudent,
+      listTime : (clazz.listSchedule.map((s,i) => 
+                  <div key={i}>
+                    {removeLastThreeChar(s.startTime)} - {removeLastThreeChar(s.endTime)} {(s.schedule !== "1") ? "Thứ "+s.schedule : "Chủ Nhật"}
+                    <br/>
+                  </div>)),
       teacherName: clazz.teacherId.fullName,
       action: <Button color="primary" style={{borderRadius:"15px"}} onClick={() => setClassId(clazz.id) }>Xem</Button>
   }))
@@ -378,15 +378,14 @@ const AttendanceList = (props) =>{
       <CardBody>
           <MDBDataTableV5 
           responsive 
-          theadColor="primary-color" 
           searchTop searchBottom={false} 
-          theadTextWhite bordered  hover  entriesOptions={[5,10, 20, 50,100]} 
+          hover  entriesOptions={[5,10, 20, 50,100]} 
           entries={5} pagesAmount={5} data={datatable2} />
           <br/>
           <MDBDataTableV5 
-          responsive theadColor="primary-color" 
-          searchTop searchBottom={false} theadTextWhite 
-          bordered borderless={false} hover  entriesOptions={[50,100, 150, 200,300,400]} 
+          responsive 
+          searchTop searchBottom={false} 
+          hover  entriesOptions={[50,100, 150, 200,300,400]} 
           entries={50} pagesAmount={50} data={datatable} />
       </CardBody>
     </Card>

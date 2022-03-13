@@ -11,7 +11,7 @@ import {
   Row,
 
 } from "reactstrap";
-
+import StarIcon from "@material-ui/icons/Star";
 import { MDBDataTableV5 } from 'mdbreact';
 import Header from "./Header";
 // import Moment from 'moment';
@@ -20,6 +20,7 @@ import { Bar } from 'react-chartjs-2';
 import { connect } from "react-redux";
 import {  withRouter } from "react-router-dom";
 import { selectFistName } from "../../redux/selectors/userLoginInfoSelector";
+import avatar1 from "../../assets/img/avatars/avatar.jpg";
 import StudentApi from "../../api/StudentApi";
 const StatisticsScorce = (props) =>{
 
@@ -157,15 +158,29 @@ const StudentListScorces = (props) =>{
       
       },
       {
+        label: 'Điểm TB',
+        field: 'avgMark',
+      
+      },
+      {
+        label: 'Sao',
+        field: 'score',
+      },
+      {
+        label: 'Lớp',
+        field: 'grade',
+      
+      },
+      {
         label: 'Trường',
         field: 'school',
       
       },
       {
-        label: 'Điểm TB',
-        field: 'avgMark',
+        label: '',
+        field: 'action',
       
-      },
+      }
       
     ],
     rows: [
@@ -185,15 +200,24 @@ const StudentListScorces = (props) =>{
   }, [grade,subject]);
 
   data.map(st => datatable.rows.push({
-      rank: (st.rank <= 3 && st.rank > 0 ) ? <p style={{color:"red"}}>{st.rank}</p> :
-            (st.rank > 3 && st.rank <= 10) ? <p style={{color:"green"}}>{st.rank}</p> : st.rank,
-      fullName: (st.rank <= 3 && st.rank > 0) ? <p style={{color:"red"}}>{st.fullName}</p> :
-                (st.rank > 3 && st.rank <= 10) ? <p style={{color:"green"}}>{st.fullName}</p> : st.fullName,
-      school:   (st.rank <= 3 && st.rank > 0) ? <p style={{color:"red"}}>{st.school}</p> :
-                (st.rank > 3 && st.rank <= 10) ? <p style={{color:"green"}}>{st.school}</p> : st.school,
-      avgMark:  (st.avgMark !== 0 && st.rank <= 3) ? <p style={{color:"red"}}>{st.avgMark}</p> :
-                (st.avgMark !== 0 && st.rank > 3 && st.rank <= 10) ? <p style={{color:"green"}}>{st.avgMark}</p> :
-                (st.avgMark !== 0 && st.rank > 10) ? st.avgMark : "chưa có hạng",
+      rank: st.rank,
+      fullName: <>
+                    <img
+                    src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : avatar1 }
+                    width="36"
+                    height="36"
+                    className="rounded-circle mr-2"
+                    alt={st.fullName}
+                    />
+                    {st.fullName}
+                </>,
+      school: st.school,
+      avgMark: (st.avgMark !== 0 ) ? st.avgMark : "chưa có hạng",
+      score: <>
+              {st.score}
+              <StarIcon style={{color:"yellow",marginBottom:"4px"}}/>
+            </>,
+      grade: st.grade
   }))
 
   return (
@@ -245,9 +269,12 @@ const WeakStudentListScorces = (props) =>{
 
       },
       {
+        label: 'Lớp',
+        field: 'grade',
+      },
+      {
         label: 'Trường',
         field: 'school',
-      
       },
       {
         label: 'Điểm TB',

@@ -47,7 +47,7 @@ function printSubmit  (number)  {
   for(var i = 0 ; i < number ; i ++){
     listV.push(
       <>
-        <Check key={i} color="action"/>
+        <Check key={i} color="green"/>
         <br/>
       </>
     )
@@ -398,8 +398,7 @@ const SubmittedStudentInWeek = (props) =>{
           responsive 
           searchTop
           searchBottom={false}
-          theadColor="primary-color" 
-          theadTextWhite bordered borderless={false} hover 
+          bordered borderless={false} hover 
            entriesOptions={[100,200, 300, 400,500]} entries={100} pagesAmount={100} data={datatable} />
       </CardBody>
     </Card>

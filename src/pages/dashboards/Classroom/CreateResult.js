@@ -23,6 +23,11 @@ import * as Yup from 'yup';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+
+const removeLastThreeChar = (str) => {
+  return str.slice(0,-3)
+}
+
 const { SearchBar } = Search;
 const CreateClass = () => {
   const datatable = {
@@ -34,13 +39,8 @@ const CreateClass = () => {
       },
       {
         label: 'Lịch Học',
-        field: 'schedule',
+        field: 'listTime',
      
-      },
-      {
-        label: 'Thời Gian',
-        field: 'time',
-  
       },
       {
         label: 'Giáo Viên',
@@ -120,9 +120,11 @@ const CreateClass = () => {
   listClazz.map(clazz => datatable.rows.push(
     {
       fullName: clazz.subjectName + " " + clazz.grade + clazz.className,
-      schedule: (clazz.schedule !== "1") ? "Thứ "+clazz.schedule : "Chủ Nhật",
-      time: clazz.startTime +" - "+clazz.endTime,
-      total: clazz.totalStudent,
+      listTime : (clazz.listSchedule.map((s,i) => 
+                  <div key={i}>
+                    {removeLastThreeChar(s.startTime)} - {removeLastThreeChar(s.endTime)} {(s.schedule !== "1") ? "Thứ "+s.schedule : "Chủ Nhật"}
+                    <br/>
+                  </div>)),
       teacherName: clazz.teacherId.fullName,
       action: <Button onClick={() => submitStudentMarkInClass(clazz)} type="button" color="primary" style={{borderRadius:"20px"}}>
                     Nhập Điểm
