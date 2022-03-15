@@ -1,10 +1,6 @@
 import React from "react";
 
 import {
-  CardBody,
-  Card,
-  CardHeader,
-  CardTitle,
   Row,
   Col,
   Input
@@ -139,12 +135,11 @@ const ClassList = (props) => {
 
 
   return (
-    <Card className="flex-fill w-100">
-      <CardHeader>
+    <>
         <div style={{display:"flex", justifyContent:"flex-start"}}>
-            <CardTitle tag="h5" className="mb-0">
+            <h3  className="mb-0" style={{fontWeight:"bold"}}>
               Danh Sách Lớp Học
-            </CardTitle>
+            </h3>
                 <Row className="ml-auto">
                   <Col xs="auto">
                     <Input 
@@ -167,15 +162,19 @@ const ClassList = (props) => {
                     </Col>
                   </Row>
         </div>
-      </CardHeader>
-      <CardBody>
+        
             <MDBDataTableV5 
-            hover 
-            responsive
-            searchTop searchBottom={false}
-            entriesOptions={[5,10, 20, 50,100]} entries={5} pagesAmount={5} data={datatable} />
-        </CardBody>
-    </Card>
+              hover 
+              bordered
+              responsive
+              pagingTop
+              pagingBottom={false}
+              searchTop searchBottom={false}
+              entriesOptions={[5,10, 20, 50,100]} entries={5} pagesAmount={5} data={datatable} />
+
+
+            
+    </>
     );
 }
 export default ClassList;

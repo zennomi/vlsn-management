@@ -1,10 +1,6 @@
 import React, {useEffect, useState} from "react";
 
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
   Col,
   Container,
   Input,
@@ -86,7 +82,7 @@ const StatisticsScorce = (props) =>{
   return(
   <> 
       <div className='header'>
-          <h1 className='title'>Thống Kê Điểm TB:</h1>
+          <h2 className='title' style={{fontWeight:"bold"}}>Thống kê điểm TB:</h2>
           <div className ="d-flex">
             <Row>
                 <Col>
@@ -188,7 +184,12 @@ const StudentListScorces = (props) =>{
     ],
   };  
   
-  
+  const redriectToProfile = (id) => {
+    props.history.push({
+      pathname: '/student/info',
+      state: { studentId: id }
+    })
+  };
 
   useEffect(() => {
     const getAllStudentSubjectAvgMarkInGrade = async () =>{
@@ -217,32 +218,39 @@ const StudentListScorces = (props) =>{
               {st.score}
               <StarIcon style={{color:"yellow",marginBottom:"4px"}}/>
             </>,
-      grade: st.grade
+      grade: st.grade,
+      clickEvent: () => redriectToProfile(st.id)
   }))
 
   return (
-    <Card className="flex-fill w-100">
-      <CardHeader style={{backgroundColor:"#5ddae0"}}>
-      <div style={{display:"flex", justifyContent:"flex-start"}}>
-        <CardTitle  className="mb-0">
-            <h1>Top 100</h1>
-        </CardTitle>
+    // <Card className="flex-fill w-100">
+    //   <CardHeader style={{backgroundColor:"#5ddae0"}}>
+    //   <div style={{display:"flex", justifyContent:"flex-start"}}>
+    //     <CardTitle  className="mb-0">
+    //         <h1>Top 100</h1>
+    //     </CardTitle>
         
               
             
-      </div>
-      </CardHeader>
-      <CardBody>
+    //   </div>
+    //   </CardHeader>
+    //   <CardBody>
+        <>
+            <h3 style={{fontWeight:"bold"}}>Top 100</h3>
             <MDBDataTableV5 
             hover 
+            info
             responsive
+            pagingTop
+            bordered
             searchTop
             searchBottom={false}
             entriesOptions={[5,10, 20, 50,100,500]} 
             entries={100} pagesAmount={4} 
             data={datatable} />
-        </CardBody>
-    </Card>
+        </>
+        /* </CardBody>
+    </Card> */
     );
   
 
@@ -255,6 +263,13 @@ const WeakStudentListScorces = (props) =>{
   const subject = props.subject;
   
   const [data,setData] = useState([]);
+
+  const redriectToProfile = (id) => {
+    props.history.push({
+      pathname: '/student/info',
+      state: { studentId: id }
+    })
+  };
 
   const datatable = {
     columns: [
@@ -269,17 +284,21 @@ const WeakStudentListScorces = (props) =>{
 
       },
       {
+        label: 'Điểm TB',
+        field: 'avgMark',
+      
+      },
+      {
+        label: 'Sao',
+        field: 'score',
+      },
+      {
         label: 'Lớp',
         field: 'grade',
       },
       {
         label: 'Trường',
         field: 'school',
-      },
-      {
-        label: 'Điểm TB',
-        field: 'avgMark',
-      
       },
       
     ],
@@ -299,12 +318,31 @@ const WeakStudentListScorces = (props) =>{
   
   }, [grade,subject]);
 
-  datatable.rows=data;
-
+  data.map(st => datatable.rows.push({
+    rank: st.rank,
+    fullName: <>
+                  <img
+                  src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : avatar1 }
+                  width="36"
+                  height="36"
+                  className="rounded-circle mr-2"
+                  alt={st.fullName}
+                  />
+                  {st.fullName}
+              </>,
+    school: st.school,
+    avgMark: (st.avgMark !== 0 ) ? st.avgMark : "chưa có hạng",
+    score:  <>
+              {st.score}
+              <StarIcon style={{color:"yellow",marginBottom:"4px"}}/>
+            </>,
+    grade: st.grade,
+    clickEvent: () => redriectToProfile(st.id)
+}))
 
   return (
-    <Card className="flex-fill w-100">
-      <CardHeader style={{backgroundColor:"#c17847"}}>
+    // <Card className="flex-fill w-100">
+      /* <CardHeader style={{backgroundColor:"#c17847"}}>
       <div style={{display:"flex", justifyContent:"flex-start"}}>
         <CardTitle  className="mb-0">
             <h1>Học Sinh Dưới Điểm TB</h1>
@@ -314,16 +352,22 @@ const WeakStudentListScorces = (props) =>{
             
       </div>
       </CardHeader>
-      <CardBody>
+      <CardBody> */
+        <>
+            <h3 style={{fontWeight:"bold"}}>Học sinh dưới điểm TB</h3>
             <MDBDataTableV5 
             hover 
             responsive
+            pagingTop
             searchTop
+            bordered
             searchBottom={false}
+            tag
             entriesOptions={[5,10, 20, 50,100,500]} 
             entries={100} pagesAmount={4} data={datatable} />
-        </CardBody>
-    </Card>
+        </>
+        /* </CardBody> */
+    // </Card>
     );
   
 }

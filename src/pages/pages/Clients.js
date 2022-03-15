@@ -186,7 +186,7 @@ const ClientsList = (props) =>{
                 <button style={{background:"none",border:"none"}} onClick={() => toggleDelete(st)}>
                     <Delete color="secondary"/>
                 </button>
-            </div>
+            </div>,
     }
   ))
   
@@ -194,11 +194,13 @@ const ClientsList = (props) =>{
   
   return(
   <> 
-    <Card>
-      <CardHeader>
-                  <Row >
+
+            <Row >
+              
+
+                
                   <Col xs="auto">
-                    <Input 
+                      <Input 
                               id ="grade"
                               type="select"
                               name="grade"
@@ -215,10 +217,11 @@ const ClientsList = (props) =>{
                               <option value = "7">Khối 7</option>
                               <option value = "6">Khối 6</option>
                       </Input>
-                    </Col>
-                  </Row>
-      </CardHeader>
-      <CardBody>
+                  </Col>
+        
+          </Row>
+    
+
           <Row>
                 <Col>
                   
@@ -226,17 +229,15 @@ const ClientsList = (props) =>{
                       hover 
                       responsive
                       pagingTop
+                      bordered
                       searchTop
                       searchBottom={false}
-                      barReverse
                       exportToCSV
                       entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
-                  
-                      <CSVLink headers={headers} data={listStudent}>Export to CSV</CSVLink>
+                      
                 </Col>
           </Row>
-      </CardBody> 
-    </Card>
+          <CSVLink className="ml-auto" headers={headers} data={listStudent}>Export to CSV</CSVLink>
     <Modal isOpen={modalUpdate} toggle={toggleUpdate}>
       <Row>
 
@@ -773,7 +774,7 @@ const Clients = (props) => {
   <Container fluid className="p-0">
     <Row>
         <Col style={{display:"flex"}}>
-            <h1 className="h3 mb-3">Học Sinh Khối {grade}</h1>
+            <h1 className="h3 mb-3">Học sinh khối {grade}</h1>
             <Button style={{marginLeft:"auto"}} color="primary" onClick={toggle}>
                 Thêm học sinh mới
             </Button>

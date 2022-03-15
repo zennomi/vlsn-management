@@ -59,7 +59,7 @@ const CreateClass = () => {
 
   return(
   <Container fluid className="p-0">
-    <h1 className="h3 mb-3">Tạo Lớp học mới</h1>
+    <h1 className="h3 mb-3">Tạo lớp học mới</h1>
 
     <Row>
       <Col>

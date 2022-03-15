@@ -1,10 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
+
   Col,
   Container,
   Input,
@@ -58,7 +55,12 @@ function printSubmit  (number)  {
 const SubmittedStudentInWeek = (props) =>{ 
 
   
-  
+  const redriectToProfile = (id) => {
+    props.history.push({
+      pathname: '/student/info',
+      state: { studentId: id }
+    })
+  };
 
   
   const resetPage = props.resetPage;
@@ -258,6 +260,7 @@ const SubmittedStudentInWeek = (props) =>{
                     {printNotSubmit(st.listClass.length)}
                   </>
                   ,
+          clickEvent: () => redriectToProfile(st.id)
     }
   ))
   
@@ -324,7 +327,7 @@ const SubmittedStudentInWeek = (props) =>{
   return(
   <> 
       <div className='header' style={{marginBottom:"5px"}}>
-      <h1 className='title'>BÀI TẬP VỀ NHÀ</h1>
+      <h2 className='title' style={{fontWeight:"bold"}}>BÀI TẬP VỀ NHÀ</h2>
           <Row>
               <Col xs="12" lg="7">
                   <HorizontalBar responsive data={data} options={options} />
@@ -392,16 +395,12 @@ const SubmittedStudentInWeek = (props) =>{
                 
           </Row>
       </div>
-    <Card>
-      <CardBody>
           <MDBDataTableV5 
           responsive 
           searchTop
           searchBottom={false}
-          bordered borderless={false} hover 
+          bordered borderless={true} hover 
            entriesOptions={[100,200, 300, 400,500]} entries={100} pagesAmount={100} data={datatable} />
-      </CardBody>
-    </Card>
     
   </>
     );
@@ -410,6 +409,7 @@ const StudentInBlackList = (props) =>{
   const blackList = props.blackList;
   const resetPage = props.resetPage;
   const setResetPage = props.setResetPage;
+
 
   const changeStatus = async (st,status) =>{
     var alertStatus = "Đình Chỉ";
@@ -492,24 +492,18 @@ const StudentInBlackList = (props) =>{
   
   return(
   <> 
-    <Card>
-      <CardHeader style={{backgroundColor:"#c17847"}}>
+    
       
-        <CardTitle tag="h5" className="mb-0" style={{color:"white"}} >
+        <h3 style={{fontWeight:"bold"}} >
           HỌC SINH THIẾU BTVN 3 LẦN
-        </CardTitle>
+        </h3>
         
-              
- 
-      </CardHeader>
-      <CardBody>
           <MDBDataTableV5 responsive hover 
-          
+          bordered
           searchTop
           searchBottom={false}
            entriesOptions={[100,200, 300, 400,500]} entries={100} pagesAmount={100} data={datatable} />
-      </CardBody>
-    </Card>
+
     
   </>
     );

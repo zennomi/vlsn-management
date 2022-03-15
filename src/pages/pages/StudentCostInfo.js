@@ -1,10 +1,6 @@
 import React, {useEffect,useState} from "react";
 
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
   Col,
   Container,
   Input,
@@ -292,14 +288,14 @@ const StudentCostInfo = (props) =>{
                     
       </Modal> 
     </Row>
-    <Row>
+    <Row style={{marginTop:"10px"}}>
       <Col>
-        <Card>
-          <CardHeader>
+      
+        
             <div style={{display:"flex", justifyContent:"flex-start"}}>
-            <CardTitle tag="h5" className="mb-0">
-              Học Sinh Chưa Nộp Học Phí
-            </CardTitle>
+            <h4 style={{fontWeight:"bold"}}>
+              Học sinh chưa nộp học phí
+            </h4>
             
                   <Row className="ml-auto">
                         <Col  >
@@ -346,77 +342,36 @@ const StudentCostInfo = (props) =>{
                     </Row>
                 
             </div>
-          </CardHeader>
-          <CardBody>
+
+
               <MDBDataTableV5 
               hover 
               responsive
+              bordered
               searchTop
               searchBottom={false}
               entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
-          </CardBody>
-        </Card>
-        <Card>
-          <CardHeader>
-            <div style={{display:"flex", justifyContent:"flex-start"}}>
-            <CardTitle tag="h5" className="mb-0">
-              Học Sinh Đã Nộp Học Phí
-            </CardTitle>
+            <br/>
+
+            <div style={{display:"flex", justifyContent:"flex-start", marginTop:"20px"}}>
+            <h4 style={{fontWeight:"bold"}}>
+              Học sinh đã nộp học phí
+            </h4>
             
-                  <Row className="ml-auto">
-                        <Col  >
-                            <Input 
-                                  
-                      
-                                  id ="subject"
-                                  type="select"
-                                  name="subject"
-                                  value={subject}
-                                  onChange={ async (e) =>{
-                                      setSubject(e.target.value);
-                                  }}
-                                >
-                                  <option value = "Toán Đại">Toán Đại</option>
-                                  <option value = "Toán Hình">Toán Hình</option>
-                                  <option value = "Tiếng Anh">Tiếng Anh</option>
-                                  <option value = "Lý">Lý</option>
-                                  <option value = "Hóa">Hóa</option>
-                                  <option value = "Văn">Văn</option>
-                                
-                          </Input>
-                        </Col>
-                        <Col  >
-                            <Input 
-                                  id ="grade"
-                                  type="select"
-                                  name="grade"
-                                  value={grade}
-                                  onChange={ (e) =>{
-                                      setGrade(e.target.value);
-                                  }}
-                                >
-                                  <option value = "12">Khối 12</option>
-                                  <option value = "11">Khối 11</option>
-                                  <option value = "10">Khối 10</option>
-                                  <option value = "9">Khối 9</option>
-                                  <option value = "8">Khối 8</option>
-                                  <option value = "7">Khối 7</option>
-                                  <option value = "6">Khối 6</option>
-                          </Input>
-                        </Col>
-                    </Row>
+                  
                 
             </div>
-          </CardHeader>
-          <CardBody>
+
+  
               <MDBDataTableV5 
                 hover
                 responsive
                 searchTop
+                bordered
                 searchBottom={false}
                 entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable1} />
-          </CardBody>
-        </Card>
+
+
       </Col>
     </Row>
   </>

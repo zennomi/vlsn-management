@@ -1,10 +1,6 @@
 import React, {useEffect,useState} from "react";
 
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
   Col,
   Container,
   Input,
@@ -116,12 +112,11 @@ const AbsentListInWeek = (props) =>{
   
   return(
   <> 
-    <Card>
-      <CardHeader>
+
         <div style={{display:"flex", justifyContent:"flex-start"}}>
-        <CardTitle tag="h5" className="mb-0">
-          Học Sinh Nghỉ Học Trong Tuần
-        </CardTitle>
+          <h3 style={{fontWeight:"bold"}}>
+            Học sinh nghỉ học trong tuần
+          </h3>
         
               <Row className="ml-auto">
                     <Col lg="6.5" >
@@ -200,17 +195,15 @@ const AbsentListInWeek = (props) =>{
                 </Row>
             
         </div>
-      </CardHeader>
-      <CardBody>
+
           <MDBDataTableV5 
           hover 
           responsive
           searchTop
+          bordered
           searchBottom={false}
           entriesOptions={[5,10, 20, 50,100]} entries={10} pagesAmount={10} data={datatable} />
-      </CardBody>
-    </Card>
-    
+
   </>
     );
 }
@@ -322,10 +315,10 @@ const AttendanceList = (props) =>{
   console.log(students);
   return(
   <> 
-      <div className='header' style={{marginBottom:"5px"}}>
-      <h1 className='title'>DANH SÁCH ĐIỂM DANH</h1>
+      <div className='header' style={{marginBottom:"5px", display:"flex", justifyContent:"flex-start"}}>
+      <h3 className='title' style={{fontWeight:"bold"}}>Danh sách điểm danh</h3>
           
-          <Row>
+          <Row className="ml-auto">
                 <Col xs="auto">
                     <div >
                       <div className ="d-flex">
@@ -374,21 +367,21 @@ const AttendanceList = (props) =>{
                 
           </Row>
       </div>
-    <Card>
-      <CardBody>
+
           <MDBDataTableV5 
           responsive 
+          bordered
           searchTop searchBottom={false} 
           hover  entriesOptions={[5,10, 20, 50,100]} 
           entries={5} pagesAmount={5} data={datatable2} />
           <br/>
           <MDBDataTableV5 
           responsive 
+          bordered
           searchTop searchBottom={false} 
           hover  entriesOptions={[50,100, 150, 200,300,400]} 
           entries={50} pagesAmount={50} data={datatable} />
-      </CardBody>
-    </Card>
+
   </>
     );
 }
@@ -406,7 +399,8 @@ const AbsentStudent = (props) => {
         <AbsentListInWeek {...props}/>
       </Col>
     </Row>
-    <Row>
+    <br/>
+    <Row style={{marginTop:"30px"}}>
       <Col>
         <AttendanceList {...props}/>
       </Col>

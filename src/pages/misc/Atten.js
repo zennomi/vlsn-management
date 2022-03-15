@@ -14,12 +14,14 @@ const Atten = (props) => {
 
   const today = Moment(Date.now()).format('YYYY-MM-DD');
   const studentId = props.match.params.id;
-  const [status, setStatus] = useState("Điểm Danh");// state này lưu trạng thái status điểm danh
+  const [status, setStatus] = useState("Điểm danh");// state này lưu trạng thái status điểm danh
   const [studentInfo, setStudent] = useState({status:"active"}); // state này lưu thông tin học sinh
   const [listSuggestClass, setListClass] = useState([]); // state này lưu các lớp của học sinh để điểm danh bù
   const [listSuggestClassForSubAttendance, setSubListClass] = useState([]); // state này lưu các lớp hiện tại cùng kiểu với lớp muốn điểm danh bù
   const [classRightNow, setClassNow] = useState([]); // state này lưu lớp học hiện tại phù hợp để điểm danh chính
   const [isAttened, setAtten] = useState(false); // state handle ẩn hiện khi chưa điểm danh và khi đã điểm danh
+
+  const [isActive, SetIsActive] = useState(false);
 
   const weeklyToday = new Date().getDay() + 1;
 
@@ -33,9 +35,14 @@ const Atten = (props) => {
           if(clazz.length === 0){
             const suggestList = await StudentApi.getStudentClasses(studentId);
             setListClass(suggestList);
-            setStatus("Điểm Danh Bù ");
+            setStatus("Điểm danh bù ");
+          }else{ // chỉ có 1 lớp học ở hiện tại
+            setClassNow(clazz);
+            if(clazz[0].costStatus === "inactive"){
+              SetIsActive(true);
+            }
           }
-          setClassNow(clazz);
+          
     }
     getStudentInfo();
     getClassInPresentToAtten();
@@ -66,11 +73,11 @@ const Atten = (props) => {
       }
     
       if(res === "atten successful!"){
-          setStatus("Điểm Danh Thành Công");
+          setStatus("Điểm danh thành công");
           setAtten(!isAttened);
       }
       else{
-          alert("Điểm Danh Thất bại!");
+          alert("Điểm danh thất bại!");
       }
       //call api
   }
@@ -89,12 +96,12 @@ const Atten = (props) => {
           const res = await AttendanceApi.studentAttenCompensate(studentId,clazz.id); // điểm danh bù buổi chưa học gần nhất của lớp có id là clazz.id
           const res1 = await AttendanceApi.addToSubAttendanceClass(listClassWithSameType[0].id,studentId);// thêm vào danh sách điểm danh lớp học bù hôm nay
           if(res === "Atten Compensate successful!" && res1 === "Atten Compensate successful!"){
-            setStatus("Điểm Danh Bù Thành Công");
+            setStatus("Điểm danh bù thành công");
             setAtten(!isAttened);
           }else{
             setAtten(!isAttened);
             setSubListClass([]);
-            alert("Điểm Danh Thất bại!");
+            alert("Điểm danh thất bại!");
           }
         } catch (error) {
             setAtten(!isAttened);
@@ -112,7 +119,7 @@ const Atten = (props) => {
             }else{
               setAtten(!isAttened);
               setSubListClass([]);
-              alert("Điểm Danh Thất bại!");
+              alert("Điểm danh thất bại!");
             }
           } catch (error) {
             setSubListClass([]);
@@ -131,7 +138,7 @@ const Atten = (props) => {
       const res1 = await AttendanceApi.addToSubAttendanceClass(selectedClassId,studentId);
       if(res1 === "Atten Compensate successful!"){
         setSubListClass([]);
-        setStatus("Điểm Danh Bù Thành Công");
+        setStatus("Điểm danh bù thành công");
       }else{
         setAtten(!isAttened);
         alert("Điểm Danh Thất bại!");
@@ -148,24 +155,30 @@ const Atten = (props) => {
       
       <div className="text-center">
         <h1 className="display-1 font-weight-bold">
-            <img style={{width:"50%"}} alt="successful" src={(status === "Điểm Danh" || status === "Điểm Danh Bù "  ) ? require("../../assets/img/icon/check.png"):require("../../assets/img/icon/check2.png") } 
+            <img style={{width:"50%"}} alt="successful" src={((status === "Điểm danh" && !isActive) || (status === "Điểm danh bù " && !isActive) ) ? 
+            require("../../assets/img/icon/check.png"):
+            (isActive) ? 
+            require("../../assets/img/icon/warning.png"):
+            require("../../assets/img/icon/check2.png") } 
               className="align-middle text-primary" size={24} />
         </h1>
         
         {(classRightNow.length === 1 && studentInfo.status === "active") ? 
               <>
-                <h1 className="h2 mb-3">
-                  {status} {classRightNow[0].subjectName + " " + classRightNow[0].grade + classRightNow[0].className}
-                </h1>
-                <p className="h4">{studentInfo.fullName}</p>
-                {(isAttened === false) ? 
-                    <Button onClick={submit} color="primary" size="lg">
-                        Xác Nhận
-                    </Button>
-                    :
-                    null
-                }
-
+                {(classRightNow[0].costStatus === "active") ?
+                  <>
+                  <h1 className="h2 mb-3">
+                    {status} {classRightNow[0].subjectName + " " + classRightNow[0].grade + classRightNow[0].className}
+                  </h1>
+                  <p className="h4">{studentInfo.fullName}</p>
+                  {(isAttened === false) ? 
+                      <Button onClick={submit} color="primary" size="lg">
+                          Xác Nhận
+                      </Button>
+                      :
+                      null
+                  }
+                  </> : <p style={{fontWeight:"bold"}}>Chưa hoàn thành học phí!</p> }
               </>
               : 
               (classRightNow.length !== 1 && studentInfo.status === "active") ? 

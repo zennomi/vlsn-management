@@ -49,7 +49,7 @@ const Ecommerce = (props) =>{
   <Container fluid className="p-0">
     <Header />
     <Row>
-      <Col className="d-flex">
+      <Col>
         <ClassList 
           setGrade={setGrade}
           grade={grade}
