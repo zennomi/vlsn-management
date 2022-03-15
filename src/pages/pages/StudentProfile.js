@@ -305,11 +305,11 @@ const Comment = (props) => {
       <>
       <Media key={i}>
         <img
-          src={avatar1}
+          src={(comment.avatarUrl !== null && comment.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${comment.avatarUrl}`) : avatar1 }
           width="36"
           height="36"
           className="rounded-circle mr-2"
-          alt="Chris Wood"
+          alt=""
         />
         <Media body>
           <strong>{comment.role} - {comment.fullName}</strong> đã đăng lời nhận xét{" "}
@@ -357,11 +357,11 @@ const Comment = (props) => {
             <Form>
                 <Media>
                   <img
-                    src={avatar1}
+                    src={(user.avatarUrl !== null && user.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${user.avatarUrl}`) : avatar1 }
                     width="36"
                     height="36"
                     className="rounded-circle mr-2"
-                    alt="Chris Wood"
+                    alt=""
                   />
                   <Media body>
                     <strong>{user.role} - {user.fullName}</strong>{" "}
@@ -496,7 +496,8 @@ const StudentProfile = (props) =>{
   const user = {
     id: props.id,
     fullName:props.fullName,
-    role:props.role
+    role:props.role,
+    avatarUrl:props.avatarUrl
   }
   
   return(

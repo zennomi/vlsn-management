@@ -194,6 +194,8 @@ const CreateClass = () => {
                           >
                             <option value="Toán Đại">Toán Đại</option>
                             <option value="Toán Hình">Toán Hình</option>
+                            <option value="Toán Hình">Luyện Đề C3</option>
+                            <option value="Toán Hình">Luyện Đề C2</option>
                             <option value="Tiếng Anh">Tiếng Anh</option>
                             <option value="Hóa">Hóa</option>
                             <option value="Văn">Văn</option>

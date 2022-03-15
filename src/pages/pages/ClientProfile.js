@@ -43,6 +43,7 @@ const translateRoleToVietnamese = role => {
   if (role === "MENTOR") return "TRỢ GIẢNG";
   else if (role === "TEACHER") return "GIÁO VIÊN";
   else if (role === "MANAGER") return "QUẢN LÍ";
+  else return "QUẢN TRỊ VIÊN";
 }
 
 const StudentProfileDetails = (props) =>{ 
@@ -378,14 +379,14 @@ const Comment = (props) => {
     <CardBody>
       
       { (comments.length !== 0) ? comments.map((comment,i) => 
-      <>
+      <div key={i}>
       <Media key={i}>
         <img
-          src={avatar1}
+          src={(comment.avatarUrl !== null && comment.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${comment.avatarUrl}`) : avatar1 }
           width="36"
           height="36"
           className="rounded-circle mr-2"
-          alt="Chris Wood"
+          alt=""
         />
         <Media body>
           <strong>{translateRoleToVietnamese(comment.role)} - {comment.fullName}</strong> đã đăng lời nhận xét{" "}
@@ -398,7 +399,7 @@ const Comment = (props) => {
       </Media>
 
       <hr />
-      </>
+      </div>
       ): <h5>Không có lời nhận xét nào</h5>}
 
     </CardBody>

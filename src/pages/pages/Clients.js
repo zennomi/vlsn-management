@@ -163,7 +163,7 @@ const ClientsList = (props) =>{
                     width="36"
                     height="36"
                     className="rounded-circle mr-2"
-                    alt={st.fullName}
+                    alt=""
                     />
                     {st.fullName}
                 </>,
