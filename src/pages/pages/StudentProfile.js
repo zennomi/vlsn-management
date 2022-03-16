@@ -99,7 +99,7 @@ const StudentProfileDetails = (props) =>{
     <hr className="my-0" />
 
     <CardBody>
-      <CardTitle >Lớp học đã đăng ký</CardTitle>
+      <CardTitle style={{fontWeight:"bold"}} >Lớp học đã đăng ký</CardTitle>
       {student.listClass.map((clazz,i) => 
         <div key={i}>
           <div key={i} className="d-flex justify-content-between flex-wrap">
@@ -219,7 +219,7 @@ const Activities = (props) => {
   return(
   <Card>
     <CardHeader>
-      <CardTitle tag="h5" className="mb-0">
+      <CardTitle tag="h5" className="mb-0" style={{fontWeight:"bold"}}>
         Bảng Điểm
       </CardTitle>
     </CardHeader>
@@ -295,7 +295,7 @@ const Comment = (props) => {
   return(
     <Card>
     <CardHeader>
-      <CardTitle tag="h5" className="mb-0">
+      <CardTitle tag="h5" className="mb-0" style={{fontWeight:"bold"}}>
         Nhận xét từ trợ giảng và giáo viên:
       </CardTitle>
     </CardHeader>
@@ -472,7 +472,7 @@ const DailyStatus = (props) => {
   return(
      <Card>
         <CardHeader>
-          <CardTitle>Thông tin từng buổi học</CardTitle>
+          <CardTitle style={{fontWeight:"bold"}}>Thông tin từng buổi học</CardTitle>
         </CardHeader>
         <CardBody>
             <MDBDataTableV5
@@ -502,7 +502,7 @@ const StudentProfile = (props) =>{
   
   return(
   <Container fluid className="p-0">
-    <h1 className="h3 mb-3">Thông tin học sinh </h1>
+    <h1 className="h3 mb-3" style={{fontWeight:"bold"}}>Thông tin học sinh </h1>
 
     <Row>
       <Col md="5" xl="4">

@@ -14,20 +14,24 @@ import {
   Container,
   Media,
   Row,
-
+  Modal,
+  ModalFooter,
+  ModalBody,
+  ModalHeader
 } from "reactstrap";
 import { MDBDataTableV5 } from 'mdbreact';
 import ClientApi from "../../api/ClientApi";
 import FileApi from "../../api/FileApi";
 
-
-
-
+import Cropper from "react-easy-crop";
+import Slider from "@material-ui/core/Slider";
+import getCroppedImg from "./CropImage";
 import avatar1 from "../../assets/img/avatars/avatar.jpg";
 import avatar4 from "../../assets/img/avatars/avatar-4.jpg";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toastr } from "react-redux-toastr";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import CameraAltIcon from "@material-ui/icons/CameraAlt";
+import { IconButton } from "@material-ui/core";
+
 import {
   Clock as ClockIcon,
   // Camera as CameraIcon
@@ -38,6 +42,18 @@ import StarIcon from "@material-ui/icons/Star";
 const removeLastThreeChar = (str) => {
   return str.slice(0,-3)
 }
+
+const dataURLtoFile = (dataurl, filename) => {
+	const arr = dataurl.split(",");
+	const mime = arr[0].match(/:(.*?);/)[1];
+	const bstr = atob(arr[1]);
+	let n = bstr.length;
+	const u8arr = new Uint8Array(n);
+
+	while (n--) u8arr[n] = bstr.charCodeAt(n);
+
+	return new File([u8arr], filename, { type: mime });
+};
 
 const translateRoleToVietnamese = role => {
   if (role === "MENTOR") return "TRỢ GIẢNG";
@@ -79,71 +95,50 @@ const StudentProfileDetails = (props) =>{
     avgStudentMark = totalMark/takedSubjectExam;
   }
   
-  const avatarInputFileRef = useRef(null);
+  const previewAvatarUrl = props.previewAvatarUrl;
+  const avatarInputFileRef = props.avatarInputFileRef;
+  const onChangeAvatarInputFile = props.onChangeAvatarInputFile;
 
-  const [previewAvatarUrl, setPreviewAvatarUrl] = useState();
-
-  const [previewAvatarFile, setPreviewAvatarFile] = useState();
-
-  const [isDisabledSaveButton, setDisabledSaveButton] = useState(false);
-
-  const onChangeAvatarInputFile = (e) => {
-    let reader = new FileReader();
-    let file = e.target.files[0];
-    reader.readAsDataURL(file);
-
-    reader.onloadend = () => {
-      setPreviewAvatarUrl(reader.result);
-      setPreviewAvatarFile(file);
-    }
-  };
-
-  const showSucessNotification = (title, message) => {
-    const options = {
-      timeOut: 2500,
-      showCloseButton: false,
-      progressBar: false,
-      position: "top-right"
-    };
-
-    // show notification
-    toastr.success(title, message, options);
-  }
-
-  const handleSave = async () => {
-    try {
-      setDisabledSaveButton(true);
-      // upload avatar
-      const nameImage = await FileApi.uploadUserAvatarImage(previewAvatarFile,studentId);
-      localStorage.setItem("avatarUrl",nameImage);
-      sessionStorage.setItem("avatarUrl",nameImage);
-      setDisabledSaveButton(false);
-      showSucessNotification(
-        "Change Profile",
-        "Change Profile Successfully!"
-      );
-    } catch (error) {
-      setDisabledSaveButton(false);
-      console.log(error);
-    }
-  }
-  
   return(
+  <>
+    
   <Card>
-   
     <CardBody className="text-center">
-      <img
-        src={
-          previewAvatarUrl ?
-          previewAvatarUrl :
-          (student.avatarUrl !== "null" && student.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${student.avatarUrl}`) : avatar4 }
-        alt={student.fullName}
-        className="img-fluid rounded-circle mb-2"
-        width="128"
-        height="128"
-      />
+
+      <div style={{
+          textAlign:"center"
+      }}>
+        <img
+          style={{
+            display:"block",
+            margin:"auto"
+          }}
+          src={
+            previewAvatarUrl ?
+            previewAvatarUrl :
+            (student.avatarUrl !== "null" && student.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${student.avatarUrl}`) : avatar4 }
+          alt={student.fullName}
+          className="img-fluid rounded-circle mb-2"
+          width="128"
+          height="128"
+        />
+        <IconButton
+            type="button"
+            style={{
+              display:"block",
+              height: "3rem",
+              width: "3rem",
+              margin:"auto",
+              top:"-34px",
+              backgroundColor:"lightgrey"
+           }}
+           onClick={(e) => avatarInputFileRef.current.click()}
+          >
+            <CameraAltIcon fontSize='medium' />
+        </IconButton>
+      </div>
       <CardTitle  className="mb-0">
-            <h4>{student.fullName} - Lớp {student.grade}</h4>
+            <h4 style={{fontWeight:"bold"}}>{student.fullName} - Lớp {student.grade}</h4>
             <h5>Số sao: {student.score} <StarIcon style={{color:"yellow",marginBottom:"4px"}}/></h5>
       </CardTitle>
       <input id="avatarInput"
@@ -153,10 +148,8 @@ const StudentProfileDetails = (props) =>{
                     onChange={onChangeAvatarInputFile}
                     style={{ display: 'none' }}
         />
-        <Button color="primary" onClick={(e) => avatarInputFileRef.current.click()}>
-            <FontAwesomeIcon icon={faUpload} /> Upload
-        </Button>
-        <Button color="primary" disabled={isDisabledSaveButton} onClick={handleSave}>Save changes</Button>
+        
+        
 
       {/* <div>
         <Button size="sm" color="primary" className="mr-1">
@@ -176,7 +169,7 @@ const StudentProfileDetails = (props) =>{
     <hr className="my-0" />
 
     <CardBody>
-      <CardTitle >Lớp học đã đăng ký</CardTitle>
+      <h5 style={{fontWeight:"bold"}} >Lớp học đã đăng ký</h5>
       {student.listClass.map((clazz,i) => 
         <div key={i}>
           <div key={i} className="d-flex justify-content-between flex-wrap">
@@ -203,7 +196,7 @@ const StudentProfileDetails = (props) =>{
           
           <div className="d-flex justify-content-between flex-wrap">
                 <div>
-                    <h5 style={{fontWeight:"bold"}}>Điểm Trung Bình: {avgStudentMark}
+                    <h5 style={{fontWeight:"bold"}}>Điểm trung bình: {avgStudentMark}
                     </h5>
                 </div>
                 <div>
@@ -223,12 +216,12 @@ const StudentProfileDetails = (props) =>{
     </CardBody>
     <hr className="my-0" />
     <CardBody>
-        <h5 style={{textAlign:"center",fontWeight:"bold"}}>Xếp Hạng: 
+        <h5 style={{textAlign:"center",fontWeight:"bold"}}>Xếp hạng: 
         {(avgStudentMark >= 9) ? <p style={{color:"red"}}>Vàng (Xuất Sắc)</p> :
         (avgStudentMark >= 8 && avgStudentMark < 9) ? <p style={{color:"red"}}>Bạc (Giỏi)</p> :
         (avgStudentMark >= 5 && avgStudentMark < 8) ? <p style={{color:"red"}}>Đồng (Khá)</p> : 
         (avgStudentMark > 0 && avgStudentMark < 5) ?<p style={{color:"red"}}>Gỗ (Yếu)</p> : 
-        <p style={{color:"black"}}>Chưa Xếp Hạng</p>}
+        <p style={{color:"black"}}>Chưa xếp hạng</p>}
         </h5>
         <div style={{margin: "0 auto"}}>
 
@@ -243,7 +236,7 @@ const StudentProfileDetails = (props) =>{
               
         </div>
     </CardBody>
-  </Card>
+  </Card></>
 );
 }
 const Activities = (props) => {
@@ -292,11 +285,11 @@ const Activities = (props) => {
           )
     
   )
-    console.log(listDataTable);
+    
   return(
   <Card>
     <CardHeader>
-      <CardTitle tag="h5" className="mb-0">
+      <CardTitle tag="h5" className="mb-0" style={{fontWeight:"bold"}}>
         Bảng Điểm
       </CardTitle>
     </CardHeader>
@@ -372,7 +365,7 @@ const Comment = (props) => {
   return(
     <Card>
     <CardHeader>
-      <CardTitle tag="h5" className="mb-0">
+      <CardTitle tag="h5" className="mb-0" style={{fontWeight:"bold"}}>
         Nhận xét từ trợ giảng và giáo viên:
       </CardTitle>
     </CardHeader>
@@ -493,7 +486,7 @@ const DailyStatus = (props) => {
   return(
      <Card>
         <CardHeader>
-          <CardTitle>Thông tin từng buổi học</CardTitle>
+          <CardTitle style={{fontWeight:"bold"}}>Thông tin từng buổi học</CardTitle>
         </CardHeader>
         <CardBody>
             <MDBDataTableV5
@@ -514,14 +507,158 @@ const ClientProfile = (props) =>{
   
   const studentId = props.id;
  
+  const avatarInputFileRef = useRef(null);
+
+  const [previewAvatarUrl, setPreviewAvatarUrl] = useState();
+
+  const [previewAvatarFile, setPreviewAvatarFile] = useState();
+
+  const [isDisabledSaveButton, setDisabledSaveButton] = useState(false);
+
+  const [modalChangeAvatar, setModalChangeAvatar] = useState(false);
+
+  // const [image, setImage] = React.useState(null); image == previewAvatarUrl
+
+  const [croppedArea, setCroppedArea] = useState(null);
+	const [crop, setCrop] = useState({ x: 0, y: 0 });
+	const [zoom, setZoom] = useState(1);
+
+  const onCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
+		setCroppedArea(croppedAreaPixels);
+	};
+
+  // const onSelectFile = (event) => {
+	// 	if (event.target.files && event.target.files.length > 0) {
+	// 		const reader = new FileReader();
+	// 		reader.readAsDataURL(event.target.files[0]);
+	// 		reader.addEventListener("load", () => {
+	// 			setImage(reader.result);
+	// 		});
+	// 	}
+	// };
+
+  const onChangeAvatarInputFile = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+			let reader = new FileReader();
+      let file = e.target.files[0];
+      reader.readAsDataURL(file);
+
+      reader.onloadend = () => {
+        setPreviewAvatarUrl(reader.result);
+        setPreviewAvatarFile(file);
+        setModalChangeAvatar(true);
+      }
+		}
+    
+  };
+
+  const showSucessNotification = (title, message) => {
+    const options = {
+      timeOut: 2500,
+      showCloseButton: false,
+      progressBar: false,
+      position: "top-right"
+    };
+
+    // show notification
+    toastr.success(title, message, options);
+  }
+
+  const handleSave = async () => {
+    const canvas = await getCroppedImg(previewAvatarUrl, croppedArea);
+    
+    const imageCroppedFile = dataURLtoFile(canvas.toDataURL("image/jpeg"),previewAvatarFile.name);
+    try {
+      setDisabledSaveButton(true);
+      // upload avatar
+      const nameImage = await FileApi.uploadUserAvatarImage(imageCroppedFile,studentId);
+      localStorage.setItem("avatarUrl",nameImage);
+      sessionStorage.setItem("avatarUrl",nameImage);
+      setDisabledSaveButton(false);
+      showSucessNotification(
+        "Change Profile",
+        "Change Profile Successfully!"
+      );
+      setModalChangeAvatar(false);
+    } catch (error) {
+      setDisabledSaveButton(false);
+      console.log(error);
+    }
+  }
   
   return(
-  <Container fluid className="p-0">
-    <h1 className="h3 mb-3">Thông tin học sinh </h1>
+  <>
+    <Modal size="xl" isOpen={modalChangeAvatar} toggle={setModalChangeAvatar}>
+      <ModalHeader>
+            Kéo để đặt vị trí
+      </ModalHeader>
+      <ModalBody>
+      <div style={{
+          height: "50vh",
+          width: "55vw"
+      }}>
+        <div style={{
+          height: "90%",
+          padding: "10px"
+        }}>
+        {previewAvatarUrl ? (
+          <>
+            <div style={{
+              height: "90%",
+             
+            }}>
+              <Cropper
+                image={previewAvatarUrl}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
 
+            <div style={{
+                height: "10%",
+                display: "flex",
+                alignItems: "center",
+                margin: "auto",
+                width: "60%",
+            }}>
+              <Slider
+                min={1}
+                max={3}
+                step={0.1}
+                value={zoom}
+                onChange={(e, zoom) => setZoom(zoom)}
+              />
+            </div>
+          </>
+        ) : null}
+      </div>
+    </div>
+    </ModalBody>
+    <ModalFooter>
+            <Button color="primary" onClick={handleSave} disabled={isDisabledSaveButton}>Lưu</Button>
+            <Button color="primary" onClick={() => {
+                setPreviewAvatarUrl();
+                setModalChangeAvatar(false)
+              }}>
+                Hủy</Button>
+    </ModalFooter>
+    </Modal>
+  <Container fluid className="p-0">
+    <h1 style={{fontWeight:"bold"}} className="h3 mb-3">Thông tin học sinh </h1>
+    
+       
+   
     <Row>
       <Col md="5" xl="4">
-        <StudentProfileDetails studentId={studentId} />
+        <StudentProfileDetails 
+        previewAvatarUrl={previewAvatarUrl}
+        avatarInputFileRef={avatarInputFileRef}
+        onChangeAvatarInputFile={onChangeAvatarInputFile}
+        studentId={studentId} />
       </Col>
       <Col md="7" xl="8">
         <Activities studentId={studentId} />
@@ -536,6 +673,7 @@ const ClientProfile = (props) =>{
       </Col>
     </Row>
   </Container>
+  </>
 );
 }
 // export default ClientProfile;
