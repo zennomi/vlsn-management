@@ -11,7 +11,8 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
-  ModalHeader
+  ModalHeader,
+ 
 } from "reactstrap";
 import Moment from 'moment';
 import { Formik,FastField, Form  } from 'formik';
@@ -28,11 +29,17 @@ import Delete from "@material-ui/icons/Delete";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import CheckIcon from "@material-ui/icons/Check";
 import { green } from "@material-ui/core/colors";
+import AttendanceApi from "../../api/AttendanceApi";
+
+function format_two_digits(n) {
+  return n < 10 ? '0' + n : n;
+}
 
 
 const Attendance = (props) =>{ 
     
     const today = Moment(Date.now()).format('DD-MM-YYYY');
+    const today3 = Moment(Date.now()).format('YYYY-MM-DD');
     const todayInMonth = Moment(Date.now()).format('DD-MM');
     const today2 = Moment(Date.now()).format('YYYY-MM-DD');
    
@@ -116,6 +123,36 @@ const Attendance = (props) =>{
       }
     }
 
+    // điểm danh
+    const submit = async (studentId) => {
+      var d = new Date();
+      const hours = format_two_digits(d.getHours());
+      const minutes = format_two_digits(d.getMinutes());
+      const seconds = format_two_digits(d.getSeconds());
+      const startTime = clazz.startTime;
+      const rightnow = hours + ":" + minutes + ":" + seconds;
+      console.log(startTime);
+      console.log(rightnow);
+      var res = "";
+      if(rightnow > startTime){
+   
+         res = await AttendanceApi.studentAtten(studentId,"L",clazz.classId,today3);
+      }
+      else{
+
+         res = await AttendanceApi.studentAtten(studentId,"P",clazz.classId,today3);
+      }
+    
+      if(res === "atten successful!"){
+          alert("Điểm danh thành công");
+          
+      }
+      else{
+          alert("Điểm danh thất bại!");
+      }
+      //call api
+  }
+
     const [listStudentNotInClass, setAbsentStudents] = useState([]);
     const [attenedStudents, setAttendStudents] = useState([]);
     const [subStudentInClass, setSubList] = useState([]);
@@ -172,10 +209,20 @@ const Attendance = (props) =>{
           {
             label: 'Trường',
             field: 'school',
-            sort: 'asc',
        
           },
-         
+          {
+            label: 'SĐT',
+            field: 'studentNumber',
+          },
+          {
+            label: 'SĐT PH',
+            field: 'parentNumber',
+          },
+          {
+            label: '',
+            field: 'action',
+          },
         ],
         rows: []
       };
@@ -327,7 +374,19 @@ const Attendance = (props) =>{
       }, [clazz.grade,clazz.subjectName]);
 
       data.rows = attenedStudents;
-      data1.rows = listStudentNotInClass;
+
+
+      
+      listStudentNotInClass.map(st => data1.rows.push({
+        id: st.id,
+        fullName: st.fullName,
+        school:st.school,
+        studentNumber:st.studentNumber,
+        parentNumber: st.parentNumber,
+        action: <Button color="primary" onClick={() => submit(st.id)} >Điểm danh</Button>
+      }))
+
+
       data3.rows = subStudentInClass;
 
       const toggleDelete = async (student) => {
@@ -439,7 +498,7 @@ const Attendance = (props) =>{
 
     return (
         <Container fluid className="p-0">
-            <h1 className="h3 mb-3">Thông Tin Lớp Học Ngày {today}</h1>
+            <h1 className="h3 mb-3">Thông tin lớp lọc ngày {today}</h1>
             <Row>
             <Col>
                  
