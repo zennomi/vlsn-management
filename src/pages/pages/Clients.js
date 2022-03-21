@@ -21,6 +21,7 @@ import { Autocomplete } from '@material-ui/lab'
 import TextField from '@material-ui/core/TextField';
 import { ReactstrapInput } from "reactstrap-formik";
 import StudentApi from "../../api/StudentApi";
+import DeactivedStudentApi from "../../api/DeactivedStudentApi";
 import ClassroomApi from "../../api/ClassroomApi";
 import UserApi from "../../api/UserApi";
 import FacebookIcon from '@material-ui/icons/Facebook';
@@ -34,7 +35,6 @@ import * as Yup from 'yup';
 const headers = [
   { label: "Họ và Đệm", key: "lastName" },
   { label: "Tên", key: "firstName" },
-  { label: "Trường", key: "lastName" },
   { label: "SĐT", key: "studentNumber" },
   { label: "Lớp", key: "grade" },
   { label: "trường học", key: "school" },
@@ -465,6 +465,161 @@ const ClientsList = (props) =>{
     );
 }
 
+const DeactivedClientsList = (props) => {
+  const datatable = {
+    columns: [
+      {
+        label: 'ID',
+        field: 'id',
+     
+      },
+      {
+        label: 'Họ Tên',
+        field: 'fullName',
+     
+      },
+      {
+        label: 'Trường học',
+        field: 'school',
+ 
+      },
+      {
+        label: 'SĐT',
+        field: 'studentNumber',
+  
+      },
+      {
+        label: 'Lớp',
+        field: 'grade',
+        sort: 'asc',
+ 
+      },
+      {
+        label: 'Tên PH',
+        field: 'parentName',
+ 
+      },
+      {
+        label: 'SĐT PH',
+        field: 'parentNumber',
+
+      },
+      {
+        label: 'Facebook',
+        field: 'facebookLink',
+      },
+      {
+        label: '',
+        field: 'action',
+     
+      },
+    ],
+    rows: [
+       
+    ]
+  }; 
+
+  const grade = props.grade;
+  const setGrade = props.setGrade;
+  const listDeactivedStudent = props.listDeactivedStudent;
+  const setListDeactivedStudent = props.setListDeactivedStudent;
+
+  const toggleUpdate = async (rowData) => {
+    console.log(rowData);
+    // const res = await StudentApi.getStudentById(rowData.id);
+    // setStudent(res);
+    // setModalUpdate(!modalUpdate);
+    // const listSuggest = await ClassroomApi.getListClassroomInGrade(rowData.grade);
+    // setSuggest(listSuggest);
+  
+  }
+
+  const toggleDelete = async (student) => {
+    var requested = window.confirm("Bạn có chắc chắn muốn thêm học sinh trở lại" + student.fullName);
+  
+    if ( requested) {
+        alert("thêm thành công");
+        // const res = await StudentApi.deleteStudent(student.id);
+        // if (res === "delete successful!"){
+        //     const newStudentList = await StudentApi.getAllStudentInGrade(grade);
+        //     setListStudent(newStudentList);
+        //     alert("Xóa học sinh thành công!");
+        // }
+    }
+  };
+
+  listDeactivedStudent.map(st => datatable.rows.push(
+    {
+      id:st.id,
+      fullName:<>
+                    
+                    {st.fullName}
+                </>,
+      school:st.school,
+      grade:st.grade,
+      studentNumber:st.studentNumber,
+      parentNumber: st.parentNumber,
+      parentName:st.parentName,
+      facebookLink: (st.facebookLink !== null) ?
+      <a alt={st.facebookLink} href={st.facebookLink} style={{color:"blue",fontWeight:"bolder"}}>
+        Xem Facebook <FacebookIcon color="primary"/> 
+     </a> : "Chưa có",
+     action: <div style={{display:"flex"}}>
+                <button style={{background:"none",border:"none"}} onClick={() => toggleUpdate(st)}>
+                    <Edit color="action"/>
+                </button>
+                <button style={{background:"none",border:"none"}} onClick={() => toggleDelete(st)}>
+                    <Delete color="secondary"/>
+                </button>
+            </div>,
+    }
+  ))
+    return (
+      <>
+             <Row >
+              
+
+                
+                    <Col xs="auto">
+                        <Input 
+                                id ="grade"
+                                type="select"
+                                name="grade"
+                                value={grade}
+                                onChange={ (e) =>{
+                                  setGrade(e.target.value);
+                                }}
+                              >
+                                <option value = "12">Khối 12</option>
+                                <option value = "11">Khối 11</option>
+                                <option value = "10">Khối 10</option>
+                                <option value = "9">Khối 9</option>
+                                <option value = "8">Khối 8</option>
+                                <option value = "7">Khối 7</option>
+                                <option value = "6">Khối 6</option>
+                        </Input>
+                    </Col>
+          
+            </Row>
+            <Row>
+                <Col>
+                  
+                      <MDBDataTableV5 
+                      hover 
+                      responsive
+                      pagingTop
+                      bordered
+                      searchTop
+                      searchBottom={false}
+                      exportToCSV
+                      entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
+                      
+                </Col>
+          </Row>
+          <CSVLink className="ml-auto" headers={headers} data={listDeactivedStudent}>Export to CSV</CSVLink>
+      </>
+    )
+}
 
 const Single = (props) => {
   
@@ -757,6 +912,7 @@ const Clients = (props) => {
   const [modal, setModal] = useState(false);
   const [grade,setGrade] = useState(12);
   const [listStudent, setListStudent] = useState([]);
+  const [listDeactivedStudent, setListDeactivedStudent] = useState([]);
   
   useEffect(() => {
     const getAllStudentList = async () =>{
@@ -764,6 +920,14 @@ const Clients = (props) => {
       setListStudent(result);
     }
     getAllStudentList();
+  }, [grade]);
+
+  useEffect(() => {
+    const getAllDeactivedStudentList = async () =>{
+      const result = await DeactivedStudentApi.getAllDeactivedStudentInGrade(grade);
+      setListDeactivedStudent(result);
+    }
+    getAllDeactivedStudentList();
   }, [grade]);
   
   
@@ -774,7 +938,7 @@ const Clients = (props) => {
   <Container fluid className="p-0">
     <Row>
         <Col style={{display:"flex"}}>
-            <h1 className="h3 mb-3">Học sinh khối {grade}</h1>
+            <h1 className="h3 mb-3" style={{fontWeight:"bold"}}>Học sinh khối {grade}</h1>
             <Button style={{marginLeft:"auto"}} color="primary" onClick={toggle}>
                 Thêm học sinh mới
             </Button>
@@ -791,6 +955,21 @@ const Clients = (props) => {
       <Modal isOpen={modal} toggle={toggle}>
             <Single grade={grade} handler = {toggle} listStudent={listStudent} setListStudent={setListStudent} />
       </Modal>
+    </Row>
+    <br/>
+    {/* học sinh đã nghỉ học */}
+    <Row>
+      <Col>
+        <h3 className="h3 mb-3" style={{fontWeight:"bold"}}>Học sinh đã nghỉ khối {grade}</h3>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+          <DeactivedClientsList 
+          grade ={grade}
+          setGrade={setGrade}
+         {...props} listDeactivedStudent={listDeactivedStudent} setListDeactivedStudent={setListDeactivedStudent}/>
+      </Col>
     </Row>
   </Container>
   );
