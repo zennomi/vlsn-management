@@ -2,7 +2,7 @@ import Api from './Api';
 
 const url = "/reasonlefts";
 
-const createClassSchedule = (studentId, [...listReason]) => {
+const createReasonLeft = (studentId, [...listReason]) => {
 
     const body = [...listReason];
    
@@ -11,7 +11,7 @@ const createClassSchedule = (studentId, [...listReason]) => {
 
 // export
 const api = { 
-    createClassSchedule,
+    createReasonLeft,
 
      }
 export default api;

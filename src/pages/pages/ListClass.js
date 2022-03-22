@@ -117,7 +117,7 @@ const ListClass = (props) => {
                 <h5 >{row.className +" - GV." + row.teacherName + "-"+ 
                   row.start + " - " + row.end} </h5> 
                       <Button color="primary"  onClick ={() => redirect(row)}  style ={{marginLeft:"auto", borderRadius:"20px"}}>
-                          Tham Gia
+                        Tham Gia
                       </Button>
                 </div> 
             }

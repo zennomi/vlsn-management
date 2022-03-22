@@ -324,6 +324,7 @@ const CreateClass = () => {
               <Row>
                   <Col>
                     <Button
+                      type="button"
                       color="primary"
                       size="sm"
                       onClick={() => {

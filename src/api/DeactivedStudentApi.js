@@ -11,6 +11,7 @@ const createDeactivedStudent = (firstName, lastName,  school, grade, studentNumb
         studentNumber:studentNumber,
         parentNumber:parentNumber,
         parentName: (parentName !== "Chưa có tên PH") ? parentName : "",
+        processStatus: '0',
         leftDate: leftDate
     }
     return Api.post(`${url}/`,body);
@@ -21,10 +22,13 @@ const getAllDeactivedStudentInGrade = (grade) => {
     }
     return Api.get(`${url}/`, { params: parameters});
 };
-
+const deleteDeactivedStudent = (id) => {
+    return Api.delete(`${url}/${id}`);
+}
 // export
 const api = { 
     createDeactivedStudent,
-    getAllDeactivedStudentInGrade
+    getAllDeactivedStudentInGrade,
+    deleteDeactivedStudent
      }
 export default api;

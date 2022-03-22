@@ -9,11 +9,14 @@ import {
   Container,
  
   Row,
-
+  Badge,
   Button,
   Input,
   Label,
-  Modal, 
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter, 
 } from "reactstrap";
 import { Formik,FastField, Form  } from 'formik';
 import { MDBDataTableV5 } from 'mdbreact';
@@ -22,6 +25,7 @@ import TextField from '@material-ui/core/TextField';
 import { ReactstrapInput } from "reactstrap-formik";
 import StudentApi from "../../api/StudentApi";
 import DeactivedStudentApi from "../../api/DeactivedStudentApi";
+import ReasonLeftApi from "../../api/ReasonLeftApi";
 import ClassroomApi from "../../api/ClassroomApi";
 import UserApi from "../../api/UserApi";
 import FacebookIcon from '@material-ui/icons/Facebook';
@@ -30,6 +34,7 @@ import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/Delete";
 import { CSVLink } from "react-csv";
 import avatar1 from "../../assets/img/avatars/avatar.jpg";
+import { produce } from "immer";
 import * as Yup from 'yup';
 
 const headers = [
@@ -118,11 +123,29 @@ const ClientsList = (props) =>{
 
   const [modalUpdate, setModalUpdate] = useState(false);
   const [student, setStudent] = useState({});
+
   const grade = props.grade;
   const setGrade = props.setGrade;
   const listStudent = props.listStudent;
   const setListStudent = props.setListStudent;
+
+  const setListDeactivedStudent = props.setListDeactivedStudent
   
+  const [isDeletingStudent, setIsDeletingStudent] = useState(false);
+
+  const [deletingStudentInfo, setDeletingStudentInfo] = useState({});
+
+
+
+  const [id,setId] = useState(1);
+
+  const [listReason, setListReason] = useState([
+    {
+        id: 0,
+        reasonLeft:"",
+        departmentName:"",
+    }
+  ]);
   
 
   const toggleUpdate = async (rowData) => {
@@ -145,12 +168,18 @@ const ClientsList = (props) =>{
     var requested = window.confirm("Bạn có chắc chắn muốn xóa học sinh " + student.fullName);
   
     if ( requested) {
-        const res = await StudentApi.deleteStudent(student.id);
-        if (res === "delete successful!"){
-            const newStudentList = await StudentApi.getAllStudentInGrade(grade);
-            setListStudent(newStudentList);
-            alert("Xóa học sinh thành công!");
-        }
+
+        setIsDeletingStudent(true);
+        setDeletingStudentInfo(student);
+
+
+
+        // const res = await StudentApi.deleteStudent(student.id);
+        // if (res === "delete successful!"){
+        //     const newStudentList = await StudentApi.getAllStudentInGrade(grade);
+        //     setListStudent(newStudentList);
+        //     alert("Xóa học sinh thành công!");
+        // }
     }
   };
   
@@ -461,6 +490,184 @@ const ClientsList = (props) =>{
           </Col>
         </Row>
     </Modal>
+
+    <Modal isOpen={isDeletingStudent} toggle={setIsDeletingStudent}>
+            <Formik
+                    initialValues={
+                      {
+                        leftdate:""
+                      }
+                    }
+
+                    validationSchema={
+                      Yup.object({
+                        leftdate: Yup.string()
+                          .required('bắt buộc'),
+                        
+                       
+                        
+                        
+                      })
+                    }
+
+                    onSubmit={async (values) => {
+                      
+                      var validationReason = true;
+
+                      for (var i = 0 ; i < listReason.length ; i ++){
+                        if(listReason[i].reasonLeft === "" || listReason[i].departmentName === ""){
+                          validationReason = false;
+                          break;
+                        }
+                      }
+
+                      if(validationReason){
+
+                          const resCreateDeactivedStudent = await DeactivedStudentApi.createDeactivedStudent(
+                            deletingStudentInfo.firstName,
+                            deletingStudentInfo.lastName,
+                            deletingStudentInfo.school,
+                            deletingStudentInfo.grade,
+                            deletingStudentInfo.studentNumber,
+                            deletingStudentInfo.parentNumber,
+                            deletingStudentInfo.parentName,
+                            values.leftdate
+                          )
+
+                          const resCreateReasonLeft = await ReasonLeftApi.createReasonLeft(resCreateDeactivedStudent,listReason);
+
+                          if (resCreateReasonLeft === "create successful!"){
+
+                            const newDeactivedList = await DeactivedStudentApi.getAllDeactivedStudentInGrade(grade);
+                            setListDeactivedStudent(newDeactivedList);
+
+                            const res = await StudentApi.deleteStudent(deletingStudentInfo.id);
+                            if (res === "delete successful!"){
+                                const newStudentList = await StudentApi.getAllStudentInGrade(grade);
+                                setListStudent(newStudentList);
+                                alert("Xóa học sinh thành công!");
+                                setIsDeletingStudent(false);
+                            }else{
+                              alert("Xóa học sinh thất bại!");
+                            }
+                               
+                          }else{
+                            alert("thêm lí do không thành công!");
+                          }
+                          
+                          
+
+                      }
+
+
+                    
+
+                    }}
+                >
+                  {({setFieldValue, values}) => <Form>
+                    <ModalHeader></ModalHeader>
+                    <ModalBody>
+                
+                      {listReason.map((reason,index) => 
+                      <Row key={index}>
+                          <Col>
+                                < Label for="reasonleft" style={{marginBottom: "4px"}}>Lí do nghỉ học</Label>
+                                <Input
+                                  bsSize="lg"
+                                  type="text"
+                                  name="reasonleft"
+                                  onChange={e => {
+                                    const sc = e.target.value;
+                                    setListReason(currentSchedule =>
+                                      produce(currentSchedule, v => {
+                                        v[index].reasonLeft = sc;
+                                      })
+                                    );
+                                  }}
+                                  value={reason.reasonLeft}
+                                  
+                                >
+                                </Input>
+
+                          </Col>
+                          <Col>
+                                < Label for="departmentName" style={{marginBottom: "4px"}}>Phòng ban</Label>
+                                <Input
+                                  bsSize="lg"
+                                  type="text"
+                                  name="departmentName"
+                                  onChange={e => {
+                                    const sc = e.target.value;
+                                    setListReason(currentSchedule =>
+                                      produce(currentSchedule, v => {
+                                        v[index].departmentName = sc;
+                                      })
+                                    );
+                                  }}
+                                  value={reason.departmentName}
+                                  
+                                >
+                                </Input>
+                          </Col>
+                          <button
+                              type="button"
+                              style={{
+                                backgroundColor:"white",
+                                border:"none",
+                                fontWeight:"bolder",
+                                fontSize:"larger"
+                              }}
+
+                              onClick={() => {
+                                setListReason(currentSchedule =>
+                                  currentSchedule.filter(x => x.id !== reason.id)
+                                );
+                              }}
+                            >
+                              x
+                            </button>
+                      </Row>)}
+                      <Row>
+                          <Col>
+                            <Button
+                              type="button"
+                              color="primary"
+                              size="sm"
+                              onClick={() => {
+                                setListReason(currentSchedule => [
+                                  ...currentSchedule,
+                                  {
+                                    id:id,
+                                    reasonLeft: "",
+                                    departmentName: "",
+                                  }
+                                ]);
+                              
+                                setId(id + 1);
+                              }}                    
+                            >Thêm lí do</Button>
+                          </Col>
+                      </Row>
+                      <Row>
+                          <Col>
+                                <FastField
+                              label="Thời gian nghỉ học"
+                              bsSize="lg"
+                              type="datetime-local"
+                              name="leftdate"
+                              component={ReactstrapInput}
+                            />
+                          </Col>
+                      </Row>
+                
+            </ModalBody>
+            <ModalFooter>
+                      <Button color="primary"  type="submit" >Xác nhận</Button>
+                      <Button color="primary" onClick={() => setIsDeletingStudent(false)}>Hủy</Button>
+            </ModalFooter>
+             </Form>}
+             </Formik>
+    </Modal>
   </>
     );
 }
@@ -468,11 +675,6 @@ const ClientsList = (props) =>{
 const DeactivedClientsList = (props) => {
   const datatable = {
     columns: [
-      {
-        label: 'ID',
-        field: 'id',
-     
-      },
       {
         label: 'Họ Tên',
         field: 'fullName',
@@ -489,10 +691,12 @@ const DeactivedClientsList = (props) => {
   
       },
       {
-        label: 'Lớp',
-        field: 'grade',
-        sort: 'asc',
- 
+        label: 'Lí do',
+        field: 'reason'
+      },
+      {
+          label: 'Xử lý',
+          field: 'processStatus'
       },
       {
         label: 'Tên PH',
@@ -523,6 +727,7 @@ const DeactivedClientsList = (props) => {
   const setGrade = props.setGrade;
   const listDeactivedStudent = props.listDeactivedStudent;
   const setListDeactivedStudent = props.setListDeactivedStudent;
+  const setListStudent = props.setListStudent;
 
   const toggleUpdate = async (rowData) => {
     console.log(rowData);
@@ -535,10 +740,51 @@ const DeactivedClientsList = (props) => {
   }
 
   const toggleDelete = async (student) => {
-    var requested = window.confirm("Bạn có chắc chắn muốn thêm học sinh trở lại" + student.fullName);
+    var requested = window.confirm("Bạn có chắc chắn muốn thêm học sinh trở lại " + student.fullName);
   
     if ( requested) {
-        alert("thêm thành công");
+
+                var lastNameDeleteSpace = student.lastName.replace(/\s+/g, ''); // xóa khoảng trắng
+                const lastName = capitalizeFirstLetter(lastNameDeleteSpace);  // viết hoa chữ cái đầu
+                const resLast = removeAccents(lastName) // bỏ dấu tiếng việt
+                var firstNameDeleteSpace = student.firstName.replace(/\s+/g, ''); // xóa khoảng trắng
+                const firstName = capitalizeFirstLetter(firstNameDeleteSpace);  // viết hoa chữ cái đầu
+                const resFirst = removeAccents(firstName); // bỏ dấu tiếng việt
+                const password = resLast+resFirst;
+               
+
+                const newStudentId = await StudentApi.createStudent(
+                  student.studentNumber, // username là sđt của học sinh
+                  password,
+                  student.firstName,
+                  student.lastName,
+                  student.school,
+                  student.grade,
+                  student.studentNumber,
+                  student.parentNumber,
+                  student.parentName,
+                  student.facebookLink
+                )
+
+                if(newStudentId !== 0 ){
+                  const deleteDeactived = await DeactivedStudentApi.deleteDeactivedStudent(student.id);
+                  if (deleteDeactived === "delete successful!"){
+                    const newDeactivedList = await DeactivedStudentApi.getAllDeactivedStudentInGrade(grade);
+                    setListDeactivedStudent(newDeactivedList);
+                    const newStudentList = await StudentApi.getAllStudentInGrade(grade);
+                    setListStudent(newStudentList);
+                      alert("thêm học sinh thành công! ID: "+newStudentId + "\r\n"+ 
+                    "tài khoản: "+ student.studentNumber + "\r\n"
+                     + "mật khẩu:" + password);
+
+                  }else{
+                    alert("Xóa học sinh đã nghỉ thất bại!");
+                  }
+                }else{
+                  alert("Học sinh đã tồn tại! Bạn đã thêm học sinh này, vui lòng tìm kiếm trên danh sách học sinh có tên " + student.fullName);
+
+                }
+               
         // const res = await StudentApi.deleteStudent(student.id);
         // if (res === "delete successful!"){
         //     const newStudentList = await StudentApi.getAllStudentInGrade(grade);
@@ -555,8 +801,21 @@ const DeactivedClientsList = (props) => {
                     
                     {st.fullName}
                 </>,
+      processStatus: <div className="d-flex justify-content-center">
+                          <Input
+                            type="checkbox"
+                            checked={(st.processStatus === "0") ? false : true}
+                            onChange={(e) => {
+                              console.log(e.target.checked);
+                              st.processStatus = "1";
+                            }}
+                          />
+                      </div>,
       school:st.school,
-      grade:st.grade,
+      reason: <>
+                  
+                  {st.listReason.map((reason,i) =><> <p>{reason.reasonLeft} - <Badge color="success">{reason.departmentName}</Badge></p></>)}
+              </>,
       studentNumber:st.studentNumber,
       parentNumber: st.parentNumber,
       parentName:st.parentName,
@@ -917,18 +1176,13 @@ const Clients = (props) => {
   useEffect(() => {
     const getAllStudentList = async () =>{
       const result = await StudentApi.getAllStudentInGrade(grade);
+      const resultDeactived = await DeactivedStudentApi.getAllDeactivedStudentInGrade(grade);
+      setListDeactivedStudent(resultDeactived);
       setListStudent(result);
     }
     getAllStudentList();
   }, [grade]);
 
-  useEffect(() => {
-    const getAllDeactivedStudentList = async () =>{
-      const result = await DeactivedStudentApi.getAllDeactivedStudentInGrade(grade);
-      setListDeactivedStudent(result);
-    }
-    getAllDeactivedStudentList();
-  }, [grade]);
   
   
   const toggle = () => setModal(!modal);
@@ -949,11 +1203,13 @@ const Clients = (props) => {
         <ClientsList 
           grade ={grade}
           setGrade={setGrade}
+          setListDeactivedStudent={setListDeactivedStudent}
          {...props} listStudent={listStudent} setListStudent={setListStudent}/>
         
       </Col>
       <Modal isOpen={modal} toggle={toggle}>
-            <Single grade={grade} handler = {toggle} listStudent={listStudent} setListStudent={setListStudent} />
+            <Single grade={grade} handler = {toggle} listStudent={listStudent} setListStudent={setListStudent}
+             />
       </Modal>
     </Row>
     <br/>
@@ -968,7 +1224,7 @@ const Clients = (props) => {
           <DeactivedClientsList 
           grade ={grade}
           setGrade={setGrade}
-         {...props} listDeactivedStudent={listDeactivedStudent} setListDeactivedStudent={setListDeactivedStudent}/>
+         {...props} listDeactivedStudent={listDeactivedStudent} setListStudent={setListStudent} setListDeactivedStudent={setListDeactivedStudent}/>
       </Col>
     </Row>
   </Container>
