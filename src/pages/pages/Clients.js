@@ -262,7 +262,7 @@ const ClientsList = (props) =>{
                       searchTop
                       searchBottom={false}
                       exportToCSV
-                      entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
+                      entriesOptions={[30,200, 300, 400]} entries={30} pagesAmount={30} data={datatable} />
                       
                 </Col>
           </Row>
@@ -691,11 +691,15 @@ const DeactivedClientsList = (props) => {
   
       },
       {
-        label: 'Lí do',
+        label: 'Ngày nghỉ học',
+        field: 'leftDate'
+      },
+      {
+        label: 'Lí do - Phòng ban',
         field: 'reason'
       },
       {
-          label: 'Xử lý',
+          label: 'Tình trạng xử lý',
           field: 'processStatus'
       },
       {
@@ -723,11 +727,17 @@ const DeactivedClientsList = (props) => {
     ]
   }; 
 
+  
+
   const grade = props.grade;
   const setGrade = props.setGrade;
   const listDeactivedStudent = props.listDeactivedStudent;
   const setListDeactivedStudent = props.setListDeactivedStudent;
   const setListStudent = props.setListStudent;
+
+  const [listCheckState, setListCheckState] = useState({
+    
+  });
 
   const toggleUpdate = async (rowData) => {
     console.log(rowData);
@@ -794,6 +804,19 @@ const DeactivedClientsList = (props) => {
     }
   };
 
+  useEffect(() => {
+    const getCheckedStatus = () =>{
+        var studentCheckedState = {}
+        for(var k = 0 ; k < listDeactivedStudent.length ; k ++){
+            studentCheckedState[listDeactivedStudent[k].id] = (listDeactivedStudent[k].processStatus === "0") ? false : true;
+        }
+        setListCheckState(studentCheckedState);
+    }
+    getCheckedStatus();
+  }, [listDeactivedStudent]);
+  
+  console.log(listCheckState);
+
   listDeactivedStudent.map(st => datatable.rows.push(
     {
       id:st.id,
@@ -801,17 +824,32 @@ const DeactivedClientsList = (props) => {
                     
                     {st.fullName}
                 </>,
-      processStatus: <div className="d-flex justify-content-center">
-                          <Input
+      processStatus: <div >
+                          <input
                             type="checkbox"
-                            checked={(st.processStatus === "0") ? false : true}
-                            onChange={(e) => {
-                              console.log(e.target.checked);
-                              st.processStatus = "1";
+                            style={{width:"30px"}}
+                            checked={(listCheckState[st.id]) ? true : false}
+                            onChange={ async e => {
+                                console.log(e.target.checked);
+                                const newListCheckstate = {
+                                  ...listCheckState
+                                }
+                                newListCheckstate[st.id] = e.target.checked;
+                                setListCheckState(newListCheckstate);
+                                const updateStudentProceessStatus = await DeactivedStudentApi.updateDeactivedStudent(st.id,(e.target.checked) ? "1" : "0");
+                                if (updateStudentProceessStatus === "update successful!"){
+                                  const newDeactivedList = await DeactivedStudentApi.getAllDeactivedStudentInGrade(grade);
+                                  setListDeactivedStudent(newDeactivedList);
+                                  
+                                  alert("thay đổi thành công!");
+                                }
+
                             }}
-                          />
+                          >
+                          </input>
                       </div>,
       school:st.school,
+      leftDate:st.leftDate,
       reason: <>
                   
                   {st.listReason.map((reason,i) =><> <p>{reason.reasonLeft} - <Badge color="success">{reason.departmentName}</Badge></p></>)}
@@ -833,6 +871,10 @@ const DeactivedClientsList = (props) => {
             </div>,
     }
   ))
+  
+
+  
+
     return (
       <>
              <Row >
@@ -871,7 +913,7 @@ const DeactivedClientsList = (props) => {
                       searchTop
                       searchBottom={false}
                       exportToCSV
-                      entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
+                      entriesOptions={[30,100, 300, 400]} entries={30} pagesAmount={30} data={datatable} />
                       
                 </Col>
           </Row>

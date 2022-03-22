@@ -25,10 +25,17 @@ const getAllDeactivedStudentInGrade = (grade) => {
 const deleteDeactivedStudent = (id) => {
     return Api.delete(`${url}/${id}`);
 }
+const updateDeactivedStudent = (id,processStatus) => {
+    const body =  {
+        processStatus: processStatus,
+    }
+    return Api.put(`${url}/${id}`,body);
+}
 // export
 const api = { 
     createDeactivedStudent,
     getAllDeactivedStudentInGrade,
-    deleteDeactivedStudent
+    deleteDeactivedStudent,
+    updateDeactivedStudent
      }
 export default api;
