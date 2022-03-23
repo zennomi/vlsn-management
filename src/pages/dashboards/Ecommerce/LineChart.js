@@ -18,68 +18,67 @@ import { MoreHorizontal } from "react-feather";
 const LineChart = ({ theme }) => {
   const data = {
     labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
+      "Tháng 1",
+      "Tháng 2",
+      "Tháng 3",
+      "Tháng 4",
+      "Tháng 5",
+      "Tháng 6",
+      "Tháng 8",
+      "Tháng 9",
+      "Tháng 10",
+      "Tháng 11",
+      "Tháng 12"
     ],
     datasets: [
       {
-        label: "Sales ($)",
+        label: "Học sinh mới ($)",
         fill: true,
         backgroundColor: "transparent",
+        tension: 0.0,
         borderColor: theme.primary,
         data: [
-          2015,
-          1465,
-          1487,
-          1796,
-          1387,
-          2123,
-          2866,
-          2548,
-          3902,
-          4938,
-          3917,
-          4927
+          20,
+          16,
+          30,
+          50,
+          40,
+          20,
+          30,
+          10,
+          40,
+          30,
+          50
         ]
       },
       {
-        label: "Orders",
+        label: "Học sinh nghỉ",
         fill: true,
         backgroundColor: "transparent",
-        borderColor: theme.tertiary,
-        borderDash: [4, 4],
+        borderColor: "orange",
+        tension: 0.0,
         data: [
-          928,
-          734,
-          626,
-          893,
-          921,
-          1202,
-          1396,
-          1232,
-          1524,
-          2102,
-          1506,
-          1887
+          6,
+          3,
+          5,
+          10,
+          4,
+          5,
+          10,
+          7,
+          20,
+          10,
+          3
         ]
-      }
+      },
+      
     ]
   };
 
   const options = {
     maintainAspectRatio: false,
     legend: {
-      display: false
+      display: true
     },
     tooltips: {
       intersect: false
@@ -104,7 +103,7 @@ const LineChart = ({ theme }) => {
       yAxes: [
         {
           ticks: {
-            stepSize: 500
+            stepSize: 10
           },
           display: true,
           borderDash: [5, 5],

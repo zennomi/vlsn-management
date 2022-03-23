@@ -36,6 +36,9 @@ import { CSVLink } from "react-csv";
 import avatar1 from "../../assets/img/avatars/avatar.jpg";
 import { produce } from "immer";
 import * as Yup from 'yup';
+import Header from "../dashboards/Ecommerce/Header";
+import Statistics from "../dashboards/Ecommerce/Statistics";
+import LineChart from "../dashboards/Ecommerce/LineChart";
 
 const headers = [
   { label: "Họ và Đệm", key: "lastName" },
@@ -1232,6 +1235,13 @@ const Clients = (props) => {
   return(
     
   <Container fluid className="p-0">
+    <Header />
+    <Statistics />
+    <Row>
+        <Col>
+              <LineChart/>
+        </Col>
+    </Row>
     <Row>
         <Col style={{display:"flex"}}>
             <h1 className="h3 mb-3" style={{fontWeight:"bold"}}>Học sinh khối {grade}</h1>
@@ -1255,6 +1265,7 @@ const Clients = (props) => {
       </Modal>
     </Row>
     <br/>
+    
     {/* học sinh đã nghỉ học */}
     <Row>
       <Col>

@@ -1,7 +1,6 @@
 import React from "react";
 
 import {
-  Button,
   Col,
   DropdownItem,
   DropdownMenu,
@@ -10,7 +9,7 @@ import {
   UncontrolledDropdown
 } from "reactstrap";
 
-import { Calendar, Filter, RefreshCw } from "react-feather";
+import { Calendar } from "react-feather";
 
 const Header = () => {
   return (
@@ -22,7 +21,7 @@ const Header = () => {
       <Col xs="auto" className="ml-auto text-right mt-n1">
         <UncontrolledDropdown className="d-inline mr-2">
           <DropdownToggle caret color="light" className="bg-white shadow-sm">
-            <Calendar className="feather align-middle mt-n1" /> Today
+            <Calendar className="feather align-middle mt-n1" /> Lớp 12
           </DropdownToggle>
           <DropdownMenu right>
             <DropdownItem>Action</DropdownItem>
@@ -33,12 +32,19 @@ const Header = () => {
           </DropdownMenu>
         </UncontrolledDropdown>
 
-        <Button color="primary" className="shadow-sm mr-1">
-          <Filter className="feather" />
-        </Button>
-        <Button color="primary" className="shadow-sm">
-          <RefreshCw className="feather" />
-        </Button>
+        <UncontrolledDropdown className="d-inline mr-2">
+          <DropdownToggle caret color="light" className="bg-white shadow-sm">
+            <Calendar className="feather align-middle mt-n1" /> Toán
+          </DropdownToggle>
+          <DropdownMenu right>
+            <DropdownItem>Action</DropdownItem>
+            <DropdownItem>Another Action</DropdownItem>
+            <DropdownItem>Something else here</DropdownItem>
+            <DropdownItem divider />
+            <DropdownItem>Seperated link</DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+
       </Col>
     </Row>
   );
