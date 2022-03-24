@@ -15,7 +15,7 @@ import { Settings as SettingsIcon } from "react-feather";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleRight,
-  faShoppingCart
+ 
 } from "@fortawesome/free-solid-svg-icons";
 
 import screenshotClassic from "../assets/img/screenshots/theme-classic-small.png";
@@ -174,22 +174,6 @@ class Settings extends React.Component {
                   <span className="d-inline-block mt-1 text-muted">Modern</span>
                 </div>
 
-                <Button
-                  color="primary"
-                  block
-                  size="lg"
-                  href="https://themes.getbootstrap.com/product/appstack-react-admin-dashboard-template/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span className="align-middle">
-                    <FontAwesomeIcon
-                      icon={faShoppingCart}
-                      className="text-white"
-                    />{" "}
-                  </span>
-                  <span className="align-middle">Buy AppStack</span>
-                </Button>
               </div>
             </PerfectScrollbar>
           </div>

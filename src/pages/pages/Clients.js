@@ -497,7 +497,7 @@ const ClientsList = (props) =>{
         </Row>
     </Modal>
 
-    <Modal isOpen={isDeletingStudent} toggle={setIsDeletingStudent}>
+    <Modal size="lg" isOpen={isDeletingStudent} toggle={setIsDeletingStudent}>
             <Formik
                     initialValues={
                       {
@@ -1224,16 +1224,33 @@ const Clients = (props) => {
   const [listStudent, setListStudent] = useState([]);
   const [listDeactivedStudent, setListDeactivedStudent] = useState([]);
   const [month, setMonth] = useState(nowMonth);
+
+  const [statisticsMonth, setStatisticsMonth] = useState([
+    {
+      numberOfStatisticStudentThisMonth:0,
+      percentDeltaCurrentMonth:0,
+    },
+    {
+      numberOfStatisticStudentThisMonth:0,
+      percentDeltaCurrentMonth:0,
+    },
+    {
+      numberOfStatisticStudentThisMonth:0,
+      percentDeltaCurrentMonth:0,
+    },
+  ]);
   
   useEffect(() => {
     const getAllStudentList = async () =>{
       const result = await StudentApi.getAllStudentInGrade(grade);
       const resultDeactived = await DeactivedStudentApi.getAllDeactivedStudentInGrade(grade);
+      const statisticMonthChoosed = await StudentApi.getStudentStatisticInMonthAtGrade(month,grade);
+      setStatisticsMonth(statisticMonthChoosed);
       setListDeactivedStudent(resultDeactived);
       setListStudent(result);
     }
     getAllStudentList();
-  }, [grade]);
+  }, [grade, month]);
 
   
   
@@ -1250,12 +1267,14 @@ const Clients = (props) => {
       setGrade={setGrade}
     />
     <Statistics 
+        statisticsMonth={statisticsMonth}
         grade ={grade}
         {...props} 
         month={month}
         setMonth={setMonth}
         setGrade={setGrade}
     />
+    
     <Row>
         <Col>
               <LineChart
