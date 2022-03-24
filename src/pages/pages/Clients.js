@@ -18,6 +18,9 @@ import {
   ModalHeader,
   ModalFooter, 
 } from "reactstrap";
+
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import { Formik,FastField, Form  } from 'formik';
 import { MDBDataTableV5 } from 'mdbreact';
 import { Autocomplete } from '@material-ui/lab'
@@ -39,7 +42,7 @@ import * as Yup from 'yup';
 import Header from "../dashboards/Ecommerce/Header";
 import Statistics from "../dashboards/Ecommerce/Statistics";
 import LineChart from "../dashboards/Ecommerce/LineChart";
-
+import { selectFullName, selectRole, selectAvatarUrl, selectFistName } from "../../redux/selectors/userLoginInfoSelector";
 const headers = [
   { label: "Họ và Đệm", key: "lastName" },
   { label: "Tên", key: "firstName" },
@@ -1213,10 +1216,14 @@ const Single = (props) => {
 }
 const Clients = (props) => {
 
+  const date = new Date();
+  const nowMonth = date.getMonth() + 1;
+
   const [modal, setModal] = useState(false);
   const [grade,setGrade] = useState(12);
   const [listStudent, setListStudent] = useState([]);
   const [listDeactivedStudent, setListDeactivedStudent] = useState([]);
+  const [month, setMonth] = useState(nowMonth);
   
   useEffect(() => {
     const getAllStudentList = async () =>{
@@ -1235,11 +1242,30 @@ const Clients = (props) => {
   return(
     
   <Container fluid className="p-0">
-    <Header />
-    <Statistics />
+    <Header 
+      {...props} 
+      grade ={grade}
+      month={month}
+      setMonth={setMonth}
+      setGrade={setGrade}
+    />
+    <Statistics 
+        grade ={grade}
+        {...props} 
+        month={month}
+        setMonth={setMonth}
+        setGrade={setGrade}
+    />
     <Row>
         <Col>
-              <LineChart/>
+              <LineChart
+                    grade ={grade}
+                    {...props} 
+                    month={month}
+                    setMonth={setMonth}
+                    setGrade={setGrade}
+
+              />
         </Col>
     </Row>
     <Row>
@@ -1288,6 +1314,16 @@ const Clients = (props) => {
 //     students: selectListStudent(state)
 //   };
 // };
-
+const mapGlobalStateToProps = state => {
+  return {
+    app: state.app,
+    sidebar: state.sidebar,
+    layout: state.layout,
+    fullName: selectFullName(state),
+    role: selectRole(state),
+    avatarUrl: selectAvatarUrl(state),
+    firstName: selectFistName(state),
+  };
+};
 // export default connect(mapGlobalStateToProps, { getAllStudentAction })(Clients);
-export default Clients;
+export default withRouter(connect(mapGlobalStateToProps)(Clients));

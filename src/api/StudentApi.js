@@ -44,10 +44,19 @@ const createStudent = (username, password, firstName, lastName,  school, grade, 
         grade:grade,
         studentNumber:studentNumber,
         parentNumber:parentNumber,
+
         social:(social !== '') ? social : null,
         parentName: (parentName !== "Chưa có tên PH") ? parentName : "",
     }
     return Api.post(`${url}/`,body);
+}
+const getStudentStatisticInMonthAtGrade = (month, grade) => {
+    const parameters = {
+        month: month,
+        grade:grade
+    }
+    
+    return Api.get(`${url}/statistic`,{params:parameters });
 }
 const deleteStudent = (studentId) => {
     return Api.delete(`${url}/${studentId}`)
@@ -130,5 +139,6 @@ const api = {
     getStatictisSubjectAvgMarkInGrade,
     getStudentSubjectAvgMarkInGrade,
     getAllStudentInGrade,
+    getStudentStatisticInMonthAtGrade,
     getWeakStudentSubjectAvgMarkInGrade }
 export default api;
