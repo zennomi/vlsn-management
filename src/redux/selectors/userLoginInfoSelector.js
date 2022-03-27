@@ -19,6 +19,10 @@ const selectUserAvatarUrlSelector = createSelector(
     selectUserInfoSelector,
     state => state.avatarUrl);
 
+const selectUserFacebookAvatarUrlSelector = createSelector(
+    selectUserInfoSelector,
+    state => state.facebookUrl);
+
 const selectUserIdSelector = createSelector(
     selectUserInfoSelector,
     state => state.id);
@@ -45,6 +49,9 @@ export const selectRole = (state) => {
 }
 export const selectAvatarUrl = (state) => {
     return selectUserAvatarUrlSelector(state);
+}
+export const selectFacebookAvatarUrl = (state) => {
+    return selectUserFacebookAvatarUrlSelector(state);
 }
 export const selectId = (state) => {
     return selectUserIdSelector(state);

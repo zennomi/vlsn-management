@@ -24,6 +24,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 
+
 const removeLastThreeChar = (str) => {
   return str.slice(0,-3)
 }
@@ -81,13 +82,25 @@ const CreateClass = () => {
     
   ];
   
-  const students = [];
+  const [students, setStudents] = useState([]);
+  
 
-  function afterSaveCell(oldValue, newValue) {
+  function afterSaveCell(oldValue,newValue,oldRow) {
+    console.log(oldValue);
+    console.log(newValue);
+    console.log(oldRow); // lay ca row
+
+    // setStudents(current =>
+    //   produce(current, v => {
+    //     v[oldRow.index].mark = newValue;
+    //   })
+    // );
+
     // console.log('--after save cell--');
     // console.log('New Value was apply as');
     // console.log(newValue);
     // console.log(`and the type is ${typeof newValue}`);
+    
   }
   const [listType, setTypes] = useState([]);
   const [listClazz, setListClass] = useState([]);
@@ -131,15 +144,29 @@ const CreateClass = () => {
               </Button>
     }
   ))
-  listStudent.map(student => students.push(
-    {
-        fullName:student.fullName,
-        school:student.school,
-        id:student.id,
-        parentNumber:student.parentNumber,
-        mark:0
+
+  useEffect(() => {
+    const handleChangeStateStudentOnToolkit = () =>{
+      var intiialStudentsValue = [];
+      listStudent.map((student,i) => intiialStudentsValue.push(
+        {   
+            index:i,
+            fullName:student.fullName,
+            school:student.school,
+            id:student.id,
+            parentNumber:student.parentNumber,
+            mark:0
+        }
+      ))
+      setStudents(intiialStudentsValue);
     }
-  ))
+    handleChangeStateStudentOnToolkit();
+    
+  }, [listStudent]);
+  
+  
+  
+
   return(
   <Container fluid className="p-0">
 
@@ -177,7 +204,7 @@ const CreateClass = () => {
                   
                   const dateFormat = Moment(values.date).format('DD-MM-YYYY');
                   const exam = await ExamApi.createExam(values.examName,values.type.typeId,dateFormat);
-              
+                  console.log(students);
                   const submitMark = [];
                   students.map(student => submitMark.push({
                     studentId:student.id,
@@ -294,6 +321,7 @@ const CreateClass = () => {
                   keyField="id"
                   data={ students }
                   columns={ columns }
+                  cellEdit
                   search
                 >
                   {
@@ -302,12 +330,17 @@ const CreateClass = () => {
                         <SearchBar { ...props.searchProps } />
                         <hr />
                         <BootstrapTable
+                         
+                         keyField="id"
+                         data={ students }
+                         columns={ columns }
+                         cellEdit={ cellEditFactory({
+                          mode: 'click',
+                          blurToSave: true,
+                          afterSaveCell
+                        }) }
                           { ...props.baseProps }
-                          cellEdit={ cellEditFactory({
-                            mode: 'click',
-                            blurToSave: true,
-                            afterSaveCell
-                          }) }
+                         
                         />
                         
                       </div>

@@ -168,7 +168,6 @@ const ClassList = (props) => {
               bordered
               responsive
               pagingTop
-              pagingBottom={false}
               searchTop searchBottom={false}
               entriesOptions={[5,10, 20, 50,100]} entries={5} pagesAmount={5} data={datatable} />
 

@@ -15,6 +15,7 @@ export function enableModernTheme() {
 }
 
 function enableTheme(name) {
+  
   toggleTheme(name);
 
   return {

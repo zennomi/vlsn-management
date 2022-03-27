@@ -24,7 +24,7 @@ const NewHomeWork = (props) => {
     misson:"",
     date:""
   }];
-  console.log(newHomeWork);
+  
 
   return(
     <>
@@ -194,10 +194,7 @@ const HomeWork = (props) =>{
   for(var i = 0 ; i < 2 ; i ++){
     newHomeWork.push(unSubmitHomeWorks[i]);
   }
-  console.log(unSubmitHomeWorks);
-  console.log(submitedHomeWorks);
-  console.log(newHomeWork);
-  console.log(homeworks);
+  
 
   return(
   <> 

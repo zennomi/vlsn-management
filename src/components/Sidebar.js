@@ -11,7 +11,7 @@ import { faCircle } from "@fortawesome/free-solid-svg-icons";
 
 import routes,{studentDashboard} from "../routes/index";
 import avatar from "../assets/img/avatars/avatar.jpg";
-import { selectFullName, selectRole, selectAvatarUrl } from "../redux/selectors/userLoginInfoSelector";
+import { selectFullName, selectRole, selectAvatarUrl, selectFacebookAvatarUrl } from "../redux/selectors/userLoginInfoSelector";
 const initOpenRoutes = (location) => {
   /* Open collapse element that matches current url */
   const pathName = location.pathname;
@@ -236,7 +236,10 @@ const Sidebar = (props) => {
               <div className="media">
                 <img
                   className="rounded-circle mr-3"
-                  src={(props.avatarUrl !== "null" && props.avatarUrl !== null) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : avatar }
+                  src={
+                    (props.avatarUrl !== "null" && props.avatarUrl !== null) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) :
+                    (props.facebookUrl !== "null" && props.facebookUrl !== null) ? props.facebookUrl :
+                     avatar }
                   alt={props.fullName}
                   width="40"
                   height="40"
@@ -267,7 +270,8 @@ const mapGlobalStateToProps = state => {
     layout: state.layout,
     fullName: selectFullName(state),
     role: selectRole(state),
-    avatarUrl: selectAvatarUrl(state)
+    avatarUrl: selectAvatarUrl(state),
+    facebookUrl: selectFacebookAvatarUrl(state)
   };
 };
 export default withRouter(connect(mapGlobalStateToProps)(Sidebar));

@@ -23,7 +23,7 @@ import Slider from "@material-ui/core/Slider";
 import getCroppedImg from "./CropImage";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { selectFullName, selectRole, selectId, selectAvatarUrl } from "../../redux/selectors/userLoginInfoSelector";
+import { selectFullName, selectRole, selectId, selectAvatarUrl, selectFacebookAvatarUrl } from "../../redux/selectors/userLoginInfoSelector";
 import { toastr } from "react-redux-toastr";
 import avatar4 from "../../assets/img/avatars/avatar-4.jpg";
 import FileApi from "../../api/FileApi";
@@ -189,7 +189,9 @@ const ProfileDetails = (props) =>{
             src={
               previewAvatarUrl ?
               previewAvatarUrl :
-              (props.avatarUrl !== "null" && props.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : avatar4 }
+              (props.avatarUrl !== "null" && props.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${props.avatarUrl}`) : 
+              (props.facebookUrl !== null && props.facebookUrl !== "null") ? props.facebookUrl :
+              avatar4 }
             alt={props.fullName}
             className="img-fluid rounded-circle mb-2"
             width="128"
@@ -230,26 +232,30 @@ const ProfileDetails = (props) =>{
 }
 
 
-const Profile = (props) => (
-  <Container fluid className="p-0">
-    <h1 className="h3 mb-3">Thông tin</h1>
+const Profile = (props) => {
 
-    <Row>
-      <Col >
-        <ProfileDetails {...props} />
-      </Col>
-      
-    </Row>
-  </Container>
-);
 
+  return(
+    <Container fluid className="p-0">
+      <h1 className="h3 mb-3">Thông tin</h1>
+
+      <Row>
+        <Col >
+          <ProfileDetails {...props} />
+        </Col>
+        
+      </Row>
+    </Container>
+  );
+}
 
 const mapGlobalStateToProps = state => {
   return {
     fullName: selectFullName(state),
     role: selectRole(state),
     id:selectId(state),
-    avatarUrl:selectAvatarUrl(state)
+    avatarUrl:selectAvatarUrl(state),
+    facebookUrl: selectFacebookAvatarUrl(state)
   };
 };
 export default withRouter(connect(mapGlobalStateToProps)(Profile));

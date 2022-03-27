@@ -204,7 +204,9 @@ const StudentListScorces = (props) =>{
       rank: st.rank,
       fullName: <>
                     <img
-                    src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : avatar1 }
+                    src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
+                          (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
+                          avatar1 }
                     width="36"
                     height="36"
                     className="rounded-circle mr-2"
@@ -322,7 +324,9 @@ const WeakStudentListScorces = (props) =>{
     rank: st.rank,
     fullName: <>
                   <img
-                  src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : avatar1 }
+                  src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
+                      (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
+                      avatar1 }
                   width="36"
                   height="36"
                   className="rounded-circle mr-2"
@@ -362,7 +366,6 @@ const WeakStudentListScorces = (props) =>{
             searchTop
             bordered
             searchBottom={false}
-            tag
             entriesOptions={[5,10, 20, 50,100,500]} 
             entries={100} pagesAmount={4} data={datatable} />
         </>

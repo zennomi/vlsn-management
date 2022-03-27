@@ -28,7 +28,7 @@ import {
 
   UserPlus
 } from "react-feather";
-import { selectFullName, selectRole, selectAvatarUrl } from "../redux/selectors/userLoginInfoSelector";
+import { selectFullName, selectRole, selectAvatarUrl, selectFacebookAvatarUrl } from "../redux/selectors/userLoginInfoSelector";
 
 
 import avatar1 from "../assets/img/avatars/avatar.jpg";
@@ -129,7 +129,7 @@ const NavbarDropdownItem = ({ icon, title, description, time, spacing }) => (
   </ListGroupItem>
 );
 
-const NavbarComponent = ({ dispatch,fullName,history,avatarUrl }) => {
+const NavbarComponent = ({ dispatch,fullName,history,avatarUrl,facebookUrl }) => {
 
   const signOut = async () => {
     await localStorage.clear();
@@ -221,7 +221,10 @@ const NavbarComponent = ({ dispatch,fullName,history,avatarUrl }) => {
             <span className="d-none d-sm-inline-block">
               <DropdownToggle nav caret>
                 <img
-                  src={(avatarUrl !== null && avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${avatarUrl}`) : avatar1 }
+                  src={
+                  (avatarUrl !== null && avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${avatarUrl}`) : 
+                  (facebookUrl !== null && facebookUrl !== "null") ? facebookUrl :
+                  avatar1 }
                   alt={fullName}
                   className="avatar img-fluid rounded-circle mr-1"
                   
@@ -246,7 +249,8 @@ const mapGlobalStateToProps = state => {
     layout: state.layout,
     fullName: selectFullName(state),
     role: selectRole(state),
-    avatarUrl :selectAvatarUrl(state)
+    avatarUrl :selectAvatarUrl(state),
+    facebookUrl : selectFacebookAvatarUrl(state)
   };
 };
 export default withRouter(connect(mapGlobalStateToProps)(NavbarComponent));

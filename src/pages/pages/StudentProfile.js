@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { selectFullName, selectRole, selectId, selectAvatarUrl } from "../../redux/selectors/userLoginInfoSelector";
+import { selectFullName, selectRole, selectId, selectAvatarUrl, selectFacebookAvatarUrl } from "../../redux/selectors/userLoginInfoSelector";
 import { Formik,FastField, Form  } from 'formik';
 import { ReactstrapInput } from "reactstrap-formik";
 import {
@@ -75,7 +75,9 @@ const StudentProfileDetails = (props) =>{
    
     <CardBody className="text-center">
       <img
-        src={(student.avatarUrl !== "null" && student.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${student.avatarUrl}`) : avatar4 }
+        src={(student.avatarUrl !== "null" && student.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${student.avatarUrl}`) : 
+              (student.facebookUrl !== "null" && student.facebookUrl !== null) ? student.facebookUrl :
+             avatar4 }
         alt={student.fullName}
         className="img-fluid rounded-circle mb-2"
         width="128"
@@ -305,7 +307,9 @@ const Comment = (props) => {
       <>
       <Media key={i}>
         <img
-          src={(comment.avatarUrl !== null && comment.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${comment.avatarUrl}`) : avatar1 }
+          src={(comment.avatarUrl !== null && comment.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${comment.avatarUrl}`) : 
+              (comment.facebookUrl !== null && comment.facebookUrl !== "null") ? comment.facebookUrl :
+              avatar1 }
           width="36"
           height="36"
           className="rounded-circle mr-2"
@@ -357,7 +361,9 @@ const Comment = (props) => {
             <Form>
                 <Media>
                   <img
-                    src={(user.avatarUrl !== null && user.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${user.avatarUrl}`) : avatar1 }
+                    src={(user.avatarUrl !== null && user.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${user.avatarUrl}`) : 
+                          (user.facebookUrl !== null && user.facebookUrl !== "null") ? user.facebookUrl :
+                        avatar1 }
                     width="36"
                     height="36"
                     className="rounded-circle mr-2"
@@ -497,7 +503,8 @@ const StudentProfile = (props) =>{
     id: props.id,
     fullName:props.fullName,
     role:props.role,
-    avatarUrl:props.avatarUrl
+    avatarUrl:props.avatarUrl,
+    facebookUrl:props.facebookUrl
   }
   
   return(
@@ -528,7 +535,8 @@ const mapGlobalStateToProps = state => {
     fullName: selectFullName(state),
     role: selectRole(state),
     id:selectId(state),
-    avatarUrl:selectAvatarUrl(state)
+    avatarUrl:selectAvatarUrl(state),
+    facebookUrl: selectFacebookAvatarUrl(state)
   };
 };
 export default withRouter(connect(mapGlobalStateToProps)(StudentProfile));

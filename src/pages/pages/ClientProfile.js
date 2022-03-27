@@ -78,7 +78,7 @@ const StudentProfileDetails = (props) =>{
     const getStudentStudyStatus = async () =>{
         const res = await ClientApi.getStudentStudyInfo(studentId);
         setStudent(res);
-        console.log(res);
+       
     }
     getStudentStudyStatus();
     
@@ -116,7 +116,9 @@ const StudentProfileDetails = (props) =>{
           src={
             previewAvatarUrl ?
             previewAvatarUrl :
-            (student.avatarUrl !== "null" && student.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${student.avatarUrl}`) : avatar4 }
+            (student.avatarUrl !== "null" && student.avatarUrl !== null ) ? (`${process.env.REACT_APP_AVATAR_URL}/${student.avatarUrl}`) :
+            (student.facebookUrl !== "null" && student.facebookUrl !== null) ? student.facebookUrl :
+            avatar4 }
           alt={student.fullName}
           className="img-fluid rounded-circle mb-2"
           width="128"
@@ -252,7 +254,7 @@ const Activities = (props) => {
     const getStudentStudyStatus = async () =>{
         const res = await ClientApi.getStudentStudyInfo(studentId);
         setStudent(res);
-        console.log(res);
+        
     }
     getStudentStudyStatus();
     
@@ -375,7 +377,9 @@ const Comment = (props) => {
       <div key={i}>
       <Media key={i}>
         <img
-          src={(comment.avatarUrl !== null && comment.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${comment.avatarUrl}`) : avatar1 }
+          src={(comment.avatarUrl !== null && comment.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${comment.avatarUrl}`) : 
+                (comment.facebookUrl !== null && comment.facebookUrl !== "null") ? comment.facebookUrl :
+                avatar1 }
           width="36"
           height="36"
           className="rounded-circle mr-2"

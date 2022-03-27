@@ -20,10 +20,13 @@ import { withRouter } from "react-router-dom";
 import storage from "../../Storage/storage";
 import { toastr } from "react-redux-toastr";
 import { connect } from 'react-redux';
+
 import { setTokenInfo, setUserLoginInfo, setRememberMeInfo } from "../../redux/actions/userLoginInfoActions"
 import { selectRememberMe } from "../../redux/selectors/userLoginInfoSelector";
 
 const SignIn = (props) => {
+
+  
 
   const showErrorNotification = (title, message) => {
     const options = {
@@ -86,7 +89,8 @@ const SignIn = (props) => {
                   "userName": result.userName,
                   "role": result.role,
                   "status": result.status,
-                  "avatarUrl": result.avatarUrl
+                  "avatarUrl": result.avatarUrl,
+                  "facebookUrl": result.facebookUrl
                 }
                 storage.setUserInfo(user);
 

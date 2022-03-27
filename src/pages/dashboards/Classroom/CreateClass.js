@@ -42,7 +42,7 @@ const CreateClass = () => {
   useEffect(() => {
     const getSuggestTeacher = async () =>{
       const result = await TeacherApi.getListTeacherBySubject("Toán");
-      console.log(result);
+    
       setSuggest(result);
     }
     const getSuggestMentor = async () =>{

@@ -194,7 +194,9 @@ const ClientsList = (props) =>{
       id:st.id,
       fullName:<>
                     <img
-                    src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : avatar1 }
+                    src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
+                      (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
+                     avatar1 }
                     width="36"
                     height="36"
                     className="rounded-circle mr-2"
@@ -821,7 +823,7 @@ const DeactivedClientsList = (props) => {
     getCheckedStatus();
   }, [listDeactivedStudent]);
   
-  console.log(listCheckState);
+ 
 
   listDeactivedStudent.map(st => datatable.rows.push(
     {
@@ -858,7 +860,7 @@ const DeactivedClientsList = (props) => {
       leftDate:st.leftDate,
       reason: <>
                   
-                  {st.listReason.map((reason,i) =><> <p>{reason.reasonLeft} - <Badge color="success">{reason.departmentName}</Badge></p></>)}
+                  {st.listReason.map((reason,i) =><div key={i}> <p key={i}>- {reason.reasonLeft} - <Badge color="success">{reason.departmentName}</Badge></p></div>)}
               </>,
       studentNumber:st.studentNumber,
       parentNumber: st.parentNumber,
@@ -1224,7 +1226,8 @@ const Clients = (props) => {
   const [listStudent, setListStudent] = useState([]);
   const [listDeactivedStudent, setListDeactivedStudent] = useState([]);
   const [month, setMonth] = useState(nowMonth);
-
+  const [newStudentLineChart, setNewStudentLineChart] = useState([]);
+  const [deactivedStudentLineChart, setDeactivedStudentLineChart] = useState([]);
   const [statisticsMonth, setStatisticsMonth] = useState([
     {
       numberOfStatisticStudentThisMonth:0,
@@ -1252,6 +1255,16 @@ const Clients = (props) => {
     getAllStudentList();
   }, [grade, month]);
 
+  useEffect(() => {
+    const getAllStatisticOfThisYear = async () =>{
+        const statsticOfNewStudent = await StudentApi.getNewStudentStatisticOfThisYearAtGrade(grade);
+        const statisticOfDeactivedStudent = await StudentApi.getDeactivedStudentStatisticOfThisYearAtGrade(grade);
+        setNewStudentLineChart(statsticOfNewStudent);
+        setDeactivedStudentLineChart(statisticOfDeactivedStudent);
+    }
+    getAllStatisticOfThisYear();
+  }, [grade]);
+
   
   
   const toggle = () => setModal(!modal);
@@ -1278,12 +1291,9 @@ const Clients = (props) => {
     <Row>
         <Col>
               <LineChart
-                    grade ={grade}
+                    newStudentLineChart={newStudentLineChart}
+                    deactivedStudentLineChart={deactivedStudentLineChart}
                     {...props} 
-                    month={month}
-                    setMonth={setMonth}
-                    setGrade={setGrade}
-
               />
         </Col>
     </Row>

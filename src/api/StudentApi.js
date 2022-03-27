@@ -58,6 +58,20 @@ const getStudentStatisticInMonthAtGrade = (month, grade) => {
     
     return Api.get(`${url}/statistic`,{params:parameters });
 }
+const getNewStudentStatisticOfThisYearAtGrade = (grade) => {
+    const parameters = {
+        grade:grade
+    }
+    
+    return Api.get(`${url}/statistic/new`,{params:parameters });
+}
+const getDeactivedStudentStatisticOfThisYearAtGrade = (grade) => {
+    const parameters = {
+        grade:grade
+    }
+    
+    return Api.get(`${url}/statistic/deactived`,{params:parameters });
+}
 const deleteStudent = (studentId) => {
     return Api.delete(`${url}/${studentId}`)
 }
@@ -140,5 +154,7 @@ const api = {
     getStudentSubjectAvgMarkInGrade,
     getAllStudentInGrade,
     getStudentStatisticInMonthAtGrade,
+    getNewStudentStatisticOfThisYearAtGrade,
+    getDeactivedStudentStatisticOfThisYearAtGrade,
     getWeakStudentSubjectAvgMarkInGrade }
 export default api;

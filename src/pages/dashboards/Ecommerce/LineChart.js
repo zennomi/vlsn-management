@@ -7,15 +7,16 @@ import {
   CardBody,
   CardHeader,
   CardTitle,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown
+
 } from "reactstrap";
 
-import { MoreHorizontal } from "react-feather";
 
-const LineChart = ({ theme }) => {
+const LineChart = (props) => {
+
+  const theme = props.theme;
+  const newStudentLineChart = props.newStudentLineChart;
+  const deactivedStudentLineChart = props.deactivedStudentLineChart;
+
   const data = {
     labels: [
       "Tháng 8",
@@ -37,19 +38,7 @@ const LineChart = ({ theme }) => {
         backgroundColor: "transparent",
         tension: 0.0,
         borderColor: theme.primary,
-        data: [
-          20,
-          16,
-          30,
-          50,
-          40,
-          20,
-          30,
-          10,
-          40,
-          30,
-          50
-        ]
+        data: newStudentLineChart
       },
       {
         label: "Học sinh nghỉ",
@@ -57,19 +46,7 @@ const LineChart = ({ theme }) => {
         backgroundColor: "transparent",
         borderColor: "orange",
         tension: 0.0,
-        data: [
-          6,
-          3,
-          5,
-          10,
-          4,
-          5,
-          10,
-          7,
-          20,
-          10,
-          3
-        ]
+        data: deactivedStudentLineChart
       },
       
     ]
@@ -120,16 +97,7 @@ const LineChart = ({ theme }) => {
     <Card className="flex-fill w-100">
       <CardHeader>
         <div className="card-actions float-right">
-          <UncontrolledDropdown>
-            <DropdownToggle tag="a">
-              <MoreHorizontal />
-            </DropdownToggle>
-            <DropdownMenu right>
-              <DropdownItem>Action</DropdownItem>
-              <DropdownItem>Another Action</DropdownItem>
-              <DropdownItem>Something else here</DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
+         
         </div>
         <CardTitle tag="h5" className="mb-0">
           Total Revenue

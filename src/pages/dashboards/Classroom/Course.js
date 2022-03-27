@@ -13,6 +13,7 @@ import {
   ModalHeader,
   ModalFooter,
   Label,
+  Badge,
  
 } from "reactstrap";
 import { MDBDataTableV5 } from 'mdbreact';
@@ -45,6 +46,7 @@ const reactPlayer = {
   top: "0",
   left: "0",
 }
+
 
 const CourseList = (props) =>{
 
@@ -397,7 +399,7 @@ const CourseList = (props) =>{
                                           setPage(0);
                                           setIsSearching(true);
                                       }}
-                                      ><i class="fa fa-search"></i></button>
+                                      ><i className="fa fa-search"></i></button>
                                     </form>
                                 </Col>
                                 <Col></Col>
@@ -453,6 +455,9 @@ const CourseList = (props) =>{
                                 {listExistLesson.map((lesson,i) => 
                                 <Col key={i} lg="3">
                                   <div 
+                                  style={{
+                                    cursor: "pointer"
+                                  }}
                                   onClick={() => {
                                       setListSelectedLesson(current => [
                                         ...current,
@@ -465,7 +470,7 @@ const CourseList = (props) =>{
                                      
                                     }}                
                                   >
-                                    <Card>
+                                    <Card style={{backgroundColor:"whitesmoke"}}>
                                       <CardBody>
                                       {(lesson.video !== null) ?
                                         <div style={playerWarpper}>
@@ -482,7 +487,9 @@ const CourseList = (props) =>{
                                           <img alt="Video" style={{width:"100%"}} src={require("../../../assets/img/brands/logo.png")}></img>
                                         </div>
                                         }
+                        
                                         <h4>{lesson.lessonName}</h4>
+                                        <Badge>Bấm vào để chọn</Badge>
                                         <div className="d-flex justify-content-between flex-wrap" >
                                               <div>
                                                 <h5 style={{fontWeight:"bold"}}>ID: {lesson.id}</h5>
@@ -551,11 +558,7 @@ const CourseList = (props) =>{
 
                     {/* modal create video lesson */}
                     <Modal isOpen={modalLessonVideo}  toggle={setModalLessonVideo}>
-                          <ModalHeader>
-                                Thêm Video Bài Giảng
-                          </ModalHeader>
-                          <ModalBody>
-                              <Formik
+                          <Formik
                                     initialValues={
                                       {
                                           lessonName:(lesson.lessonName !== undefined) ? lesson.lessonName : "",
@@ -598,34 +601,37 @@ const CourseList = (props) =>{
                                     }}
                                 
                                 >
-                                {({setFieldValue, values, isSubmitting}) => 
-                                    <Form>
-                                          <FastField
-                                                label="Thêm Link Video"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="link"
-                                                component={ReactstrapInput}
-                                              />
+                            {({setFieldValue, values, isSubmitting}) => 
+                            <Form>
+                                <ModalHeader>
+                                      Thêm Video Bài Giảng
+                                </ModalHeader>
+                                <ModalBody>
+                                    
+                                                <FastField
+                                                      label="Thêm Link Video"
+                                                      bsSize="lg"
+                                                      type="text"
+                                                      name="link"
+                                                      component={ReactstrapInput}
+                                                    />
 
-                                          <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
-                                    </Form>
+                                                
+                                          
+                                    
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
+                                    <Button color="primary" onClick={() => setModalLessonVideo(false)}>Hủy</Button>
+                                </ModalFooter>
+                          </Form>
                                   }
-                              </Formik>
-                              
-                          </ModalBody>
-                          <ModalFooter>
-                              <Button color="primary" onClick={() => setModalLessonVideo(false)}>Hủy</Button>
-                          </ModalFooter>
+                            </Formik>
                     </Modal> 
                
                       {/* modal create lesson homework */}
                     <Modal size="xl" isOpen={modalHomeWork} toggle={setModalHomeWork}>
-                          <ModalHeader>
-                                Thêm BTVN
-                          </ModalHeader>
-                          <ModalBody>
-                              <Formik
+                        <Formik
                                     initialValues={
                                       {
                                           linkHomeWork:"",
@@ -665,92 +671,95 @@ const CourseList = (props) =>{
                                 
                                 >
                                 {({setFieldValue, values, isSubmitting}) => 
-                                    <Form>
-                                        <Row>
-                                            <Col>
-                                                  <FastField
-                                                    label="Thêm Link BTVN"
-                                                    bsSize="lg"
-                                                    type="text"
-                                                    name="linkHomeWork"
-                                                    component={ReactstrapInput}
-                                                  />
-                                            </Col>
-                                            <Col>
-                                                  <FastField
-                                                    label="Thêm Link Đáp Án"
-                                                    bsSize="lg"
-                                                    type="text"
-                                                    name="linkHomeWorkAnswer"
-                                                    component={ReactstrapInput}
-                                                  />
-                                            </Col>
-                                            
-                                        </Row>
-                                        <Row>
-                                            <Col>
-                                                <FastField
-                                                    label="Yêu cầu"
-                                                    bsSize="lg"
-                                                    type="textarea"
-                                                    name="misson"
-                                                    component={ReactstrapInput}
-                                                  />
+                                <Form>
+                                  <ModalHeader>
+                                        Thêm BTVN
+                                  </ModalHeader>
+                                  <ModalBody>
+                                      
+                                                <Row>
+                                                    <Col>
+                                                          <FastField
+                                                            label="Thêm Link BTVN"
+                                                            bsSize="lg"
+                                                            type="text"
+                                                            name="linkHomeWork"
+                                                            component={ReactstrapInput}
+                                                          />
+                                                    </Col>
+                                                    <Col>
+                                                          <FastField
+                                                            label="Thêm Link Đáp Án"
+                                                            bsSize="lg"
+                                                            type="text"
+                                                            name="linkHomeWorkAnswer"
+                                                            component={ReactstrapInput}
+                                                          />
+                                                    </Col>
+                                                    
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <FastField
+                                                            label="Yêu cầu"
+                                                            bsSize="lg"
+                                                            type="textarea"
+                                                            name="misson"
+                                                            component={ReactstrapInput}
+                                                          />
 
-                                            </Col>
-                                          
-                                        </Row>
-                                        <Row>
-                                              <Col>
-                                                  <FastField
-                                                    label="Hạn nộp"
-                                                    bsSize="lg"
-                                                    type="datetime-local"
-                                                    name="deadline"
-                                                    component={ReactstrapInput}
-                                                  />
-                                              </Col>
-                                              <Col>
-                                                  <FastField
-                                                    label="Loại"
-                                                    bsSize="lg"
-                                                    type="select"
-                                                    name="type"
-                                                    onChange={e => {
-
-                                                    }}
-                                                    component={ReactstrapInput}
-                                                  >
-                                                    <option value = "ES">Tự luận</option>
-                                                    <option value = "MC">Trắc nghiệm</option>
-                                                
-                                                  </FastField>
+                                                    </Col>
                                                   
-                                              </Col>
-                                        </Row>
-                                       
-                                        <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
-                                    </Form>
+                                                </Row>
+                                                <Row>
+                                                      <Col>
+                                                          <FastField
+                                                            label="Hạn nộp"
+                                                            bsSize="lg"
+                                                            type="datetime-local"
+                                                            name="deadline"
+                                                            component={ReactstrapInput}
+                                                          />
+                                                      </Col>
+                                                      <Col>
+                                                          <FastField
+                                                            label="Loại"
+                                                            bsSize="lg"
+                                                            type="select"
+                                                            name="type"
+                                                            onChange={e => {
+
+                                                            }}
+                                                            component={ReactstrapInput}
+                                                          >
+                                                            <option value = "ES">Tự luận</option>
+                                                            <option value = "MC">Trắc nghiệm</option>
+                                                        
+                                                          </FastField>
+                                                          
+                                                      </Col>
+                                                </Row>
+                                              
+                                                
+                                          
+                                      
+                                  </ModalBody>
+                                  <ModalFooter>
+                                      <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
+                                      <Button color="primary" onClick={() => setModalHomeWork(false)}>Hủy</Button>
+                                  </ModalFooter>
+                                </Form>
                                   }
-                              </Formik>
-                              
-                          </ModalBody>
-                          <ModalFooter>
-                              <Button color="primary" onClick={() => setModalHomeWork(false)}>Hủy</Button>
-                          </ModalFooter>
+                      </Formik>
                     </Modal> 
                       
                       {/* modal update lesson */}
                     <Modal isOpen={modalLesson} toggle={setModalLesson}>
-                          <ModalHeader>
-                                Cập nhật nội dung bài học
-                          </ModalHeader>
-                          <ModalBody>
-                              <Formik
+                    <Formik
                                     initialValues={
                                       {
                                         lessonName:(lesson.lessonName !== undefined) ? lesson.lessonName : "",
-                                        date:(lesson.date !== undefined) ? lesson.date : "",
+                                       
                                         chapter:(lesson.chapter !== undefined) ? lesson.chapter.chapterName : "",
                                         link:(lesson.video !== undefined && lesson.video !== null) ? lesson.video.link : "",
                                         linkHomework: (lesson.homeWork !== undefined && lesson.homeWork !== null) ? lesson.homeWork.link : "",
@@ -758,12 +767,21 @@ const CourseList = (props) =>{
                                         misson: (lesson.homeWork !== undefined && lesson.homeWork !== null) ? lesson.homeWork.misson : ""
                                       }
                                     }
+                                    validationSchema={
+                                      Yup.object({
+                                       
+                                          date: Yup.string()
+                                          .required('Bắt buộc') 
+                                       
+                                      })
+                                    }
                                     onSubmit={async (values) => {
                                        
                                         const date = new Date(values.date);
                                         const dateFormat = Moment(date).format('DD-MM-YYYY');
                                         console.log(dateFormat);
                                         console.log(date);
+                                        console.log(values.date);
                                         const res = await LessonApi.updateLesson(
                                           lesson.id,
                                           values.lessonName,
@@ -799,79 +817,82 @@ const CourseList = (props) =>{
                                     }}
                                 
                                 >
-                                {({setFieldValue, values, isSubmitting}) => 
-                                    <Form>
-                                        <FastField
-                                                label="Tên bài học"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="lessonName"
-                                                component={ReactstrapInput}
-                                              />
-                                        <FastField
-                                                label="Chương"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="chapter"
-                                                component={ReactstrapInput}
-                                              />
-                                        <FastField
-                                                label="Ngày"
-                                                bsSize="lg"
-                                                type="date"
-                                                name="date"
-                                                component={ReactstrapInput}
-                                              />
-                                        {(lesson.video !== undefined  && lesson.video !== null) ? 
-                                        <FastField
-                                                label="Link Video"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="link"
-                                                component={ReactstrapInput}
-                                              /> : null }
-                                        {(lesson.homeWork !== undefined && lesson.homeWork !== null) ?
-                                        <>
-                                        <FastField
-                                                label="Link BTVN"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="linkHomework"
-                                                component={ReactstrapInput}
-                                              />
-                                        <FastField
-                                                label="Link đáp án"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="keyLink"
-                                                component={ReactstrapInput}
-                                              />
-                                        <FastField
-                                                label="Yêu cầu"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="misson"
-                                                component={ReactstrapInput}
-                                              /> 
-                                          </>: null }
-                                        <Button color="primary" type="submit" disabled={isSubmitting}>Lưu</Button>
-                                    </Form>
-                                  }
-                              </Formik>
-                              
-                          </ModalBody>
-                          <ModalFooter>
-                              <Button color="primary" onClick={() => setModalLesson(false)}>Hủy</Button>
-                          </ModalFooter>
+                            {({setFieldValue, values, isSubmitting}) => 
+                            <Form>
+                                <ModalHeader>
+                                      Cập nhật nội dung bài học
+                                </ModalHeader>
+                                <ModalBody>
+                                    
+                                              <FastField
+                                                      label="Tên bài học"
+                                                      bsSize="lg"
+                                                      type="text"
+                                                      name="lessonName"
+                                                      component={ReactstrapInput}
+                                                    />
+                                              <FastField
+                                                      label="Chương"
+                                                      bsSize="lg"
+                                                      type="text"
+                                                      name="chapter"
+                                                      component={ReactstrapInput}
+                                                    />
+                                              <FastField
+                                                      label="Ngày"
+                                                      bsSize="lg"
+                                                      type="date"
+                                                      name="date"
+                                                      component={ReactstrapInput}
+                                                    />
+                                              {(lesson.video !== undefined  && lesson.video !== null) ? 
+                                              <FastField
+                                                      label="Link Video"
+                                                      bsSize="lg"
+                                                      type="text"
+                                                      name="link"
+                                                      component={ReactstrapInput}
+                                                    /> : null }
+                                              {(lesson.homeWork !== undefined && lesson.homeWork !== null) ?
+                                              <>
+                                              <FastField
+                                                      label="Link BTVN"
+                                                      bsSize="lg"
+                                                      type="text"
+                                                      name="linkHomework"
+                                                      component={ReactstrapInput}
+                                                    />
+                                              <FastField
+                                                      label="Link đáp án"
+                                                      bsSize="lg"
+                                                      type="text"
+                                                      name="keyLink"
+                                                      component={ReactstrapInput}
+                                                    />
+                                              <FastField
+                                                      label="Yêu cầu"
+                                                      bsSize="lg"
+                                                      type="text"
+                                                      name="misson"
+                                                      component={ReactstrapInput}
+                                                    /> 
+                                                </>: null }
+                                              
+                                  
+                                    
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="primary" type="submit" disabled={isSubmitting}>Lưu</Button>
+                                    <Button color="primary" onClick={() => setModalLesson(false)}>Hủy</Button>
+                                </ModalFooter>
+                        </Form>
+                        }
+                      </Formik>
                     </Modal> 
                     
                           {/* modal create new chapter */}
                     <Modal isOpen={modalCreateChapter} toggle={setModalCreateChapter}>
-                          <ModalHeader>
-                                Tạo chương học mới
-                          </ModalHeader>
-                          <ModalBody>
-                              <Formik
+                          <Formik
                                     initialValues={
                                       {
                                         chapterName:"",
@@ -895,37 +916,40 @@ const CourseList = (props) =>{
                                 >
                                 {({setFieldValue, values, isSubmitting}) => 
                                     <Form>
-                                        <FastField
-                                                label="Tên chương học:"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="chapterName"
-                                                component={ReactstrapInput}
-                                              />
-                                        <ul>
-                                            Chương hiện có:
-                                            {suggestChapters.map((chapter,i) => 
-                                                <li key={i}>{chapter.chapterName}</li>
-                                            )}
-                                        </ul>
+                                        <ModalHeader>
+                                              Tạo chương học mới
+                                        </ModalHeader>
+                                        <ModalBody>
+                                            
+                                                      <FastField
+                                                              label="Tên chương học:"
+                                                              bsSize="lg"
+                                                              type="text"
+                                                              name="chapterName"
+                                                              component={ReactstrapInput}
+                                                            />
+                                                      <ul>
+                                                          Chương hiện có:
+                                                          {suggestChapters.map((chapter,i) => 
+                                                              <li key={i}>{chapter.chapterName}</li>
+                                                          )}
+                                                      </ul>
 
-                                        <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
-                                    </Form>
-                                  }
-                              </Formik>
-                              
-                          </ModalBody>
-                          <ModalFooter>
-                              <Button color="primary" onClick={() => setModalCreateChapter(false)}>Hủy</Button>
-                          </ModalFooter>
+                                                      
+                                                
+                                            
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
+                                            <Button color="primary" onClick={() => setModalCreateChapter(false)}>Hủy</Button>
+                                        </ModalFooter>
+                        </Form>
+                            }
+                      </Formik>
                     </Modal> 
                               {/* modal create new lesson */}
                     <Modal isOpen={modalCreateLesson} toggle={setModalCreateLesson}>
-                          <ModalHeader>
-                                Tạo bài học mới 
-                          </ModalHeader>
-                          <ModalBody>
-                              <Formik
+                    <Formik
                                     initialValues={
                                       {
                                         lessonName:"",
@@ -974,43 +998,50 @@ const CourseList = (props) =>{
                                 >
                                 {({setFieldValue, values, isSubmitting}) => 
                                     <Form>
-                                        <FastField
-                                                label="Tên bài học:"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="lessonName"
-                                                component={ReactstrapInput}
-                                              />
-                                        <FastField
-                                                label="Ngày học"
-                                                bsSize="lg"
-                                                type="date"
-                                                name="date"
-                                                component={ReactstrapInput}
-                                              />
-                                        <Label style={{marginBottom: "4px"}}>Chọn chương học</Label>
-                                        <Autocomplete
-                                          id="multiple-limit-tags1"
-                                          name="chapterId"
-                                          onChange={(e, value) => {
-                                            setFieldValue("chapterId", value.id)
-                                          }}
-                                          options={suggestChapters}
-                                          getOptionSelected={(option,value) => option.id === value.id}
-                                          getOptionLabel={(option) => option.chapterName}
-                                          renderInput={(params) => (
-                                            <TextField {...params} name="chapterId" variant="outlined" label="Chọn chương học" />
-                                          )}
-                                        />
-                                        <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
+                                      <ModalHeader>
+                                            Tạo bài học mới 
+                                      </ModalHeader>
+                                      <ModalBody>
+                                          
+                                                    <FastField
+                                                            label="Tên bài học:"
+                                                            bsSize="lg"
+                                                            type="text"
+                                                            name="lessonName"
+                                                            component={ReactstrapInput}
+                                                          />
+                                                    <FastField
+                                                            label="Ngày học"
+                                                            bsSize="lg"
+                                                            type="date"
+                                                            name="date"
+                                                            component={ReactstrapInput}
+                                                          />
+                                                    <Label style={{marginBottom: "4px"}}>Chọn chương học</Label>
+                                                    <Autocomplete
+                                                      id="multiple-limit-tags1"
+                                                      name="chapterId"
+                                                      onChange={(e, value) => {
+                                                        setFieldValue("chapterId", value.id)
+                                                      }}
+                                                      options={suggestChapters}
+                                                      getOptionSelected={(option,value) => option.id === value.id}
+                                                      getOptionLabel={(option) => option.chapterName}
+                                                      renderInput={(params) => (
+                                                        <TextField {...params} name="chapterId" variant="outlined" label="Chọn chương học" />
+                                                      )}
+                                                    />
+                                                    
+                                              
+                                          
+                                      </ModalBody>
+                                      <ModalFooter>
+                                          <Button color="primary" type="submit" disabled={isSubmitting}>Thêm</Button>
+                                          <Button color="primary" onClick={() => setModalCreateLesson(false)}>Hủy</Button>
+                                      </ModalFooter>
                                     </Form>
                                   }
                               </Formik>
-                              
-                          </ModalBody>
-                          <ModalFooter>
-                              <Button color="primary" onClick={() => setModalCreateLesson(false)}>Hủy</Button>
-                          </ModalFooter>
                     </Modal> 
 
        
@@ -1092,7 +1123,7 @@ const AttendanceList = (props) => {
 
   
   datatable.rows = students;
-  console.log(students);
+  
   return(
   <> 
       <div className='header' style={{marginBottom:"5px"}}>

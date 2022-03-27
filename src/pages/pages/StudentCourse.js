@@ -64,15 +64,16 @@ const ListCourse = (props) => {
                         <div>
                              <h6 style={{fontWeight:"bold"}}>Giáo Viên: {clazz.teacherId.fullName}</h6>
                         </div>
-                        <div className="d-flex justify-content-between flex-wrap" >
+                        {clazz.listSchedule.map((schedule,i) => 
+                        <div key={i} className="d-flex justify-content-between flex-wrap" >
                               <div>
-                                 <CalendarIcon></CalendarIcon> {(clazz.schedule === "1") ? "Chủ Nhật" : "Thứ " + clazz.schedule}
+                                 <CalendarIcon></CalendarIcon> {(schedule.schedule === "1") ? "Chủ Nhật" : "Thứ " + schedule.schedule}
                               </div>
                               <div>
-                                  <ClockIcon></ClockIcon> {clazz.startTime} - {clazz.endTime}
+                                  <ClockIcon></ClockIcon> {schedule.startTime} - {schedule.endTime}
                               </div>
                         </div>
-                        
+                        )}
                     </CardBody>
                     <Button onClick={() => redriectToCourseVideo(clazz)} color="primary" style={{borderRadius:"20px",fontWeight:"bold"}}>Học Bài</Button>
                 </Card>

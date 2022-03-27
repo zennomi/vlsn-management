@@ -30,10 +30,10 @@ function printNotSubmit  (number)  {
   var listX = [];
   for(var i = 0 ; i < number ; i ++){
     listX.push(
-      <>
-        <Close key={i} color="error"/>
+      <div key={i}>
+        <Close  color="error"/>
         <br/>
-      </>
+      </div>
     )
   }
   return listX;
@@ -43,10 +43,10 @@ function printSubmit  (number)  {
   var listV = [];
   for(var i = 0 ; i < number ; i ++){
     listV.push(
-      <>
-        <Check key={i} color="green"/>
+      <div key={i}>
+        <Check  color="green"/>
         <br/>
-      </>
+      </div>
     )
   }
   return listV;
@@ -203,10 +203,7 @@ const SubmittedStudentInWeek = (props) =>{
     getListStudentSubmitHomeWorkOfSubjectInGrade();
   }, [grade,subject,month,resetPage]);
 
-  console.log(weekNow);
-  console.log(month);
-  console.log(nowMonth);
-  console.log(students);
+ 
   students.map(st => 
     datatable.rows.push(
     {

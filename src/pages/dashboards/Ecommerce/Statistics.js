@@ -102,7 +102,7 @@ const Statistics = (props) =>{
           </Row>
           <Progress
             color="success"
-            value={(statisticsMonth[0].percentDeltaCurrentMonth !== -96.6996) ? statisticsMonth[0].percentDeltaCurrentMonth.toFixed(2) : 100}
+            value={(statisticsMonth[2].percentDeltaCurrentMonth !== -96.6996) ? statisticsMonth[2].percentDeltaCurrentMonth.toFixed(2) : 100}
             className="progress-sm shadow-sm mb-1"
           />
         </CardBody>

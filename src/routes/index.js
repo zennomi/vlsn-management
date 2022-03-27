@@ -100,7 +100,7 @@ const studentProfileRouter = {
   children: [
     {
       path: "/profile/info",
-      name: "Thông Tin Cá Nhân",
+      name: "Tình trạng học tập",
       component: withAuth(ClientProfile,["ADMIN","MENTOR","TEACHER","STUDENT","MANAGER"]),
     },
   ]

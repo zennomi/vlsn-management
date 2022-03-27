@@ -84,16 +84,10 @@ const AbsentListInWeek = (props) =>{
         setList(res);
     }
     getAllAbsentStudentAttendanceInWeeklyDay();
-    console.log("render");
+  
   }, [grade,day,subject]);
 
 
-  useEffect(() => {
-    console.log("rerender");
-    console.log(subject);
-    console.log(getWeeklyDay(day));
-    console.log(grade);
-  });
 
   listStudent.map(st => datatable.rows.push({
       id: st.id,
@@ -295,7 +289,7 @@ const AttendanceList = (props) =>{
       action: <Button color="primary" style={{borderRadius:"15px"}} onClick={() => setClassId(clazz.id) }>Xem</Button>
   }))
 
-  console.log(students);
+  
 
   const first = (students[0] !== undefined) ? students[0] : {listAtten:[]};
 
@@ -312,7 +306,7 @@ const AttendanceList = (props) =>{
     
   )
   datatable.rows = students;
-  console.log(students);
+  
   return(
   <> 
       <div className='header' style={{marginBottom:"5px", display:"flex", justifyContent:"flex-start"}}>

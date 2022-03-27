@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import {
   landing as landingRoutes,
@@ -11,7 +11,8 @@ import {
 import DashboardLayout from "../layouts/Dashboard";
 import AuthLayout from "../layouts/Auth";
 import Page404 from "../pages/auth/Page404";
-import { connect } from "react-redux";
+import { connect,useDispatch } from "react-redux";
+import { enableModernTheme } from "../redux/actions/themeActions";
 import {selectRole} from "../redux/selectors/userLoginInfoSelector";
 
 import ScrollToTop from "../components/ScrollToTop";
@@ -47,7 +48,15 @@ const childRoutes = (Layout, routes) =>
     )
   );
 
-const Routes = (props) => (
+const Routes = (props) => {
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(enableModernTheme());
+  }, [dispatch]);
+
+  return(
   <Router>
     <ScrollToTop>
       <Switch>
@@ -66,8 +75,8 @@ const Routes = (props) => (
       </Switch>
     </ScrollToTop>
   </Router>
-);
-
+  );
+}
 const mapGlobalStateToProps = state => {
   return {
       role: selectRole(state)
