@@ -8,6 +8,7 @@ import {
   Input,
   Row,
   Button,
+  Alert,
   Modal
 } from "reactstrap";
 import { ReactstrapInput } from "reactstrap-formik";
@@ -19,6 +20,10 @@ import Header from "./Header";
 import { Bar } from 'react-chartjs-2';
 import ExamApi from "../../api/ExamApi";
 import Edit from "@material-ui/icons/Edit";
+import avatar1 from "../../assets/img/avatars/avatar.jpg";
+import FacebookIcon from '@material-ui/icons/Facebook';
+import TestApi from "../../apiLuyenDe/TestApi";
+
 const StatisticsScorce = (props) =>{
 
   const data = {
@@ -68,7 +73,7 @@ const StatisticsScorce = (props) =>{
   const setMonth = props.setMonth;
  
   const setExamId = props.setExamId;
- 
+  const setExamTestingSystemId = props.setExamTestingSystemId;
   const setClassId = props.setClassId;
 
   const [examList, setExamList] = useState([]);
@@ -111,8 +116,10 @@ const StatisticsScorce = (props) =>{
 
   const setClassIdAndExamId = async (exam,clazz) =>{
       setClassId(clazz);
-      setExamId(exam);
-      const statistics = await ExamApi.getExamResultStatisticInClass(exam,clazz);
+      setExamId(exam.examId);
+      setExamTestingSystemId(exam.testingSystemId);
+      console.log(exam.testingSystemId);
+      const statistics = await ExamApi.getExamResultStatisticInClass(exam.examId,clazz);
       console.log(statistics);
       setDataStatistics(statistics);
   }
@@ -132,7 +139,7 @@ const StatisticsScorce = (props) =>{
       examName:exam.examName,
       type:exam.type,
       createdDate:exam.createdDate,
-      action: <Button color="primary" style={{borderRadius:"15px"}} onClick={() => setClassIdAndExamId(exam.examId,exam.classId) }>Xem</Button>
+      action: <Button color="primary" style={{borderRadius:"15px"}} onClick={() => setClassIdAndExamId(exam,exam.classId) }>Xem</Button>
   }))
   
   data.datasets[0].data = datastatistics;
@@ -227,6 +234,12 @@ const StatisticsScorce = (props) =>{
 
 const StudentListScorces = (props) =>{
 
+  const grade = props.grade;
+
+  const subject = props.subject;
+
+  const month = props.month;
+
   const datatable = {
     columns: [
       {
@@ -264,7 +277,14 @@ const StudentListScorces = (props) =>{
   const [marks, setListMark] = useState([]);
   const [result,setResult] = useState({});
   const examId = props.examId;
+  const testingSystemId = props.testingSystemId;
+  console.log(testingSystemId);
   const classId = props.classId;
+
+  const listNotFinish = props.listNotFinish;
+  const setListNotFinish = props.setListNotFinish;
+  const setRerenderNotFinish = props.setRerenderNotFinish;
+  const rerenderNotFinish = props.rerenderNotFinish;
   const [modalUpdate, setModalUpdate] = useState(false);
 
   useEffect(() => {
@@ -274,18 +294,69 @@ const StudentListScorces = (props) =>{
     }
     getAllExamMark();
     
-  }, [examId]);
+  }, [examId,listNotFinish]);
 
   const toggleUpdate =  (mark) => {
     setResult(mark)
     setModalUpdate(true);
   }
 
+  const updateExamResultAutomatically = async (id) => {
+      console.log(id);
+      if (id === null || id === "null"){
+        alert("Bài kiểm tra này không được tạo trên hệ thống luyện đề!");
+      }else{
+          // call api const res = 
+          const res = await TestApi.getExamResultTable(id);
+          var mapTestingSystemIdAndResult = {};
+          for(var i = 0 ; i < res.length ; i++){
+            mapTestingSystemIdAndResult[res[i].id] = res[i].mark;
+          }
+          const bodyToUpdate = [];
+
+          var allStudent = [...marks, ...listNotFinish];
+
+          allStudent.map(mark => bodyToUpdate.push(
+            {
+                examId: examId,
+                studentId: mark.id,
+                classroomId:classId,
+                mark: (mapTestingSystemIdAndResult[mark.testingSystemId] !== undefined && mark.testingSystemId !== null && mark.testingSystemId !== "null") ?
+                 mapTestingSystemIdAndResult[mark.testingSystemId] : mark.mark
+            }
+          ))
+          
+          console.log(allStudent);
+          const response = await ExamApi.updateManyExamResult(bodyToUpdate);
+          if(response === "update successful!"){
+            const newResponse = await ExamApi.getAllStudentNotTakeSubjectExamInMonthAtGrade(month,grade,subject);
+            setListNotFinish(newResponse);
+            setRerenderNotFinish(!rerenderNotFinish);
+            alert("Cập nhật thành công!");
+          }else{
+            alert("Cập nhật thất bại!");
+          }
+      }
+
+
+  }
+
   marks.map(mark => datatable.rows.push({
     id:mark.id,
-    fullName:mark.fullName,
+    fullName: <>
+                    <img
+                    src={(mark.avatarUrl !== null && mark.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${mark.avatarUrl}`) : 
+                        (mark.facebookUrl !== null && mark.facebookUrl !== "null") ? mark.facebookUrl :
+                        avatar1 }
+                    width="36"
+                    height="36"
+                    className="rounded-circle mr-2"
+                    alt={mark.fullName}
+                    />
+                    {mark.fullName}
+              </>,
     school:mark.school,
-    mark:mark.mark,
+    mark:mark.mark.toFixed(2),
     parentNumber:mark.parentNumber,
     action: <button style={{background:"none",border:"none"}} onClick={() => toggleUpdate(mark)}>
                 <Edit color="action"/>
@@ -296,8 +367,16 @@ const StudentListScorces = (props) =>{
     <>  
       {/* <Button color="primary">GỬI ĐIỂM PHỤ HUYNH</Button> */}
         
-              <h3 style={{fontWeight:"bold"}}>Top 100</h3>
-          
+              <div style={{display:"flex"}}>
+                <h3 style={{fontWeight:"bold"}}>Top 100</h3>
+                <Button type="button" onClick={() => updateExamResultAutomatically(testingSystemId)} style={{marginLeft:"auto"}} color="primary">Cập nhập điểm</Button>
+              </div>
+              <div>
+                          <Alert color="primary" style={{padding:"10px", fontWeight:"bolder"}}>
+                            Note: Những bài kiểm tra không tạo trên hệ thống luyện đề sẽ không thể cập nhật điểm! Học sinh chưa hoàn thành bài kiểm tra trên web luyện đề
+                            sẽ bị tính là 0 điểm
+                          </Alert>
+              </div>
               <MDBDataTableV5 
               hover 
               responsive 
@@ -377,10 +456,18 @@ const WeakStudentListScorces = (props) =>{
 
   const month = props.month;
 
+  const [students, setStudents] = useState([]);
+
+  const setListNotFinish = props.setListNotFinish;
   
+  const rerenderNotFinish = props.rerenderNotFinish;
 
   const datatable = {
     columns: [
+      {
+        label: 'ID',
+        field: 'id',
+      },
       {
         label: 'Họ Tên',
         field: 'fullName',
@@ -391,31 +478,65 @@ const WeakStudentListScorces = (props) =>{
       
       },
       {
-        label: 'STĐ PH',
+        label: 'SĐT',
+        field: 'studentNumber',
+      },
+      {
+        label: 'Tên PH',
         field: 'parentName',
       },
       {
-        label: 'STĐ PH',
+        label: 'SĐT PH',
         field: 'parentNumber',
+      },
+      {
+        label: 'Facebook',
+        field: 'facebookLink',
       },
     ],
     rows: [
       
     ],
   };  
-  const [students, setStudents] = useState([]);
+  
   
 
   useEffect(() => {
     const getListStudentNotTakeSubjectExamInMonthAtGrade = async () =>{
           const response = await ExamApi.getAllStudentNotTakeSubjectExamInMonthAtGrade(month,grade,subject);
           setStudents(response);
+          setListNotFinish(response);
     }
     getListStudentNotTakeSubjectExamInMonthAtGrade();
    
-  }, [month,grade,subject]);
+  }, [month,grade,subject,setListNotFinish,rerenderNotFinish]);
 
-  datatable.rows = students;
+  
+
+  students.map(mark => datatable.rows.push({
+      id:mark.id,
+      fullName: <>
+                    <img
+                    src={(mark.avatarUrl !== null && mark.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${mark.avatarUrl}`) : 
+                        (mark.facebookUrl !== null && mark.facebookUrl !== "null") ? mark.facebookUrl :
+                        avatar1 }
+                    width="36"
+                    height="36"
+                    className="rounded-circle mr-2"
+                    alt={mark.fullName}
+                    />
+                    {mark.fullName}
+              </>,
+      school:mark.school,
+      mark:mark.mark,
+      studentNumber:mark.studentNumber,
+      parentName: mark.parentName,
+      parentNumber:mark.parentNumber,
+      facebookLink: (mark.facebookLink !== null) ?
+                      <a alt={mark.facebookLink} href={mark.facebookLink} style={{color:"blue",fontWeight:"bolder"}}>
+                        Xem Facebook <FacebookIcon color="primary"/> 
+                    </a> : "Chưa có",
+    }))
 
   return (
       <>
@@ -440,6 +561,11 @@ const StudentScorces = (props) => {
   const [subject,setSubject] = useState("Toán Đại");
   const [examId,setExamId] = useState(0);
   const [classId,setClassId] = useState(0);
+  const [testingSystemId,setExamTestingSystemId] = useState();
+  
+  const [listNotFinish, setListNotFinish] = useState([]);
+
+  const [rerenderNotFinish, setRerenderNotFinish] = useState(false);
 
   return(
     
@@ -455,8 +581,11 @@ const StudentScorces = (props) => {
         setGrade={setGrade} 
         subject={subject} 
         examId={examId}
+        setExamTestingSystemId={setExamTestingSystemId}
+        testingSystemId={testingSystemId}
         setExamId={setExamId}
         classId={classId}
+        
         setClassId={setClassId}
         setSubject={setSubject}/>
       </Col>
@@ -469,6 +598,11 @@ const StudentScorces = (props) => {
         setMonth={setMonth} 
         grade={grade} 
         setGrade={setGrade} 
+        listNotFinish={listNotFinish}
+        testingSystemId={testingSystemId}
+        rerenderNotFinish={rerenderNotFinish}
+        setRerenderNotFinish={setRerenderNotFinish}
+        setListNotFinish={setListNotFinish}
         subject={subject} 
         examId={examId}
         classId={classId}
@@ -481,6 +615,9 @@ const StudentScorces = (props) => {
         {...props}
         month={month} 
         setMonth={setMonth} 
+        setListNotFinish={setListNotFinish}
+        listNotFinish={listNotFinish}
+        rerenderNotFinish={rerenderNotFinish}
         grade={grade} 
         setGrade={setGrade} 
         subject={subject} 

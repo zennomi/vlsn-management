@@ -1,23 +1,23 @@
 import axios from 'axios';
-import storage from '../Storage/storage';
+
 
 const axiosClient = axios.create({
-    baseURL: `${process.env.REACT_APP_QUANLY_API_DOMAIN}`,
+    baseURL: `${process.env.REACT_APP_LUYEN_DE_API_DOMAIN}`,
     //timeout: 5000, // default is `0` (no timeout)
     // responseType: 'json'
 });
 
-axiosClient.interceptors.request.use(async (config) => {
-    // Handle token here ...
-    //check token
-    const token = storage.getToken();
-    if (token != null && token !== undefined) {
-        config.headers.Authorization = `Bearer ${token}`;
-    } else {
+// axiosClient.interceptors.request.use(async (config) => {
+//     // Handle token here ...
+//     //check token
+//     const token = storage.getToken();
+//     if (token != null && token !== undefined) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//     } else {
         
-    }
-    return config;
-});
+//     }
+//     return config;
+// });
 
 axiosClient.interceptors.response.use((response) => {
    

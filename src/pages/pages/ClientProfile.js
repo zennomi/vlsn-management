@@ -389,7 +389,7 @@ const Comment = (props) => {
           <strong>{translateRoleToVietnamese(comment.role)} - {comment.fullName}</strong> đã đăng lời nhận xét{" "}
           <br />
           <small className="text-muted">{comment.commentDate}</small>
-          <h5 className="border text-muted p-2 mt-1">
+          <h5 style={{fontWeight:"bold"}} >
             {comment.comment}
           </h5>
         </Media>

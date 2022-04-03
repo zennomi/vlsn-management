@@ -304,8 +304,8 @@ const Comment = (props) => {
     <CardBody>
       
       { (comments.length !== 0) ? comments.map((comment,i) => 
-      <>
-      <Media key={i}>
+      <div key={i}>
+      <Media >
         <img
           src={(comment.avatarUrl !== null && comment.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${comment.avatarUrl}`) : 
               (comment.facebookUrl !== null && comment.facebookUrl !== "null") ? comment.facebookUrl :
@@ -319,14 +319,14 @@ const Comment = (props) => {
           <strong>{comment.role} - {comment.fullName}</strong> đã đăng lời nhận xét{" "}
           <br />
           <small className="text-muted">{comment.commentDate}</small>
-          <h5 className="border text-muted p-2 mt-1">
+          <h5 >
             {comment.comment}
           </h5>
         </Media>
       </Media>
 
       <hr />
-      </>
+      </div>
       ): <h5>Không có lời nhận xét nào</h5>}
       <Formik
             initialValues={

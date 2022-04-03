@@ -150,6 +150,7 @@ const Attendance = (props) =>{
       else{
           alert("Điểm danh thất bại!");
       }
+      resetAttendancePage();
       //call api
   }
 
@@ -395,8 +396,8 @@ const Attendance = (props) =>{
         if ( requested) {
             const res = await AttenDanceApi.deleteAttendance(clazz.classId,student.id,today2);
             if (res === "delete successful!"){
-                resetHomeWorkPage();
-                alert("Xóa thành công!");
+              resetAttendancePage();
+                alert("Xóa thành công! Vui lòng bấm xác nhận lại để cập nhập danh sách học sinh nghỉ học");
             }
         }
       };
@@ -512,11 +513,7 @@ const Attendance = (props) =>{
                 <h6>Nội dung bài học: {lesson.chapter.chapterName} - {lesson.lessonName} </h6>}
                
                <Modal isOpen={modalCreateLesson} toggle={setModalCreateLesson}>
-                          <ModalHeader>
-                                Tạo bài học mới 
-                          </ModalHeader>
-                          <ModalBody>
-                              <Formik
+                        <Formik
                                     initialValues={
                                       {
                                         lessonName:"",
@@ -564,44 +561,51 @@ const Attendance = (props) =>{
                                 
                                 >
                                 {({setFieldValue, values}) => 
-                                    <Form>
-                                        <FastField
-                                                label="Tên bài học:"
-                                                bsSize="lg"
-                                                type="text"
-                                                name="lessonName"
-                                                component={ReactstrapInput}
-                                              />
-                                        <FastField
-                                                label="Ngày học"
-                                                bsSize="lg"
-                                                type="date"
-                                                name="date"
-                                                component={ReactstrapInput}
-                                              />
-                                        <Label style={{marginBottom: "4px"}}>Chọn chương học</Label>
-                                        <Autocomplete
-                                          id="multiple-limit-tags1"
-                                          name="chapterId"
-                                          onChange={(e, value) => {
-                                            setFieldValue("chapterId", value.id)
-                                          }}
-                                          options={suggestChapters}
-                                          getOptionSelected={(option,value) => option.id === value.id}
-                                          getOptionLabel={(option) => option.chapterName}
-                                          renderInput={(params) => (
-                                            <TextField {...params} name="chapterId" variant="outlined" label="Chọn chương học" />
-                                          )}
-                                        />
-                                        <Button color="primary" type="submit">Thêm</Button>
-                                    </Form>
-                                  }
-                              </Formik>
-                              
-                          </ModalBody>
-                          <ModalFooter>
-                              <Button color="primary" onClick={() => setModalCreateLesson(false)}>Hủy</Button>
-                          </ModalFooter>
+                                <Form>
+                                  <ModalHeader>
+                                        Tạo bài học mới 
+                                  </ModalHeader>
+                                  <ModalBody>
+                                      
+                                                <FastField
+                                                        label="Tên bài học:"
+                                                        bsSize="lg"
+                                                        type="text"
+                                                        name="lessonName"
+                                                        component={ReactstrapInput}
+                                                      />
+                                                <FastField
+                                                        label="Ngày học"
+                                                        bsSize="lg"
+                                                        type="date"
+                                                        name="date"
+                                                        component={ReactstrapInput}
+                                                      />
+                                                <Label style={{marginBottom: "4px"}}>Chọn chương học</Label>
+                                                <Autocomplete
+                                                  id="multiple-limit-tags1"
+                                                  name="chapterId"
+                                                  onChange={(e, value) => {
+                                                    setFieldValue("chapterId", value.id)
+                                                  }}
+                                                  options={suggestChapters}
+                                                  getOptionSelected={(option,value) => option.id === value.id}
+                                                  getOptionLabel={(option) => option.chapterName}
+                                                  renderInput={(params) => (
+                                                    <TextField {...params} name="chapterId" variant="outlined" label="Chọn chương học" />
+                                                  )}
+                                                />
+                                               
+                                          
+                                      
+                                  </ModalBody>
+                                  <ModalFooter>
+                                      <Button color="primary" type="submit">Thêm</Button>
+                                      <Button color="primary" onClick={() => setModalCreateLesson(false)}>Hủy</Button>
+                                  </ModalFooter>
+                              </Form>
+                            }
+                      </Formik>
                     </Modal> 
 
                 </CardHeader>

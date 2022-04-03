@@ -9,7 +9,8 @@ import {
   Row,
   Label,
   Input,
-  Button
+  Button,
+  Alert
 } from "reactstrap";
 import { Formik,FastField, Form  } from 'formik';
 import { ReactstrapInput } from "reactstrap-formik";
@@ -23,7 +24,7 @@ import * as Yup from 'yup';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
-
+import TestApi from "../../../apiLuyenDe/TestApi";
 
 const removeLastThreeChar = (str) => {
   return str.slice(0,-3)
@@ -82,7 +83,7 @@ const CreateClass = () => {
     
   ];
   
-  const [students, setStudents] = useState([]);
+  const [students, setStudents] = useState([]); // only student's info and without student mark
   
 
   function afterSaveCell(oldValue,newValue,oldRow) {
@@ -104,9 +105,11 @@ const CreateClass = () => {
   }
   const [listType, setTypes] = useState([]);
   const [listClazz, setListClass] = useState([]);
-  const [listStudent, setListStudent] = useState([]);
+  const [listStudent, setListStudent] = useState([]); // student's info and handle student's mark to submit
   const [examDate, setDate] = useState("");
   const [classroom,setClassroom] = useState({});
+  const [examTestingSystemId,setExamTestingSystemId] = useState(""); // examId from testing system;
+  const [canSubmit, setCanSubmit] = useState(true);
 
   const submitStudentMarkInClass = async (clazz) => {
         const res = await ClassroomApi.getAllStudentInClassOnDate(clazz.id,examDate);
@@ -130,6 +133,7 @@ const CreateClass = () => {
   }, []);
 
   
+  
   listClazz.map(clazz => datatable.rows.push(
     {
       fullName: clazz.subjectName + " " + clazz.grade + clazz.className,
@@ -145,24 +149,82 @@ const CreateClass = () => {
     }
   ))
 
+  const [mappingStudentResultAndTestingSystemId, setMappingTestingSystemId] = useState({});
+
+ 
+
+
+  const autoFillStudentMark = async (id) => {
+    
+    var mappingTestingIdAndResult = {};
+    
+    // call api from luyendeapi.tct.edu.vn
+    // const res = await TestingApi.getStudentResultInExam(id)
+    // if (res not exisit) => alert(Không tồn tại bài kiểm tra)
+    // else tiếp tục xử lý như dưới
+    // return [
+    //   {
+    //     id: "abc1",
+    //     mark:10
+    //     ...
+    //   },
+    //   {
+    //     id: "abc1",
+    //     mark:10
+    //     ...
+    //   },
+    //   {
+    //     id: "abc1",
+    //     mark:10
+    //     ...
+    //   },
+    // ]
+    try {
+      const res = await TestApi.getExamResultTable(id);
+      for(var i = 0 ; i < res.length ; i++){
+        mappingTestingIdAndResult[res[i].id] = res[i].mark;
+      }
+      setMappingTestingSystemId(mappingTestingIdAndResult);
+      setCanSubmit(true);
+      console.log(res);
+    } catch (error) {
+      alert("ID bài kiểm tra không tồn tại!");
+      setCanSubmit(false);
+    }
+    
+    
+
+   
+    
+  }
+
   useEffect(() => {
-    const handleChangeStateStudentOnToolkit = () =>{
+    const handleChangeStateStudentOnToolkit = () =>{  // handle mark to submit
+     
       var intiialStudentsValue = [];
-      listStudent.map((student,i) => intiialStudentsValue.push(
-        {   
-            index:i,
-            fullName:student.fullName,
-            school:student.school,
-            id:student.id,
-            parentNumber:student.parentNumber,
-            mark:0
-        }
-      ))
+      for (var k = 0 ; k < listStudent.length ; k++){
+        
+        intiialStudentsValue.push(
+          {   
+              index:k,
+              fullName:listStudent[k].fullName,
+              testingSystemId:listStudent[k].testingSystemId,
+              school:listStudent[k].school,
+              id:listStudent[k].id,
+              parentNumber:listStudent[k].parentNumber,
+              mark: (Object.keys(mappingStudentResultAndTestingSystemId).length === 0 ) ? 
+                    -1 : 
+                    (mappingStudentResultAndTestingSystemId[listStudent[k].testingSystemId] !== undefined) ? 
+                    mappingStudentResultAndTestingSystemId[listStudent[k].testingSystemId] : 0
+              
+          }
+        )
+      }
       setStudents(intiialStudentsValue);
     }
     handleChangeStateStudentOnToolkit();
     
-  }, [listStudent]);
+  }, [listStudent,mappingStudentResultAndTestingSystemId]);
   
   
   
@@ -201,21 +263,31 @@ const CreateClass = () => {
     
             onSubmit={async (values) => {
 
+                  if(canSubmit){
+
+                      const dateFormat = Moment(values.date).format('DD-MM-YYYY');
+                      const exam = await ExamApi.createExam(values.examName,values.type.typeId,dateFormat,examTestingSystemId);
+                      
+                      const submitMark = [];
+                      students.map(student => submitMark.push({
+                        studentId:student.id,
+                        classroomId:classroom.id,
+                        mark:student.mark,
+                        examId:exam
+                      }))
+                      const res = await ExamApi.createExamResult(submitMark);
+                      if (res === "create successful!"){
+                          alert("Lưu kết quả thành công!");
+                      }
+
+                  }else{
+                    alert("ID bài kiểm tra nhập vào không hợp lệ!");
+                  }
                   
-                  const dateFormat = Moment(values.date).format('DD-MM-YYYY');
-                  const exam = await ExamApi.createExam(values.examName,values.type.typeId,dateFormat);
-                  console.log(students);
-                  const submitMark = [];
-                  students.map(student => submitMark.push({
-                    studentId:student.id,
-                    classroomId:classroom.id,
-                    mark:student.mark,
-                    examId:exam
-                  }))
-                 const res = await ExamApi.createExamResult(submitMark);
-                 if (res === "create successful!"){
-                    alert("Lưu kết quả thành công!");
-                 }
+                  
+
+                
+
             }}
           >
             {({setFieldValue, values, handleChange}) => <Form>
@@ -309,6 +381,12 @@ const CreateClass = () => {
                   </Col>
                     
               </Row> 
+              <div>
+                          <Alert color="primary" style={{padding:"10px", fontWeight:"bolder"}}>
+                            Note: Ngày kiểm tra phải đúng với lịch học của lớp cần nhập điểm! Học sinh nghỉ học hôm kiểm tra sẽ không được nhập điểm. 
+                            Trong trường hợp cả lớp nghỉ học (học online) vào hôm kiểm tra thì sẽ hiển thị danh sách cả lớp học!
+                          </Alert>
+              </div>
               <hr />
               <MDBDataTableV5 
               hover 
@@ -327,17 +405,43 @@ const CreateClass = () => {
                   {
                     props => (
                       <div>
-                        <SearchBar { ...props.searchProps } />
+                        <Row>
+                            <Col>
+                                <SearchBar placeholder="Search..." { ...props.searchProps } />
+
+                            </Col>
+                            <Col>
+                            </Col>
+                            <Col>
+                            <div className="input-group">
+                                <Input type="text" className="form-control" placeholder="Nhập ID của bài kiểm tra để tự động nhập điểm"
+                                      onChange={e => setExamTestingSystemId(e.target.value)}
+                                />
+                                <Button color="primary" type="button" style={{margin:"auto"}} onClick={() => autoFillStudentMark(examTestingSystemId)}>
+                                    Tự động nhập
+                                </Button>
+                              
+                              </div>
+                                 
+                            </Col>
+                        </Row>
+                        <div>
+                          <Alert color="primary" style={{padding:"10px"}}>
+                            Note: Bấm tự động nhập đầu tiên! nếu đang nhập điểm mà bấm tự động nhập thì sẽ mất hết dữ liệu vừa nhập, ID bài kiểm tra lấy từ hệ thống luyện đề  
+                            {` ${process.env.REACT_APP_LUYEN_DE_DOMAIN}`} . 
+                            Học sinh phải liên kết tài khoản từ hệ thống luyện đề mới có thể tự động nhập!
+                          </Alert>
+                        </div>
                         <hr />
                         <BootstrapTable
                          
-                         keyField="id"
-                         data={ students }
-                         columns={ columns }
-                         cellEdit={ cellEditFactory({
-                          mode: 'click',
-                          blurToSave: true,
-                          afterSaveCell
+                          keyField="id"
+                          data={ students }
+                          columns={ columns }
+                          cellEdit={ cellEditFactory({
+                            mode: 'click',
+                            blurToSave: true,
+                            afterSaveCell
                         }) }
                           { ...props.baseProps }
                          

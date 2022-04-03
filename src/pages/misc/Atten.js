@@ -5,12 +5,28 @@ import {
 import StudentApi from "../../api/StudentApi";
 import AttendanceApi from "../../api/AttendanceApi";
 import ClassroomApi from "../../api/ClassroomApi";
+import { toastr } from "react-redux-toastr";
 import Moment from 'moment';
 function format_two_digits(n) {
   return n < 10 ? '0' + n : n;
 }
 
 const Atten = (props) => {
+
+  
+
+  const showErrorNotification = (title, message) => {
+    const options = {
+      timeOut: 3000,
+      type: "success",
+      showCloseButton: false,
+      progressBar: false,
+      position: "bottom-center"
+    };
+
+    // show notification
+    toastr.success(title, message, options);
+  }
 
   const today = Moment(Date.now()).format('YYYY-MM-DD');
   const studentId = props.match.params.id;
@@ -75,6 +91,8 @@ const Atten = (props) => {
       if(res === "atten successful!"){
           setStatus("Điểm danh thành công");
           setAtten(!isAttened);
+          showErrorNotification("Điểm danh thành công!","vui lòng tắt tab để không bị nặng máy");
+          
       }
       else{
           alert("Điểm danh thất bại!");
@@ -98,6 +116,7 @@ const Atten = (props) => {
           if(res === "Atten Compensate successful!" && res1 === "Atten Compensate successful!"){
             setStatus("Điểm danh bù thành công");
             setAtten(!isAttened);
+            showErrorNotification("Điểm danh thành công!","vui lòng tắt tab để không bị nặng máy");
           }else{
             setAtten(!isAttened);
             setSubListClass([]);
@@ -139,6 +158,7 @@ const Atten = (props) => {
       if(res1 === "Atten Compensate successful!"){
         setSubListClass([]);
         setStatus("Điểm danh bù thành công");
+        showErrorNotification("Điểm danh thành công!","vui lòng tắt tab để không bị nặng máy");
       }else{
         setAtten(!isAttened);
         alert("Điểm Danh Thất bại!");

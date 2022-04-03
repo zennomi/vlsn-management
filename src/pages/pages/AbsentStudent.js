@@ -82,6 +82,7 @@ const AbsentListInWeek = (props) =>{
     const getAllAbsentStudentAttendanceInWeeklyDay = async () =>{
         const res = await AttendanceApi.getListAbsentStudentInWeeklyDay(grade,subject,getWeeklyDay(day));
         setList(res);
+        console.log(res);
     }
     getAllAbsentStudentAttendanceInWeeklyDay();
   
