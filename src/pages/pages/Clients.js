@@ -39,6 +39,7 @@ import { CSVLink } from "react-csv";
 import avatar1 from "../../assets/img/avatars/avatar.jpg";
 import { produce } from "immer";
 import * as Yup from 'yup';
+import Moment from 'moment';
 import Header from "../dashboards/Ecommerce/Header";
 import Statistics from "../dashboards/Ecommerce/Statistics";
 import LineChart from "../dashboards/Ecommerce/LineChart";
@@ -71,7 +72,15 @@ const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+
+
+
 const ClientsList = (props) =>{ 
+
+  var today = new Date();
+  var prior30Date = new Date(new Date().setDate(today.getDate() - 30));
+  const current30DaysBeforeNow = Moment(prior30Date).format('YYYY-MM-DD');
+  console.log(current30DaysBeforeNow);
   const datatable = {
     columns: [
       {
@@ -82,6 +91,11 @@ const ClientsList = (props) =>{
       {
         label: 'Họ Tên',
         field: 'fullName',
+     
+      },
+      {
+        label: 'Ngày bắt đầu học',
+        field: 'startDate',
      
       },
       {
@@ -202,9 +216,11 @@ const ClientsList = (props) =>{
                     className="rounded-circle mr-2"
                     alt=""
                     />
-                    {st.fullName}
+                    {st.fullName} {(st.startDate >= current30DaysBeforeNow) ? <Badge color="danger"><div style={{color:"yellow"}}>New</div></Badge> : null}
+                    
                 </>,
       school:st.school,
+      startDate: Moment(st.startDate).format('DD-MM-YYYY'),
       grade:st.grade,
       studentNumber:st.studentNumber,
       parentNumber: st.parentNumber,
@@ -217,12 +233,15 @@ const ClientsList = (props) =>{
                 <button style={{background:"none",border:"none"}}  onClick={() => redriectToProfile(st.id)}>
                   <View color ="primary" />
                 </button>
+                {(props.role !== "MENTOR" && props.role !== "TEACHER") ?
+                <>
                 <button style={{background:"none",border:"none"}} onClick={() => toggleUpdate(st)}>
                     <Edit color="action"/>
                 </button>
                 <button style={{background:"none",border:"none"}} onClick={() => toggleDelete(st)}>
                     <Delete color="secondary"/>
                 </button>
+                </> : null }
             </div>,
     }
   ))
@@ -873,9 +892,10 @@ const DeactivedClientsList = (props) => {
                 <button style={{background:"none",border:"none"}} onClick={() => toggleUpdate(st)}>
                     <Edit color="action"/>
                 </button>
+                {(props.role !== "MENTOR" && props.role !== "TEACHER") ?
                 <button style={{background:"none",border:"none"}} onClick={() => toggleDelete(st)}>
                     <Delete color="secondary"/>
-                </button>
+                </button> : null }
             </div>,
     }
   ))
@@ -1300,9 +1320,10 @@ const Clients = (props) => {
     <Row>
         <Col style={{display:"flex"}}>
             <h1 className="h3 mb-3" style={{fontWeight:"bold"}}>Học sinh khối {grade}</h1>
+            {(props.role !== "MENTOR" && props.role !== "TEACHER") ? 
             <Button style={{marginLeft:"auto"}} color="primary" onClick={toggle}>
                 Thêm học sinh mới
-            </Button>
+            </Button> : null }
         </Col>
     </Row>
     <Row>
@@ -1314,10 +1335,11 @@ const Clients = (props) => {
          {...props} listStudent={listStudent} setListStudent={setListStudent}/>
         
       </Col>
+      {(props.role !== "MENTOR" && props.role !== "TEACHER") ?
       <Modal isOpen={modal} toggle={toggle}>
             <Single grade={grade} handler = {toggle} listStudent={listStudent} setListStudent={setListStudent}
              />
-      </Modal>
+      </Modal> : null }
     </Row>
     <br/>
     

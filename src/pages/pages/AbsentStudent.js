@@ -13,7 +13,7 @@ import Header from "./Header";
 import Moment from 'moment';
 import AttendanceApi from "../../api/AttendanceApi";
 import ClassroomApi from "../../api/ClassroomApi";
-
+import { CSVLink } from "react-csv";
 // chuyển về thứ {dayInNumber}
 const getWeeklyDay = (dayInNumber) => {
     var todayTransfer = new Date();
@@ -204,6 +204,17 @@ const AbsentListInWeek = (props) =>{
 }
 const AttendanceList = (props) =>{ 
 
+  var headers = [
+    { label: "Họ và Đệm", key: "lastName" },
+    { label: "Tên", key: "firstName" },
+    { label: "SĐT", key: "studentNumber" },
+    { label: "Lớp", key: "grade" },
+    { label: "trường học", key: "school" },
+    { label: "Tên PH", key: "parentName" },
+    { label: "SĐT PH", key: "parentNumber" },
+    
+  ];
+
   const[grade,setGrade] = useState(12);
   const[subject,setSubject] = useState("Toán Đại");
   
@@ -292,7 +303,8 @@ const AttendanceList = (props) =>{
 
   
 
-  const first = (students[0] !== undefined) ? students[0] : {listAtten:[]};
+  const first = (students[0] !== undefined) ? students[0] : {listAtten:[]}; // lấy hs đầu tiên của lớp để làm mẫu field, trong trường hợp học sinh chưa điểm danh, phải xác nhận phần điểm danh
+  
 
   first.listAtten.map(res =>
       datatable.columns.push({
@@ -300,6 +312,14 @@ const AttendanceList = (props) =>{
         field: res.date,
       })  
   )
+  
+  first.listAtten.map(res =>
+    headers.push({
+      label: res.date,
+      key: res.date,
+    })  
+)
+
   students.map(st => 
       st.listAtten.map(res => 
           st[res.date] = res.status
@@ -376,6 +396,8 @@ const AttendanceList = (props) =>{
           searchTop searchBottom={false} 
           hover  entriesOptions={[50,100, 150, 200,300,400]} 
           entries={50} pagesAmount={50} data={datatable} />
+
+          <CSVLink className="ml-auto" headers={headers} data={datatable.rows}>Export to CSV</CSVLink>
 
   </>
     );
