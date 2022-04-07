@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  docker-mysql:
+    image: mysql:8.0.27
+    command: --character-set-server=utf8 --collation-server=utf8_general_ci
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=tctmanagement
+    ports:
+      - 3307:3306
+    networks:
+      - tct-mysql-network
+    volumes:
+      - "./TCT-management.sql:/docker-entrypoint-initdb.d/1.sql"
+    
+
+  backend:
+    image: thangdemons2001/tct-management:latest
+    ports:
+       - 8092:8091
+    networks:
+      - tct-mysql-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/tctmanagement?createDatabaseIfNotExist=true
+      spring.datasource.username: root
+      spring.datasource.password: root
+      spring.jpa.hibernate.naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      file.avatar: C:\\Users\\Thang Nguyen\\Desktop\\Avatar 
+      #change this to your local folder
+    restart: on-failure
+    depends_on:
+       - docker-mysql
+       
+networks:
+  tct-mysql-network:
