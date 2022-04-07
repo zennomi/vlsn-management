@@ -129,7 +129,7 @@ const Attendance = (props) =>{
       const hours = format_two_digits(d.getHours());
       const minutes = format_two_digits(d.getMinutes());
       const seconds = format_two_digits(d.getSeconds());
-      const startTime = clazz.startTime;
+      const startTime = clazz.start;
       const rightnow = hours + ":" + minutes + ":" + seconds;
       console.log(startTime);
       console.log(rightnow);

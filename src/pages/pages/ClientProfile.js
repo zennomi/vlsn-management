@@ -198,7 +198,7 @@ const StudentProfileDetails = (props) =>{
           
           <div className="d-flex justify-content-between flex-wrap">
                 <div>
-                    <h5 style={{fontWeight:"bold"}}>Điểm trung bình: {avgStudentMark}
+                    <h5 style={{fontWeight:"bold"}}>Điểm trung bình: {avgStudentMark.toFixed(2)}
                     </h5>
                 </div>
                 <div>
@@ -208,7 +208,7 @@ const StudentProfileDetails = (props) =>{
           {student.subjectStatus.map((subject,i) =>
             <div key={i} className="d-flex justify-content-between flex-wrap">
                   <div>
-                      <h5>{subject.subjectName} - {(subject.avgMark === 0) ? "Chưa KTra" : subject.avgMark}</h5>
+                      <h5>{subject.subjectName} - {(subject.avgMark === 0) ? "Chưa KTra" : subject.avgMark.toFixed(2)}</h5>
                   </div>
                   <div>
                       <h5>{(subject.avgMark === 0) ? "Chưa Xếp hạng" : subject.rank}</h5>
@@ -304,7 +304,7 @@ const Activities = (props) => {
                                   <h5 style={{margin: "0 auto",fontWeight:"bold"}}>
                                       {subject.subjectName}
                                   </h5>
-                                  <h5 style={{margin: "0 auto"}}>Trung Bình: {subject.avgMark}</h5>
+                                  <h5 style={{margin: "0 auto"}}>Trung Bình: {subject.avgMark.toFixed(2)}</h5>
                                   <h5 style={{margin: "0 auto"}}>Hạng: {subject.rank}</h5>
                                   <h5 style={{fontWeight:"bold"}}>Rank: 
                                   {(subject.avgMark >= 9) ? <p style={{color:"red"}}>Vàng (Xuất Sắc)</p> :

@@ -215,7 +215,7 @@ const StudentListScorces = (props) =>{
                     {st.fullName}
                 </>,
       school: st.school,
-      avgMark: (st.avgMark !== 0 ) ? st.avgMark : "chưa có hạng",
+      avgMark: (st.avgMark !== 0 ) ? st.avgMark.toFixed(2) : "chưa có hạng",
       score: <>
               {st.score}
               <StarIcon style={{color:"yellow",marginBottom:"4px"}}/>

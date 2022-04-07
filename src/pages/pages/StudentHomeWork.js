@@ -76,7 +76,7 @@ const SubmittedStudentInWeek = (props) =>{
 
   const [weekNow,setWeekNow] = useState(4);
 
-      
+  console.log(weekNow);
     
   useEffect(() => {
 
@@ -201,7 +201,7 @@ const SubmittedStudentInWeek = (props) =>{
         setStudents(res);
     }
     getListStudentSubmitHomeWorkOfSubjectInGrade();
-  }, [grade,subject,month,resetPage]);
+  }, [grade,subject,month,resetPage,weekNow]);
 
  
   students.map(st => 
@@ -217,7 +217,7 @@ const SubmittedStudentInWeek = (props) =>{
                     </div>
                 )),
 
-          first:(st.first && weekNow >= 1) ? 
+          first: (st.first) ? 
                   <div>
                       { (st.first !== null) ? printSubmit(st.first.length): printSubmit(0)}
                       { (st.first !== null) ? printNotSubmit(st.listClass.length - st.first.length) : printNotSubmit(st.listClass.length)}
@@ -227,7 +227,7 @@ const SubmittedStudentInWeek = (props) =>{
                       {printNotSubmit(st.listClass.length)}
                     </>
                     ,
-          second:(st.second && weekNow >= 2) ? 
+          second:(st.second ) ? 
                     <div>
                       { (st.second !== null) ? printSubmit(st.second.length): printSubmit(0)}
                       { (st.second !== null) ? printNotSubmit(st.listClass.length - st.second.length) : printNotSubmit(st.listClass.length)}
@@ -237,7 +237,7 @@ const SubmittedStudentInWeek = (props) =>{
                       {printNotSubmit(st.listClass.length)}
                     </>
                     ,
-          third:(st.third && weekNow >= 3) ? 
+          third:(st.third ) ? 
                     <div>
                       { (st.third !== null) ? printSubmit(st.third.length): printSubmit(0)}
                       { (st.third !== null) ? printNotSubmit(st.listClass.length - st.third.length) : printNotSubmit(st.listClass.length)}
@@ -247,7 +247,7 @@ const SubmittedStudentInWeek = (props) =>{
                       {printNotSubmit(st.listClass.length)}
                     </>
                     ,
-          fourth:(st.fourth && weekNow >= 4) ? 
+          fourth:(st.fourth) ? 
                   <div>
                     { (st.fourth !== null) ? printSubmit(st.fourth.length): printSubmit(0)}
                     { (st.fourth !== null) ? printNotSubmit(st.listClass.length - st.fourth.length) : printNotSubmit(st.listClass.length)}
@@ -492,7 +492,7 @@ const StudentInBlackList = (props) =>{
     
       
         <h3 style={{fontWeight:"bold"}} >
-          HỌC SINH THIẾU BTVN 3 LẦN
+          HỌC SINH THIẾU BTVN ÍT NHẤT 1 LẦN
         </h3>
         
           <MDBDataTableV5 responsive hover 

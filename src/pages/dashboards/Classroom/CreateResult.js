@@ -182,7 +182,7 @@ const CreateClass = () => {
     try {
       const res = await TestApi.getExamResultTable(id);
       for(var i = 0 ; i < res.length ; i++){
-        mappingTestingIdAndResult[res[i].id] = res[i].mark;
+        mappingTestingIdAndResult[res[i].id] = res[i].mark.toFixed(2);
       }
       setMappingTestingSystemId(mappingTestingIdAndResult);
       setCanSubmit(true);
