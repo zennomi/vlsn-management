@@ -1016,10 +1016,6 @@ const Single = (props) => {
   
                   studentPhone: Yup.string()
                     .required('bắt buộc')
-                    .min(10, 'SĐT phải có 10 chữ số')
-                    .max(10, 'SĐT phải có 10 chữ số')
-                    .matches(/^[0-9]+$/, "SĐT không chứa kí tự khác")
-                    .required('bắt buộc')
                     .test('checkUniqueUsername', 'Tài khoản đã được đăng ký.', async username => {
                       // call api
                       const isExists = await UserApi.existsByUsername(username);
