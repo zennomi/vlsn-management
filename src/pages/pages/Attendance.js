@@ -527,7 +527,7 @@ const Attendance = (props) =>{
                                         lessonName: Yup.string()
                                           .required('Bắt buộc')
                                           .max(50, 'Tên bài học không được vượt quá 50 kí tự')
-                                          .min(6, 'Tên bài học ít nhất 6 kí tự'),
+                                          ,
                                         date: Yup.string()
                                           .required("Bắt buộc"),
                                         chapterId: Yup.string()
