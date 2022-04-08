@@ -222,7 +222,7 @@ const StatisticsScorce = (props) =>{
               bordered
               searchTop
               searchBottom={false}
-              entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} data={datatable} />
+              entriesOptions={[5,10, 20, 50,100,500]} entries={5} pagesAmount={5} data={datatable} />
           </div>
       </div>
       <Bar data={data} options={options} />
@@ -248,9 +248,18 @@ const StudentListScorces = (props) =>{
   
       },
       {
-        label: 'Họ Tên',
-        field: 'fullName',
-  
+        label: '',
+        field: 'avatar',
+      },
+      {
+        label: 'Họ & Đệm',
+        field: 'lastName',
+        sort: 'asc',
+      },
+      {
+        label: 'Tên',
+        field: 'firstName',
+        sort: 'asc',
       },
       {
         label: 'Trường',
@@ -260,6 +269,10 @@ const StudentListScorces = (props) =>{
       {
         label: 'Điểm KT',
         field: 'mark',
+      },
+      {
+        label: 'PHHS',
+        field: 'parentName',
       },
       {
         label: 'STĐ PH',
@@ -343,20 +356,20 @@ const StudentListScorces = (props) =>{
 
   marks.map(mark => datatable.rows.push({
     id:mark.id,
-    fullName: <>
-                    <img
-                    src={(mark.avatarUrl !== null && mark.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${mark.avatarUrl}`) : 
-                        (mark.facebookUrl !== null && mark.facebookUrl !== "null") ? mark.facebookUrl :
-                        avatar1 }
-                    width="36"
-                    height="36"
-                    className="rounded-circle mr-2"
-                    alt={mark.fullName}
-                    />
-                    {mark.fullName}
-              </>,
+    avatar:  <img
+                  src={(mark.avatarUrl !== null && mark.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${mark.avatarUrl}`) : 
+                    (mark.facebookUrl !== null && mark.facebookUrl !== "null") ? mark.facebookUrl :
+                  avatar1 }
+                  width="36"
+                  height="36"
+                  className="rounded-circle mr-2"
+                  alt=""
+                  />,
+    firstName:mark.firstName,
+    lastName:mark.lastName,
     school:mark.school,
     mark:mark.mark.toFixed(2),
+    parentName:mark.parentName,
     parentNumber:mark.parentNumber,
     action: <button style={{background:"none",border:"none"}} onClick={() => toggleUpdate(mark)}>
                 <Edit color="action"/>
@@ -383,7 +396,7 @@ const StudentListScorces = (props) =>{
               bordered
               searchTop
               searchBottom={false}
-              entriesOptions={[100,200, 300, 400]} entries={100} pagesAmount={100} data={datatable} />
+              entriesOptions={[10,50, 100, 400]} entries={10} pagesAmount={10} data={datatable} />
           
           <Modal isOpen={modalUpdate} toggle={toggleUpdate}>
             <Row>
@@ -545,10 +558,9 @@ const WeakStudentListScorces = (props) =>{
             <MDBDataTableV5 
             hover 
             responsive 
-            searchTop
             bordered
             searchBottom={false}
-            entriesOptions={[5,10, 20, 50,100,500]} entries={100} pagesAmount={4} 
+            entriesOptions={[10, 20, 50,100,500]} entries={10} pagesAmount={10} 
             data={datatable} />
       </>
     );

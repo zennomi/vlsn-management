@@ -17,7 +17,7 @@ import HomeWorkApi from "../../api/HomeWorkApi";
 import StudentApi from "../../api/StudentApi";
 import Check from "@material-ui/icons/Check";
 import Close from "@material-ui/icons/Close";
-
+import avatar1 from "../../assets/img/avatars/avatar.jpg";
 
 function percentage(partialValue, totalValue) {
   if (totalValue === 0){
@@ -102,9 +102,22 @@ const SubmittedStudentInWeek = (props) =>{
   const datatable = {
     columns: [
       {
-        label: 'Họ Tên',
-        field: 'fullName',
-      
+        label: 'ID',
+        field: 'id',
+      },
+      {
+        label: '',
+        field: 'avatar',
+      },
+      {
+        label: 'Họ & Đệm',
+        field: 'lastName',
+        sort: 'asc',
+      },
+      {
+        label: 'Tên',
+        field: 'firstName',
+        sort: 'asc',
       },
       {
         label: 'Trường học',
@@ -207,7 +220,18 @@ const SubmittedStudentInWeek = (props) =>{
   students.map(st => 
     datatable.rows.push(
     {
-          fullName:st.fullName,
+          id:st.id,
+          avatar:  <img
+                src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
+                  (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
+                avatar1 }
+                width="36"
+                height="36"
+                className="rounded-circle mr-2"
+                alt=""
+                />,
+          firstName:st.firstName,
+          lastName:st.lastName,
           school:st.school,
           studentNumber:st.studentNumber,
           classroom: (st.listClass.map((c,i) =>
@@ -397,7 +421,7 @@ const SubmittedStudentInWeek = (props) =>{
           searchTop
           searchBottom={false}
           bordered borderless={true} hover 
-           entriesOptions={[100,200, 300, 400,500]} entries={100} pagesAmount={100} data={datatable} />
+           entriesOptions={[15,50, 100, 200,300]} entries={15} pagesAmount={15} data={datatable} />
     
   </>
     );
@@ -431,9 +455,18 @@ const StudentInBlackList = (props) =>{
      
       },
       {
-        label: 'Họ Tên',
-        field: 'fullName',
-     
+        label: '',
+        field: 'avatar',
+      },
+      {
+        label: 'Họ & Đệm',
+        field: 'lastName',
+        sort: 'asc',
+      },
+      {
+        label: 'Tên',
+        field: 'firstName',
+        sort: 'asc',
       },
       {
         label: 'Trường học',
@@ -470,7 +503,17 @@ const StudentInBlackList = (props) =>{
 
   blackList.map(st => datatable.rows.push({
     id:st.id,
-    fullName:st.fullName,
+    avatar:  <img
+                  src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
+                    (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
+                  avatar1 }
+                  width="36"
+                  height="36"
+                  className="rounded-circle mr-2"
+                  alt=""
+                  />,
+    firstName:st.firstName,
+    lastName:st.lastName,
     school:st.school,
     studentNumber:st.studentNumber,
     parentNumber:st.parentNumber,
@@ -499,7 +542,7 @@ const StudentInBlackList = (props) =>{
           bordered
           searchTop
           searchBottom={false}
-           entriesOptions={[100,200, 300, 400,500]} entries={100} pagesAmount={100} data={datatable} />
+           entriesOptions={[15,50, 100, 200,300]} entries={15} pagesAmount={15} data={datatable} />
 
     
   </>

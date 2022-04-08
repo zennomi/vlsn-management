@@ -86,27 +86,41 @@ const ClientsList = (props) =>{
       {
         label: 'ID',
         field: 'id',
-     
+        sort: 'asc',
       },
       {
-        label: 'Họ Tên',
-        field: 'fullName',
-     
+        label: '',
+        field: 'avatar',
+      },
+      {
+        label: 'Họ & Đệm',
+        field: 'lastName',
+        sort: 'asc',
+      },
+      {
+        label: 'Tên',
+        field: 'firstName',
+        sort: 'asc',
+      },
+      {
+        label: '',
+        field: 'type',
+        sort: 'asc',
       },
       {
         label: 'Ngày bắt đầu học',
         field: 'startDate',
-     
+        sort: 'asc',
       },
       {
         label: 'Trường học',
         field: 'school',
- 
+        sort: 'asc',
       },
       {
         label: 'SĐT',
         field: 'studentNumber',
-  
+        sort: 'asc',
       },
       {
         label: 'Lớp',
@@ -117,12 +131,12 @@ const ClientsList = (props) =>{
       {
         label: 'Tên PH',
         field: 'parentName',
- 
+        sort: 'asc',
       },
       {
         label: 'SĐT PH',
         field: 'parentNumber',
-
+        sort: 'asc',
       },
       {
         label: 'Facebook',
@@ -206,19 +220,18 @@ const ClientsList = (props) =>{
   listStudent.map(st => datatable.rows.push(
     {
       id:st.id,
-      fullName:<>
-                    <img
-                    src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
-                      (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
-                     avatar1 }
-                    width="36"
-                    height="36"
-                    className="rounded-circle mr-2"
-                    alt=""
-                    />
-                    {st.fullName} {(st.startDate >= current30DaysBeforeNow) ? <Badge color="danger"><div style={{color:"yellow"}}>New</div></Badge> : null}
-                    
-                </>,
+      avatar:  <img
+                  src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
+                    (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
+                  avatar1 }
+                  width="36"
+                  height="36"
+                  className="rounded-circle mr-2"
+                  alt=""
+                  />,
+      type: (st.startDate >= current30DaysBeforeNow) ? <Badge color="danger"><div style={{color:"yellow"}}>New</div></Badge> : null,
+      firstName:st.firstName,
+      lastName:st.lastName,
       school:st.school,
       startDate: Moment(st.startDate).format('DD-MM-YYYY'),
       grade:st.grade,
@@ -289,7 +302,8 @@ const ClientsList = (props) =>{
                       searchTop
                       searchBottom={false}
                       exportToCSV
-                      entriesOptions={[30,200, 300, 400]} entries={30} pagesAmount={30} data={datatable} />
+                      
+                      entriesOptions={[10,15,30,200, 300, 400]}  data={datatable} />
                       
                 </Col>
           </Row>

@@ -23,15 +23,30 @@ import CheckIcon from "@material-ui/icons/Check";
 import { green } from "@material-ui/core/colors";
 import { Box } from "@material-ui/core";
 import ManagerApi from "../../api/ManagerApi";
+import avatar1 from "../../assets/img/avatars/avatar.jpg";
 
 const StudentCostInfo = (props) =>{ 
 
   const datatable = {
     columns: [
       {
-        label: 'Họ Tên',
-        field: 'fullName',
-    
+        label: 'ID',
+        field: 'id',
+        sort: 'asc',
+      },
+      {
+        label: '',
+        field: 'avatar',
+      },
+      {
+        label: 'Họ & Đệm',
+        field: 'lastName',
+        sort: 'asc',
+      },
+      {
+        label: 'Tên',
+        field: 'firstName',
+        sort: 'asc',
       },
       {
         label: 'Trường học',
@@ -77,9 +92,23 @@ const StudentCostInfo = (props) =>{
   const datatable1 = {
     columns: [
       {
-        label: 'Họ Tên',
-        field: 'fullName',
- 
+        label: 'ID',
+        field: 'id',
+        sort: 'asc',
+      },
+      {
+        label: '',
+        field: 'avatar',
+      },
+      {
+        label: 'Họ & Đệm',
+        field: 'lastName',
+        sort: 'asc',
+      },
+      {
+        label: 'Tên',
+        field: 'firstName',
+        sort: 'asc',
       },
       {
         label: 'Trường học',
@@ -203,6 +232,15 @@ const StudentCostInfo = (props) =>{
 
   listInActiveStudent.map(st => datatable.rows.push({
     id: st.id,
+    avatar:  <img
+                  src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
+                    (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
+                  avatar1 }
+                  width="36"
+                  height="36"
+                  className="rounded-circle mr-2"
+                  alt=""
+                  />,
     firstName: st.firstName,
     lastName: st.lastName,
     fullName: st.fullName,
@@ -223,6 +261,15 @@ const StudentCostInfo = (props) =>{
   }))
   listActiveStudent.map(st => datatable1.rows.push({
     id: st.id,
+    avatar:  <img
+                  src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
+                    (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
+                  avatar1 }
+                  width="36"
+                  height="36"
+                  className="rounded-circle mr-2"
+                  alt=""
+                  />,
     firstName: st.firstName,
     lastName: st.lastName,
     fullName: st.fullName,

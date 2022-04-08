@@ -245,10 +245,9 @@ const StudentListScorces = (props) =>{
             responsive
             pagingTop
             bordered
-            searchTop
             searchBottom={false}
-            entriesOptions={[5,10, 20, 50,100,500]} 
-            entries={100} pagesAmount={4} 
+            entriesOptions={[15, 20, 50,100,500]} 
+            entries={15} pagesAmount={15} 
             data={datatable} />
         </>
         /* </CardBody>
@@ -275,6 +274,11 @@ const WeakStudentListScorces = (props) =>{
 
   const datatable = {
     columns: [
+      {
+        label: 'ID',
+        field: 'id',
+    
+      },
       {
         label: 'Hạng',
         field: 'rank',
@@ -322,18 +326,8 @@ const WeakStudentListScorces = (props) =>{
 
   data.map(st => datatable.rows.push({
     rank: st.rank,
-    fullName: <>
-                  <img
-                  src={(st.avatarUrl !== null && st.avatarUrl !== "null") ? (`${process.env.REACT_APP_AVATAR_URL}/${st.avatarUrl}`) : 
-                      (st.facebookUrl !== null && st.facebookUrl !== "null") ? st.facebookUrl :
-                      avatar1 }
-                  width="36"
-                  height="36"
-                  className="rounded-circle mr-2"
-                  alt={st.fullName}
-                  />
-                  {st.fullName}
-              </>,
+    id: st.id,
+    fullName: st.fullName,
     school: st.school,
     avgMark: (st.avgMark !== 0 ) ? st.avgMark : "chưa có hạng",
     score:  <>
@@ -366,8 +360,8 @@ const WeakStudentListScorces = (props) =>{
             searchTop
             bordered
             searchBottom={false}
-            entriesOptions={[5,10, 20, 50,100,500]} 
-            entries={100} pagesAmount={4} data={datatable} />
+            entriesOptions={[15, 20, 50,100,500]} 
+            entries={15} pagesAmount={15} data={datatable} />
         </>
         /* </CardBody> */
     // </Card>

@@ -170,8 +170,14 @@ const Attendance = (props) =>{
             
           },
           {
-            label: 'Họ Tên',
-            field: 'fullName',
+            label: 'Họ Đệm',
+            field: 'lastName',
+            sort: 'asc',
+            
+          },
+          {
+            label: 'Tên',
+            field: 'firstName',
             sort: 'asc',
             
           },
@@ -202,10 +208,16 @@ const Attendance = (props) =>{
             
           },
           {
-            label: 'Họ Tên',
-            field: 'fullName',
+            label: 'Họ Đệm',
+            field: 'lastName',
             sort: 'asc',
-         
+            
+          },
+          {
+            label: 'Tên',
+            field: 'firstName',
+            sort: 'asc',
+            
           },
           {
             label: 'Trường',
@@ -236,10 +248,16 @@ const Attendance = (props) =>{
             
           },
           {
-            label: 'Họ Tên',
-            field: 'fullName',
+            label: 'Họ Đệm',
+            field: 'lastName',
             sort: 'asc',
-         
+            
+          },
+          {
+            label: 'Tên',
+            field: 'firstName',
+            sort: 'asc',
+            
           },
           {
             label: 'Trường',
@@ -266,10 +284,16 @@ const Attendance = (props) =>{
             
           },
           {
-            label: 'Họ Tên',
-            field: 'fullName',
+            label: 'Họ Đệm',
+            field: 'lastName',
             sort: 'asc',
-         
+            
+          },
+          {
+            label: 'Tên',
+            field: 'firstName',
+            sort: 'asc',
+            
           },
           {
             label: 'Trường',
@@ -294,10 +318,16 @@ const Attendance = (props) =>{
             
           },
           {
-            label: 'Họ Tên',
-            field: 'fullName',
+            label: 'Họ Đệm',
+            field: 'lastName',
             sort: 'asc',
-         
+            
+          },
+          {
+            label: 'Tên',
+            field: 'firstName',
+            sort: 'asc',
+            
           },
           {
             label: 'Trường',
@@ -381,6 +411,8 @@ const Attendance = (props) =>{
       listStudentNotInClass.map(st => data1.rows.push({
         id: st.id,
         fullName: st.fullName,
+        firstName: st.firstName,
+        lastName: st.lastName,
         school:st.school,
         studentNumber:st.studentNumber,
         parentNumber: st.parentNumber,
@@ -471,6 +503,8 @@ const Attendance = (props) =>{
         {
             id:st.id,
             fullName:st.fullName,
+            firstName: st.firstName,
+            lastName: st.lastName,
             school:st.school,
             action:<button style={{background:"none",border:"none"}} onClick={() => toggleDeleteSubmitHomeWork(st)}>
                         <Delete color="secondary"/>
@@ -481,7 +515,8 @@ const Attendance = (props) =>{
       attenedStudents.map(st => data5.rows.push(
         {
           id:st.id,
-          fullName:st.fullName,
+          firstName: st.firstName,
+          lastName: st.lastName,
           school:st.school,
           action:<button style={{background:"none",border:"none"}} onClick={() => toggleDeleteSubmitHomeWork(st)}>
                       <Delete color="secondary"/>
@@ -491,7 +526,8 @@ const Attendance = (props) =>{
       listStudentNotInClass.map(st => data5.rows.push(
         {
           id:st.id,
-          fullName:st.fullName,
+          firstName: st.firstName,
+          lastName: st.lastName,
           school:st.school,
           action: "Nghỉ học"
         }
@@ -634,8 +670,8 @@ const Attendance = (props) =>{
                           searchTop
                           searchBottom={false}
                           barReverse
-                          entriesOptions={[30,40, 50, 70,100]}
-                          entries={30} data={data}/>
+                          entriesOptions={[15,40, 50, 70,100]}
+                          entries={15} data={data}/>
                     </CardBody>
                   </CardBody>
                   <CardBody>
@@ -662,8 +698,8 @@ const Attendance = (props) =>{
                           searchTop
                           searchBottom={false}
                           barReverse
-                          entriesOptions={[30,40, 50, 70,100]}
-                          entries={30}  data={data3} />
+                          entriesOptions={[15,40, 50, 70,100]}
+                          entries={15}  data={data3} />
                     </CardBody>
                   </CardBody>
                   <CardBody>
@@ -690,8 +726,8 @@ const Attendance = (props) =>{
                           searchTop
                           searchBottom={false}
                           barReverse
-                          entriesOptions={[30,40, 50, 70,100]}
-                          entries={30}  data={data1} />
+                          entriesOptions={[15,40, 50, 70,100]}
+                          entries={15}  data={data1} />
                           <Button color="primary" onClick={submitAbsentStudents}>Xác Nhận</Button>
                     </CardBody>
                   </CardBody>
@@ -717,8 +753,8 @@ const Attendance = (props) =>{
                           searchTop
                           searchBottom={false}
                           barReverse
-                          entriesOptions={[30,40, 50, 70,100]}
-                          entries={30} data={data5}/>
+                          entriesOptions={[15,40, 50, 70,100]}
+                          entries={15} data={data5}/>
                   </CardBody>
                   
                   </Card>
@@ -745,8 +781,8 @@ const Attendance = (props) =>{
                           searchTop
                           searchBottom={false}
                           barReverse
-                          entriesOptions={[30,40, 50, 70,100]}
-                          entries={30} data={data4}/>
+                          entriesOptions={[15,40, 50, 70,100]}
+                          entries={15} data={data4}/>
                   </CardBody>
                   <Modal isOpen={isLoading} toggle={setIsLoading}>
                     <ModalBody>
