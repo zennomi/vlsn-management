@@ -384,7 +384,7 @@ const StudentListScorces = (props) =>{
                 <h3 style={{fontWeight:"bold"}}>Top 100</h3>
                 <Button type="button" onClick={() => updateExamResultAutomatically(testingSystemId)} style={{marginLeft:"auto"}} color="primary">Cập nhập điểm</Button>
               </div>
-              <div>
+              <div style={{marginTop:"5px"}}>
                           <Alert color="primary" style={{padding:"10px", fontWeight:"bolder"}}>
                             Note: Những bài kiểm tra không tạo trên hệ thống luyện đề sẽ không thể cập nhật điểm! Học sinh chưa hoàn thành bài kiểm tra trên web luyện đề
                             sẽ bị tính là 0 điểm
