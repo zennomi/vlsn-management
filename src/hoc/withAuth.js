@@ -25,6 +25,9 @@ function withAuth(AuthenticatedComponent, [...roles]) {
                     
                     return <AuthenticatedComponent {...this.props}/>
                 }else{
+                    if(myRole.role ==="STUDENT"){
+                        return <Redirect to="/profile/info" />
+                    }
                     return <Redirect to="/auth/500" />
                 }               
             }

@@ -744,8 +744,8 @@ const Attendance = (props) =>{
                   <Card>
                   <CardHeader>Học sinh thiếu btvn:</CardHeader>
                   <CardBody>
-                      <Button onClick={() => setModalSubmitStudentHomeWork(true)} color="primary">Học sinh không làm btvn</Button> 
-                      <Button onClick={() => submitAll()} color="primary">Đánh dấu tất cả đều đủ</Button> 
+                      <Button onClick={() => setModalSubmitStudentHomeWork(true)}  color="primary">Học sinh không làm btvn</Button> 
+                      <Button onClick={() => submitAll()} style={{marginLeft:"4px"}} color="primary">Đánh dấu tất cả đều đủ</Button> 
                       <MDBDataTableV5
                           hover 
                           responsive

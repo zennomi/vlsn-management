@@ -334,8 +334,8 @@ const CourseList = (props) =>{
                           <div>
                               <div style={{marginLeft:"auto"}}>
                                 <Button color="primary" onClick={() => setModalCreateLesson(true)}>Tạo bài học mới</Button>
-                                <Button color="primary" onClick={() => openAddExistsLessonToClass()}>Thêm bài học</Button>
-                                <Button color="primary" onClick={() => setModalCreateChapter(true)}>Thêm chương</Button>
+                                <Button color="primary" style={{marginLeft:"4px"}} onClick={() => openAddExistsLessonToClass()}>Thêm bài học</Button>
+                                <Button color="primary" style={{marginLeft:"4px"}} onClick={() => setModalCreateChapter(true)}>Thêm chương</Button>
                               </div>
                               
                           </div>
