@@ -177,6 +177,7 @@ const StatisticsScorce = (props) =>{
                         setSubject(e.target.value);
                     }}
                     >
+                                  <option value="Lý">Lý</option>
                                   <option value="Toán Đại">Toán Đại</option>
                                   <option value="Toán Hình">Toán Hình</option>
                                   <option value="Toán Hình">Luyện Đề C3</option>
@@ -184,7 +185,6 @@ const StatisticsScorce = (props) =>{
                                   <option value="Tiếng Anh">Tiếng Anh</option>
                                   <option value="Hóa">Hóa</option>
                                   <option value="Văn">Văn</option>
-                                  <option value="Lý">Lý</option>
                                   <option value="Sinh">Sinh</option>
                     </Input>
                 </Col>
@@ -570,7 +570,7 @@ const StudentScorces = (props) => {
 
   const [month,setMonth] = useState(1);
   const [grade,setGrade] = useState(12);
-  const [subject,setSubject] = useState("Toán Đại");
+  const [subject,setSubject] = useState("Lý");
   const [examId,setExamId] = useState(0);
   const [classId,setClassId] = useState(0);
   const [testingSystemId,setExamTestingSystemId] = useState();

@@ -71,7 +71,7 @@ const SubmittedStudentInWeek = (props) =>{
   
   const [students, setStudents] = useState([]);
   const [grade,setGrade] = useState(12);
-  const [subject,setSubject] = useState("Toán Đại");
+  const [subject,setSubject] = useState("Lý");
   const [month,setMonth] = useState(nowMonth);
 
   const [weekNow,setWeekNow] = useState(4);
@@ -386,12 +386,12 @@ const SubmittedStudentInWeek = (props) =>{
                                       setSubject(e.target.value);
                                 }}
                                 >
+                                              <option value="Lý">Lý</option>
                                               <option value="Toán Đại">Toán Đại</option>
                                               <option value="Toán Hình">Toán Hình</option>
                                               <option value="Tiếng Anh">Tiếng Anh</option>
                                               <option value="Hóa">Hóa</option>
                                               <option value="Văn">Văn</option>
-                                              <option value="Lý">Lý</option>
                                               <option value="Sinh">Sinh</option>
                                 </Input>
                             </Col>

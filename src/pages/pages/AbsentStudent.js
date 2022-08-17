@@ -74,7 +74,7 @@ const AbsentListInWeek = (props) =>{
   }; 
   const weeklyToday = new Date().getDay() + 1;
   const [grade,setGrade] = useState(12);
-  const [subject,setSubject] = useState("Toán Đại");
+  const [subject,setSubject] = useState("Lý");
   const [day,setDay] = useState(weeklyToday);
   const [listStudent, setList] = useState([]);
 
@@ -130,10 +130,10 @@ const AbsentListInWeek = (props) =>{
                                   console.log(grade);
                               }}
                             >
+                              <option value = "Lý">Lý</option>
                               <option value = "Toán Đại">Toán Đại</option>
                               <option value = "Toán Hình">Toán Hình</option>
                               <option value = "Tiếng Anh">Tiếng Anh</option>
-                              <option value = "Lý">Lý</option>
                               <option value = "Hóa">Hóa</option>
                               <option value = "Văn">Văn</option>
                             
@@ -216,7 +216,7 @@ const AttendanceList = (props) =>{
   ];
 
   const[grade,setGrade] = useState(12);
-  const[subject,setSubject] = useState("Toán Đại");
+  const[subject,setSubject] = useState("Lý");
   
   const [classes, setClasses] = useState([]);
   const [students,setStudents]=useState([]);
@@ -365,12 +365,12 @@ const AttendanceList = (props) =>{
                                     setSubject(e.target.value);
                                 }}
                                 >
+                                              <option value="Lý">Lý</option>
                                               <option value="Toán Đại">Toán Đại</option>
                                               <option value="Toán Hình">Toán Hình</option>
                                               <option value="Tiếng Anh">Tiếng Anh</option>
                                               <option value="Hóa">Hóa</option>
                                               <option value="Văn">Văn</option>
-                                              <option value="Lý">Lý</option>
                                               <option value="Sinh">Sinh</option>
                                 </Input>
                             </Col>

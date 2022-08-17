@@ -152,7 +152,7 @@ const StudentCostInfo = (props) =>{
   }; 
 
   const [grade,setGrade] = useState(12);
-  const [subject,setSubject] = useState("Toán Đại");
+  const [subject,setSubject] = useState("Lý");
   const [listActiveStudent, setListActive] = useState([]);
   const [listInActiveStudent, setListInActive] = useState([]);
   const [isLoading,setIsLoading] = useState(false);
@@ -357,10 +357,10 @@ const StudentCostInfo = (props) =>{
                                       setSubject(e.target.value);
                                   }}
                                 >
+                                  <option value = "Lý">Lý</option>
                                   <option value = "Toán Đại">Toán Đại</option>
                                   <option value = "Toán Hình">Toán Hình</option>
                                   <option value = "Tiếng Anh">Tiếng Anh</option>
-                                  <option value = "Lý">Lý</option>
                                   <option value = "Hóa">Hóa</option>
                                   <option value = "Văn">Văn</option>
                                 

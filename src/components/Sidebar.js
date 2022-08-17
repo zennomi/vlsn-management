@@ -124,8 +124,8 @@ const Sidebar = (props) => {
         <PerfectScrollbar>
           <a className="sidebar-brand" href="/">
             <img alt="TCT" src={require('../assets/img/brands/logo4.png')} 
-            className="align-middle text-primary" size={24} />{" "}
-            <span className="align-middle">Tâm Chí Tài</span>
+            className="align-middle text-primary" width={24} />{" "}
+            <span className="align-middle">Vật Lý Siêu Nhẩm</span>
           </a>
 
           <ul className="sidebar-nav">

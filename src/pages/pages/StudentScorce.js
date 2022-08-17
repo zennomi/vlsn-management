@@ -112,6 +112,7 @@ const StatisticsScorce = (props) =>{
                           setSubject(e.target.value);
                     }}
                     >
+                                  <option value="Lý">Lý</option>
                                   <option value="Toán Đại">Toán Đại</option>
                                   <option value="Toán Hình">Toán Hình</option>
                                   <option value="Luyện Đề C3">Luyện Đề C3</option>
@@ -119,7 +120,6 @@ const StatisticsScorce = (props) =>{
                                   <option value="Tiếng Anh">Tiếng Anh</option>
                                   <option value="Hóa">Hóa</option>
                                   <option value="Văn">Văn</option>
-                                  <option value="Lý">Lý</option>
                     </Input>
                 </Col>
             </Row>
@@ -371,7 +371,7 @@ const WeakStudentListScorces = (props) =>{
 const StudentScorces = (props) => {
 
   const[grade,setGrade]=useState(12);
-  const[subject,setSubject]=useState("Toán Đại");
+  const[subject,setSubject]=useState("Lý");
 
   useEffect(() => {
     console.log("render!");

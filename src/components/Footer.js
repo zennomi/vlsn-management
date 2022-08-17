@@ -8,12 +8,12 @@ const Footer = () => (
         <Col xs="6" className="text-left">
           <ul className="list-inline">
             <li className="list-inline-item">
-              <a href="https://www.facebook.com/thaychungtoan.edu.vn" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/vatlysieunham" target="_blank" rel="noopener noreferrer">
                 Fanpage  
               </a>
             </li>
             <li className="list-inline-item">
-              <a href="https://www.facebook.com/groups/539298657268877" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/groups/305247567884632" target="_blank" rel="noopener noreferrer">
                 Group  
               </a>
             </li>
